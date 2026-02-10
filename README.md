@@ -2,9 +2,9 @@
 
 📡 **Quiet, efficient dev monitoring.**
 
-Echo is a minimalist file system watcher designed to provide instant feedback during development.
+Echo is a minimalist file system watcher I built to provide instant feedback during my development sessions. It's designed to be lightweight and easy to use.
 
-## 🚀 Usage
+## 🚀 Quick Start
 
 ```bash
 python src/main.py [path]
@@ -17,4 +17,4 @@ python src/main.py [path]
 - **Clean UI:** Powered by `rich` for elegant terminal output.
 
 ---
-*Developed with AURA.*
+*Built with intention.*
