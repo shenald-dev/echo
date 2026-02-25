@@ -36,7 +36,7 @@ class Echo:
                 # Check for changes
                 for path, mtime in current.items():
                     if path not in self.snapshot:
-                        console.print(f"[green]🆕 Added:[/green] {os.path.relpath(path, self.path)}")
+                        console.print(f"[green]✨ Added:[/green] {os.path.relpath(path, self.path)}")
                     elif mtime > self.snapshot[path]:
                         console.print(f"[yellow]📝 Modified:[/yellow] {os.path.relpath(path, self.path)}")
                 

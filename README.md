@@ -10,7 +10,7 @@ Echo is a minimalist file system watcher I built to provide instant feedback dur
 python src/main.py [path]
 ```
 
-## 🛠️ Features
+## ✨ Features
 
 - **Instant Detection:** Detects additions, modifications, and deletions.
 - **Minimal Overhead:** Optimized for low CPU usage.
