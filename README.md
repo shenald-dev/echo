@@ -1,20 +1,43 @@
-# echo
+# Echo
 
-📡 **Quiet, efficient dev monitoring.**
+> Quiet, efficient file system monitoring that stays out of your way.
 
-Echo is a minimalist file system watcher I built to provide instant feedback during my development sessions. It's designed to be lightweight and easy to use.
+Echo watches your files and directories, triggering actions when changes occur. Perfect for development workflows, CI triggers, and automation.
 
-## 🚀 Quick Start
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+## Features
+
+- Recursive directory watching
+- Pattern-based filtering
+- Low memory footprint
+- Simple CLI and Python API
+- Cross-platform
+
+## Installation
 
 ```bash
-python src/main.py [path]
+pip install echo-monitor
 ```
 
-## ✨ Features
+## Quick Example
 
-- **Instant Detection:** Detects additions, modifications, and deletions.
-- **Minimal Overhead:** Optimized for low CPU usage.
-- **Clean UI:** Powered by `rich` for elegant terminal output.
+```bash
+echo watch ./src --pattern "*.py" --command "pytest"
+```
 
----
-*Built with intention.*
+## Use Cases
+
+- Auto-run tests on file changes
+- Trigger CI builds locally
+- Development workflow automation
+- Simple file sync triggers
+
+## Why Echo?
+
+Most file watchers are either too complex or not flexible enough. Echo keeps it simple: watch, filter, act.
+
+## License
+
+MIT © Shenald
