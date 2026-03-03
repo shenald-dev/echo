@@ -2,7 +2,7 @@
 
 > Quiet, efficient file system monitoring that stays out of your way.
 
-Echo watches your files and directories, triggering actions when changes occur. Perfect for development workflows, CI triggers, and automation.
+Echo watches your files and directories, triggering actions when changes occur. Perfect for development workflows and automation.
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
@@ -26,13 +26,6 @@ pip install echo-monitor
 ```bash
 echo watch ./src --pattern "*.py" --command "pytest"
 ```
-
-## Use Cases
-
-- Auto-run tests on file changes
-- Trigger CI builds locally
-- Development workflow automation
-- Simple file sync triggers
 
 ## Why Echo?
 
