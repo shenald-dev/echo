@@ -5,6 +5,7 @@
 Echo watches your files and directories, triggering actions when changes occur. Perfect for development workflows and automation.
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)
+[![CI](https://github.com/shenald-dev/echo/actions/workflows/ci.yml/badge.svg)](https://github.com/shenald-dev/echo/actions/workflows/ci.yml)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## Features
