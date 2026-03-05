@@ -1,37 +1,16 @@
-# Echo
+# 📡 echo
 
-> Quiet, efficient file system monitoring that stays out of your way.
-
-Echo watches your files and directories, triggering actions when changes occur. Perfect for development workflows and automation.
-
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)
-[![CI](https://github.com/shenald-dev/echo/actions/workflows/ci.yml/badge.svg)](https://github.com/shenald-dev/echo/actions/workflows/ci.yml)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+> Lightweight file watcher. Trigger commands on changes. <5MB RAM.
 
 ## Features
+- **🪶 Ultra Lightweight**: Uses native OS file observing capabilities via `watchdog` to consume virtually 0 resources.
+- **⚡ Instant Feedback**: Re-runs your commands natively without spinning up complex pipelines.
+- **💻 Cross Platform**: Built with Python + Rich bindings to operate seamlessly across OS boundaries.
 
-- Recursive directory watching
-- Pattern-based filtering
-- Low memory footprint
-- Simple CLI and Python API
-- Cross-platform
-
-## Installation
-
+## Quick Start
 ```bash
-pip install echo-monitor
+pip install echo-watcher
+echo-watch --path ./src --cmd "pytest"
 ```
 
-## Quick Example
-
-```bash
-echo watch ./src --pattern "*.py" --command "pytest"
-```
-
-## Why Echo?
-
-Most file watchers are either too complex or not flexible enough. Echo keeps it simple: watch, filter, act.
-
-## License
-
-MIT © Shenald
+*Built by a Vibe Coder. Let the code compile itself.*

@@ -1,0 +1,19 @@
+[project]
+name = "echo-watcher"
+version = "0.1.0"
+description = "📡 Lightweight file watcher. Trigger commands on changes. <5MB RAM, single binary."
+authors = [
+    { name = "shenald-dev", email = "bot@shenald.dev" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "watchdog>=4.0.0",
+    "rich>=13.7.0"
+]
+
+[project.scripts]
+echo-watch = "echo.watcher:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
