@@ -50,6 +50,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             process.wait()
 
+            # Reset debounce only after command completes (not when it starts)
+            # to prevent overlapping runs when commands take longer than the debounce window
+            self.last_run = time.time()
+
             with self.lock:
                 if self.current_process is process:
                     if process.returncode == 0:
