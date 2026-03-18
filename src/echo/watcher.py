@@ -1,5 +1,8 @@
+import os
 import sys
 import time
+import signal
+import platform
 import subprocess
 import argparse
 import threading
@@ -17,19 +20,31 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.lock = threading.Lock()
 
     def _run_command(self):
+        is_posix = platform.system() != "Windows"
         try:
             with self.lock:
                 if self.current_process and self.current_process.poll() is None:
                     console.print("[yellow]⚠ Terminating previous command...[/yellow]")
-                    self.current_process.terminate()
+                    if is_posix:
+                        try:
+                            os.killpg(os.getpgid(self.current_process.pid), signal.SIGTERM)
+                        except ProcessLookupError:
+                            pass
+                    else:
+                        self.current_process.terminate()
                     self.current_process.wait()
 
                 # Run the command with pipes to preserve output
+                kwargs = {}
+                if is_posix:
+                    kwargs['start_new_session'] = True
+
                 process = subprocess.Popen(
                     self.command,
                     shell=True,
                     stdout=sys.stdout,
-                    stderr=sys.stderr
+                    stderr=sys.stderr,
+                    **kwargs
                 )
                 self.current_process = process
 
@@ -79,7 +94,13 @@ def main():
         observer.stop()
         console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
         if event_handler.current_process and event_handler.current_process.poll() is None:
-            event_handler.current_process.terminate()
+            if platform.system() != "Windows":
+                try:
+                    os.killpg(os.getpgid(event_handler.current_process.pid), signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+            else:
+                event_handler.current_process.terminate()
             event_handler.current_process.wait()
 
     observer.join()
