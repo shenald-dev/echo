@@ -2,6 +2,7 @@ import sys
 import time
 import subprocess
 import argparse
+import threading
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from rich.console import Console
@@ -12,6 +13,39 @@ class CommandRunnerHandler(FileSystemEventHandler):
     def __init__(self, command: str):
         self.command = command
         self.last_run = 0.0
+        self.current_process = None
+        self.lock = threading.Lock()
+
+    def _run_command(self):
+        try:
+            with self.lock:
+                if self.current_process and self.current_process.poll() is None:
+                    console.print("[yellow]⚠ Terminating previous command...[/yellow]")
+                    self.current_process.terminate()
+                    self.current_process.wait()
+
+                # Run the command with pipes to preserve output
+                process = subprocess.Popen(
+                    self.command,
+                    shell=True,
+                    stdout=sys.stdout,
+                    stderr=sys.stderr
+                )
+                self.current_process = process
+
+            process.wait()
+
+            with self.lock:
+                if self.current_process is process:
+                    if process.returncode == 0:
+                        console.print("[green]✔ Command executed successfully.[/green]")
+                    elif process.returncode == -15: # SIGTERM
+                        console.print("[yellow]✔ Command terminated by reload.[/yellow]")
+                    else:
+                        console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
+        except Exception as e:
+            console.print(f"[bold red]Error executing command: {e}[/bold red]")
+
 
     def on_any_event(self, event):
         if event.is_directory:
@@ -23,21 +57,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
             self.last_run = current_time
             console.print(f"\n[cyan]📡 Change detected in {event.src_path}. Executing: [yellow]{self.command}[/][/cyan]")
             
-            try:
-                # Run the command with pipes to preserve output
-                process = subprocess.Popen(
-                    self.command, 
-                    shell=True, 
-                    stdout=sys.stdout,
-                    stderr=sys.stderr
-                )
-                process.wait()
-                if process.returncode == 0:
-                    console.print("[green]✔ Command executed successfully.[/green]")
-                else:
-                    console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
-            except Exception as e:
-                console.print(f"[bold red]Error executing command: {e}[/bold red]")
+            thread = threading.Thread(target=self._run_command, daemon=True)
+            thread.start()
 
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
@@ -57,6 +78,10 @@ def main():
     except KeyboardInterrupt:
         observer.stop()
         console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        if event_handler.current_process and event_handler.current_process.poll() is None:
+            event_handler.current_process.terminate()
+            event_handler.current_process.wait()
+
     observer.join()
 
 if __name__ == "__main__":
