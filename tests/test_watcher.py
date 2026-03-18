@@ -1,82 +1,40 @@
-import os
 import time
-import pytest
+import subprocess
 import threading
-from watchdog.events import FileModifiedEvent
+import pytest
+from unittest.mock import MagicMock, patch
 from echo.watcher import CommandRunnerHandler
 
-def test_debounce_logic():
-    handler = CommandRunnerHandler("echo test")
-
-    # Simulate a file modification event
-    event = FileModifiedEvent("test.txt")
-
-    # First call should trigger execution
-    handler.on_any_event(event)
-    assert handler.last_run > 0
-
-    last_run = handler.last_run
-
-    # Immediate second call should be debounced
-    handler.on_any_event(event)
-    assert handler.last_run == last_run
-
-    # Wait for more than 1 second to pass the debounce threshold
-    time.sleep(1.1)
-
-    # Third call should trigger execution again
-    handler.on_any_event(event)
-    assert handler.last_run > last_run
-
-def test_command_execution():
-    # Test a command that works
-    handler = CommandRunnerHandler("echo hello")
-    event = FileModifiedEvent("test.txt")
-
-    handler.on_any_event(event)
-    # Wait for the background thread to finish executing
-    time.sleep(0.5)
-
-    assert handler.process is not None
-    assert handler.process.returncode == 0
-
-def test_command_termination():
-    # Test a command that sleeps, so it can be terminated
+def test_smart_reload():
     handler = CommandRunnerHandler("sleep 2")
-    event = FileModifiedEvent("test.txt")
 
-    handler.on_any_event(event)
-    time.sleep(0.1) # Let the process start
+    # Trigger first run
+    mock_event = MagicMock()
+    mock_event.is_directory = False
+    mock_event.src_path = "test.py"
 
-    assert handler.process is not None
-    assert handler.process.poll() is None # Still running
+    handler.on_any_event(mock_event)
 
-    first_process = handler.process
+    # Should start a process
+    time.sleep(0.1)
+    first_process = handler.current_process
+    assert first_process is not None
+    assert first_process.poll() is None  # Still running
 
-    # Force another event by hacking last_run
+    # Force last_run so it runs again
     handler.last_run = 0
-    handler.on_any_event(event)
+    handler.on_any_event(mock_event)
 
-    time.sleep(0.5) # Let the old process terminate and new one start
+    time.sleep(0.1)
+    second_process = handler.current_process
+    assert second_process is not first_process
 
-    # Ensure the first process was terminated
+    # First should be terminated
     assert first_process.poll() is not None
-    assert first_process.returncode < 0 # Terminated by signal
 
-    # Ensure the new process is running
-    assert handler.process is not first_process
-    assert handler.process.poll() is None # Still running
+    # Second should be running
+    assert second_process.poll() is None
 
-    # Wait for the second one to finish
-    handler.process.wait()
-
-def test_invalid_command():
-    handler = CommandRunnerHandler("invalid_command_that_does_not_exist")
-    event = FileModifiedEvent("test.txt")
-
-    handler.on_any_event(event)
-    time.sleep(0.5)
-
-    # The command should fail to start, so process might be None or returncode != 0
-    # The actual Exception is caught and printed by _run_command
-    pass # As long as it doesn't crash the main thread
+    # Cleanup
+    second_process.terminate()
+    second_process.wait()

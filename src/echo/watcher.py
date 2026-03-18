@@ -1,10 +1,11 @@
+import os
 import sys
 import time
+import signal
+import platform
 import subprocess
 import argparse
-import shlex
 import threading
-import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from rich.console import Console
@@ -15,59 +16,67 @@ class CommandRunnerHandler(FileSystemEventHandler):
     def __init__(self, command: str):
         self.command = command
         self.last_run = 0.0
-        self.process = None
+        self.current_process = None
         self.lock = threading.Lock()
 
-    def _run_command(self, src_path):
-        with self.lock:
-            if self.process and self.process.poll() is None:
-                console.print("[yellow]⚠ Terminating previous running command...[/yellow]")
-                self.process.terminate()
-                self.process.wait()
+    def _run_command(self):
+        is_posix = platform.system() != "Windows"
+        try:
+            with self.lock:
+                if self.current_process and self.current_process.poll() is None:
+                    console.print("[yellow]⚠ Terminating previous command...[/yellow]")
+                    if is_posix:
+                        try:
+                            os.killpg(os.getpgid(self.current_process.pid), signal.SIGTERM)
+                        except ProcessLookupError:
+                            pass
+                    else:
+                        self.current_process.terminate()
+                    self.current_process.wait()
 
-            console.print(f"\n[cyan]📡 Change detected in {src_path}. Executing: [yellow]{self.command}[/][/cyan]")
-            
-            try:
-                # Run the command with shell=True to support pipes, redirects, &&, etc.
-                self.process = subprocess.Popen(
-                    self.command, 
-                    shell=True, 
+                # Run the command with pipes to preserve output
+                kwargs = {}
+                if is_posix:
+                    kwargs['start_new_session'] = True
+
+                process = subprocess.Popen(
+                    self.command,
+                    shell=True,
                     stdout=sys.stdout,
-                    stderr=sys.stderr
+                    stderr=sys.stderr,
+                    **kwargs
                 )
+                self.current_process = process
 
-                # Capture local reference to the process for this specific thread
-                current_process = self.process
-            except Exception as e:
-                console.print(f"[bold red]Error starting command: {e}[/bold red]")
-                return
+            process.wait()
 
-        # Wait outside the lock so we don't block new events from killing it
-        current_process.wait()
+            # Reset debounce only after command completes (not when it starts)
+            # to prevent overlapping runs when commands take longer than the debounce window
+            self.last_run = time.time()
 
-        with self.lock:
-            # Use the local reference to check return code, as self.process might have been overwritten
-            # by a newer event that started a new thread
-            if current_process.returncode is not None:
-                # In Unix, negative returncode means terminated by signal (like -15 for SIGTERM)
-                if current_process.returncode == 0:
-                    console.print("[green]✔ Command executed successfully.[/green]")
-                elif current_process.returncode < 0:
-                    console.print("[yellow]⚠ Command was terminated.[/yellow]")
-                else:
-                    console.print(f"[red]✖ Command failed with exit code {current_process.returncode}.[/red]")
+            with self.lock:
+                if self.current_process is process:
+                    if process.returncode == 0:
+                        console.print("[green]✔ Command executed successfully.[/green]")
+                    elif process.returncode == -15: # SIGTERM
+                        console.print("[yellow]✔ Command terminated by reload.[/yellow]")
+                    else:
+                        console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
+        except Exception as e:
+            console.print(f"[bold red]Error executing command: {e}[/bold red]")
+
 
     def on_any_event(self, event):
         if event.is_directory:
             return
-
+            
         current_time = time.time()
         # Simple debounce logic (1 second)
         if current_time - self.last_run > 1.0:
             self.last_run = current_time
-            # Run in a background thread so we don't block the watchdog observer
-            thread = threading.Thread(target=self._run_command, args=(event.src_path,))
-            thread.daemon = True
+            console.print(f"\n[cyan]📡 Change detected in {event.src_path}. Executing: [yellow]{self.command}[/][/cyan]")
+            
+            thread = threading.Thread(target=self._run_command, daemon=True)
             thread.start()
 
 def main():
@@ -76,40 +85,29 @@ def main():
     parser.add_argument("--cmd", type=str, required=True, help="Command to execute on change")
     args = parser.parse_args()
 
-    if not os.path.exists(args.path):
-        console.print(f"[bold red]✖ Path does not exist: {args.path}[/bold red]")
-        sys.exit(1)
+    event_handler = CommandRunnerHandler(args.cmd)
+    observer = Observer()
+    observer.schedule(event_handler, args.path, recursive=True)
+    
+    console.print(f"[bold green]✨ Echo is watching [cyan]{args.path}[/] and will run [yellow]{args.cmd}[/][/bold green]")
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        if event_handler.current_process and event_handler.current_process.poll() is None:
+            if platform.system() != "Windows":
+                try:
+                    os.killpg(os.getpgid(event_handler.current_process.pid), signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+            else:
+                event_handler.current_process.terminate()
+            event_handler.current_process.wait()
 
-    if not os.path.isdir(args.path):
-        console.print(f"[bold red]✖ Path is not a directory: {args.path}[/bold red]")
-        sys.exit(1)
-
-    while True:
-        try:
-            event_handler = CommandRunnerHandler(args.cmd)
-            observer = Observer()
-            observer.schedule(event_handler, args.path, recursive=True)
-
-            console.print(f"[bold green]✨ Echo is watching [cyan]{args.path}[/] and will run [yellow]{args.cmd}[/][/bold green]")
-            observer.start()
-
-            try:
-                while True:
-                    time.sleep(1)
-            except KeyboardInterrupt:
-                observer.stop()
-                console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-                observer.join()
-                break # Exit the outer crash recovery loop on intentional Ctrl+C
-
-        except Exception as e:
-            console.print(f"[bold red]⚠ Watcher crashed: {e}. Restarting in 3 seconds...[/bold red]")
-            try:
-                observer.stop()
-                observer.join()
-            except:
-                pass
-            time.sleep(3)
+    observer.join()
 
 if __name__ == "__main__":
     main()
