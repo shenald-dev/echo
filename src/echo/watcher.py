@@ -15,9 +15,14 @@ console = Console()
 class CommandRunnerHandler(FileSystemEventHandler):
     def __init__(self, command: str):
         self.command = command
-        self.last_run = 0.0
         self.current_process = None
         self.lock = threading.Lock()
+        self.timer_lock = threading.Lock()
+        self.debounce_timer = None
+
+    def _execute_command(self, event):
+        console.print(f"\n[cyan]📡 Change detected in {event.src_path}. Executing: [yellow]{self.command}[/][/cyan]")
+        self._run_command()
 
     def _run_command(self):
         is_posix = platform.system() != "Windows"
@@ -50,10 +55,6 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             process.wait()
 
-            # Reset debounce only after command completes (not when it starts)
-            # to prevent overlapping runs when commands take longer than the debounce window
-            self.last_run = time.time()
-
             with self.lock:
                 if self.current_process is process:
                     if process.returncode == 0:
@@ -70,14 +71,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if event.is_directory:
             return
             
-        current_time = time.time()
-        # Simple debounce logic (1 second)
-        if current_time - self.last_run > 1.0:
-            self.last_run = current_time
-            console.print(f"\n[cyan]📡 Change detected in {event.src_path}. Executing: [yellow]{self.command}[/][/cyan]")
+        with self.timer_lock:
+            if self.debounce_timer is not None:
+                self.debounce_timer.cancel()
             
-            thread = threading.Thread(target=self._run_command, daemon=True)
-            thread.start()
+            self.debounce_timer = threading.Timer(0.25, self._execute_command, args=(event,))
+            self.debounce_timer.daemon = True
+            self.debounce_timer.start()
 
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
