@@ -16,16 +16,15 @@ def test_smart_reload():
     handler.on_any_event(mock_event)
 
     # Should start a process
-    time.sleep(0.1)
+    time.sleep(0.5)
     first_process = handler.current_process
     assert first_process is not None
     assert first_process.poll() is None  # Still running
 
-    # Force last_run so it runs again
-    handler.last_run = 0
+    # Trigger second run
     handler.on_any_event(mock_event)
 
-    time.sleep(0.1)
+    time.sleep(0.5)
     second_process = handler.current_process
     assert second_process is not first_process
 

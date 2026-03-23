@@ -15,11 +15,12 @@ console = Console()
 class CommandRunnerHandler(FileSystemEventHandler):
     def __init__(self, command: str):
         self.command = command
-        self.last_run = 0.0
         self.current_process = None
         self.lock = threading.Lock()
+        self.debounce_timer = None
 
-    def _run_command(self):
+    def _run_command(self, event_path):
+        console.print(f"\n[cyan]📡 Change detected in {event_path}. Executing: [yellow]{self.command}[/][/cyan]")
         is_posix = platform.system() != "Windows"
         try:
             with self.lock:
@@ -50,10 +51,6 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             process.wait()
 
-            # Reset debounce only after command completes (not when it starts)
-            # to prevent overlapping runs when commands take longer than the debounce window
-            self.last_run = time.time()
-
             with self.lock:
                 if self.current_process is process:
                     if process.returncode == 0:
@@ -70,14 +67,16 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if event.is_directory:
             return
             
-        current_time = time.time()
-        # Simple debounce logic (1 second)
-        if current_time - self.last_run > 1.0:
-            self.last_run = current_time
-            console.print(f"\n[cyan]📡 Change detected in {event.src_path}. Executing: [yellow]{self.command}[/][/cyan]")
-            
-            thread = threading.Thread(target=self._run_command, daemon=True)
-            thread.start()
+        with self.lock:
+            if self.debounce_timer is not None:
+                self.debounce_timer.cancel()
+
+            self.debounce_timer = threading.Timer(0.25, self._start_run_command_thread, args=[event.src_path])
+            self.debounce_timer.start()
+
+    def _start_run_command_thread(self, event_path):
+        thread = threading.Thread(target=self._run_command, args=[event_path], daemon=True)
+        thread.start()
 
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
