@@ -16,14 +16,15 @@ class CommandRunnerHandler(FileSystemEventHandler):
     def __init__(self, command: str):
         self.command = command
         self.current_process = None
-        self.lock = threading.Lock()
+        self.process_lock = threading.Lock()
+        self.timer_lock = threading.Lock()
         self.debounce_timer = None
 
     def _run_command(self, event_path):
         console.print(f"\n[cyan]📡 Change detected in {event_path}. Executing: [yellow]{self.command}[/][/cyan]")
         is_posix = platform.system() != "Windows"
         try:
-            with self.lock:
+            with self.process_lock:
                 if self.current_process and self.current_process.poll() is None:
                     console.print("[yellow]⚠ Terminating previous command...[/yellow]")
                     if is_posix:
@@ -51,7 +52,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             process.wait()
 
-            with self.lock:
+            with self.process_lock:
                 if self.current_process is process:
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
@@ -67,7 +68,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if event.is_directory:
             return
             
-        with self.lock:
+        with self.timer_lock:
             if self.debounce_timer is not None:
                 self.debounce_timer.cancel()
 
