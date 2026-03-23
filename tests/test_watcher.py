@@ -37,3 +37,37 @@ def test_smart_reload():
     # Cleanup
     second_process.terminate()
     second_process.wait()
+
+def test_on_any_event_non_blocking():
+    """Verify that on_any_event doesn't block while a process is terminating."""
+    # A command that takes some time to exit
+    handler = CommandRunnerHandler("trap '' TERM; sleep 2")
+
+    mock_event = MagicMock()
+    mock_event.is_directory = False
+    mock_event.src_path = "test.py"
+
+    # Trigger first run
+    handler.on_any_event(mock_event)
+
+    # Wait for the first command to actually start
+    time.sleep(0.5)
+
+    # Trigger a second run. This spawns a timer that will try to terminate the first command
+    handler.on_any_event(mock_event)
+
+    # Give the thread a little time to start and block in wait()
+    time.sleep(0.3)
+
+    start_time = time.time()
+
+    # Trigger third run. This should not block because we're using a separate timer lock
+    handler.on_any_event(mock_event)
+
+    elapsed = time.time() - start_time
+    assert elapsed < 0.5, f"Watchdog event thread was blocked for {elapsed} seconds!"
+
+    # Cleanup
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
