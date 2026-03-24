@@ -5,3 +5,11 @@ Using a single `threading.Lock()` to synchronize both short-lived operations (li
 
 Action:
 Always use dedicated, fine-grained locks for independent resources. In background-threaded architectures, ensure that event loops are never blocked by slow I/O or process management by separating their locking contexts.
+
+## 2024-03-24 — Expensive Timer Overhead in Watchdog Events
+
+Learning:
+Spawning and cancelling `threading.Timer` inside a lock for every single file system event in Python creates a severe performance and memory churn bottleneck (taking ~0.3s for 1000 burst events).
+
+Action:
+Debounce rapid burst events using a single long-lived thread that sleeps until a `last_event_time` threshold is met, rather than starting and stopping threads on every event. This reduces overhead to O(1) time and space.
