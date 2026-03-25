@@ -1,15 +1,7 @@
-## 2024-05-24 — File watcher thread starvation via shared locks
+## 2025-03-25 — Watchdog Read-Only Events Over-triggering
 
 Learning:
-Using a single `threading.Lock()` to synchronize both short-lived operations (like debouncing timers in a file system event callback) and potentially long-running operations (like `process.wait()` on a subprocess) can cause thread starvation. When a slow-terminating subprocess held the lock, the main `watchdog` event loop was blocked, preventing the system from observing new file changes.
+The `watchdog` library on OS platforms will trigger `opened` and `closed_no_write` events when a file is simply read by another tool or IDE, which caused the watcher to needlessly re-execute the user's command. This creates redundant background work and false positives on "changes."
 
 Action:
-Always use dedicated, fine-grained locks for independent resources. In background-threaded architectures, ensure that event loops are never blocked by slow I/O or process management by separating their locking contexts.
-
-## 2024-03-24 — Expensive Timer Overhead in Watchdog Events
-
-Learning:
-Spawning and cancelling `threading.Timer` inside a lock for every single file system event in Python creates a severe performance and memory churn bottleneck (taking ~0.3s for 1000 burst events).
-
-Action:
-Debounce rapid burst events using a single long-lived thread that sleeps until a `last_event_time` threshold is met, rather than starting and stopping threads on every event. This reduces overhead to O(1) time and space.
+Ensure future file watcher logic explicitly ignores `opened` and `closed_no_write` events so it only acts on real modifications (like `modified`, `created`, or `moved`).

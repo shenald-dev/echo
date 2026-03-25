@@ -71,3 +71,31 @@ def test_on_any_event_non_blocking():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_ignore_read_only_events():
+    handler = CommandRunnerHandler("echo test")
+
+    mock_event = MagicMock()
+    mock_event.is_directory = False
+    mock_event.src_path = "test.py"
+    mock_event.event_type = "opened"
+
+    handler.on_any_event(mock_event)
+
+    assert handler.debounce_thread is None
+
+    mock_event.event_type = "closed_no_write"
+    handler.on_any_event(mock_event)
+
+    assert handler.debounce_thread is None
+
+    mock_event.event_type = "modified"
+    handler.on_any_event(mock_event)
+
+    assert handler.debounce_thread is not None
+
+    time.sleep(0.5)
+
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
