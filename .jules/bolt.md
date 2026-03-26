@@ -13,3 +13,11 @@ Spawning and cancelling `threading.Timer` inside a lock for every single file sy
 
 Action:
 Debounce rapid burst events using a single long-lived thread that sleeps until a `last_event_time` threshold is met, rather than starting and stopping threads on every event. This reduces overhead to O(1) time and space.
+
+## 2025-02-21 — Ignoring Read-Only Events in Watchdog
+
+Learning:
+The `watchdog` library triggers redundant events on read-only operations like `opened` and `closed_no_write` (e.g., when running `cat` or IDE indexing). Failing to ignore these events results in unnecessary command executions and performance overhead.
+
+Action:
+Always explicitly check for and ignore `opened` and `closed_no_write` events (using `getattr(event, 'event_type', '')` for safety) in `watchdog` file system event handlers.

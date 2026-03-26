@@ -90,6 +90,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if event.is_directory:
             return
             
+        # Ignore read-only events to prevent redundant executions
+        if getattr(event, 'event_type', '') in ('opened', 'closed_no_write'):
+            return
+
         with self.timer_lock:
             self.last_event_time = time.time()
             self.last_event_path = event.src_path
