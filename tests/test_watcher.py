@@ -71,3 +71,47 @@ def test_on_any_event_non_blocking():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_ignore_read_only_events():
+    """Verify that read-only events (opened, closed_no_write) are ignored."""
+    handler = CommandRunnerHandler("echo 1")
+
+    # Mock 'opened' event
+    mock_event_opened = MagicMock()
+    mock_event_opened.is_directory = False
+    mock_event_opened.event_type = 'opened'
+    mock_event_opened.src_path = "test.py"
+
+    # Mock 'closed_no_write' event
+    mock_event_closed = MagicMock()
+    mock_event_closed.is_directory = False
+    mock_event_closed.event_type = 'closed_no_write'
+    mock_event_closed.src_path = "test.py"
+
+    # Trigger events
+    handler.on_any_event(mock_event_opened)
+    handler.on_any_event(mock_event_closed)
+
+    # Wait for the debounce threshold just in case
+    time.sleep(0.35)
+
+    assert handler.current_process is None, "Process should not be started for read-only events"
+
+    # Mock 'modified' event
+    mock_event_modified = MagicMock()
+    mock_event_modified.is_directory = False
+    mock_event_modified.event_type = 'modified'
+    mock_event_modified.src_path = "test.py"
+
+    # Trigger valid event
+    handler.on_any_event(mock_event_modified)
+
+    # Wait for the debounce threshold + command execution time
+    time.sleep(0.35)
+
+    assert handler.current_process is not None, "Process should be started for 'modified' event"
+
+    # Cleanup
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
