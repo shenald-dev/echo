@@ -7,7 +7,7 @@
 - **⚡ Instant Feedback**: Re-runs your commands natively without spinning up complex pipelines.
 - **💻 Cross Platform**: Built with Python + Rich bindings to operate seamlessly across OS boundaries.
 - **⚡ Unblocked & Multi-threaded**: Runs execution in background threads so your file-watching event loop never pauses.
-- **🔄 Smart Reloads**: Automatically terminates running processes if a new file change is detected.
+- **🔄 Smart Reloads**: Automatically terminates running processes if a new file change is detected. If processes become unresponsive or ignore termination signals, Echo forcefully escalates to `SIGKILL` after a short timeout to prevent deadlocks.
 - **⚙️ Crash Recovery**: Restarts automatically if encountering an unexpected system error.
 
 ## Quick Start
