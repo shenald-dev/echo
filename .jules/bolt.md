@@ -21,3 +21,11 @@ The `watchdog` library triggers redundant events on read-only operations like `o
 
 Action:
 Always explicitly check for and ignore `opened` and `closed_no_write` events (using `getattr(event, 'event_type', '')` for safety) in `watchdog` file system event handlers.
+
+## 2025-02-21 — Robust Subprocess Termination
+
+Learning:
+When managing subprocesses, relying solely on `SIGTERM` and a blocking `.wait()` call can cause the parent process to hang indefinitely if the child process ignores the signal or hangs during cleanup.
+
+Action:
+Always use a timeout when waiting for a subprocess to terminate (e.g., `process.wait(timeout=0.25)`). If a `subprocess.TimeoutExpired` exception is caught, escalate to a forceful termination using `SIGKILL` (or `.kill()` on Windows) to guarantee the parent process can continue executing or shutdown cleanly.

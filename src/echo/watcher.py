@@ -60,7 +60,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     try:
                         self.current_process.wait(timeout=0.25)
                     except subprocess.TimeoutExpired:
-                        console.print("[red]⚠ Process unresponsive, sending SIGKILL...[/red]")
+                        console.print("[red]⚠ Command did not terminate gracefully, killing it...[/red]")
                         if is_posix:
                             try:
                                 os.killpg(os.getpgid(self.current_process.pid), signal.SIGKILL)
@@ -133,8 +133,7 @@ def main():
         observer.stop()
         console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
         if event_handler.current_process and event_handler.current_process.poll() is None:
-            is_posix = platform.system() != "Windows"
-            if is_posix:
+            if platform.system() != "Windows":
                 try:
                     os.killpg(os.getpgid(event_handler.current_process.pid), signal.SIGTERM)
                 except ProcessLookupError:
@@ -145,8 +144,8 @@ def main():
             try:
                 event_handler.current_process.wait(timeout=0.25)
             except subprocess.TimeoutExpired:
-                console.print("[red]⚠ Process unresponsive, sending SIGKILL...[/red]")
-                if is_posix:
+                console.print("[red]⚠ Command did not terminate gracefully, killing it...[/red]")
+                if platform.system() != "Windows":
                     try:
                         os.killpg(os.getpgid(event_handler.current_process.pid), signal.SIGKILL)
                     except ProcessLookupError:
