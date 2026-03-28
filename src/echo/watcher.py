@@ -56,7 +56,19 @@ class CommandRunnerHandler(FileSystemEventHandler):
                             pass
                     else:
                         self.current_process.terminate()
-                    self.current_process.wait()
+
+                    try:
+                        self.current_process.wait(timeout=0.25)
+                    except subprocess.TimeoutExpired:
+                        console.print("[red]⚠ Command did not terminate gracefully, killing it...[/red]")
+                        if is_posix:
+                            try:
+                                os.killpg(os.getpgid(self.current_process.pid), signal.SIGKILL)
+                            except ProcessLookupError:
+                                pass
+                        else:
+                            self.current_process.kill()
+                        self.current_process.wait()
 
                 # Run the command with pipes to preserve output
                 kwargs = {}
@@ -128,7 +140,19 @@ def main():
                     pass
             else:
                 event_handler.current_process.terminate()
-            event_handler.current_process.wait()
+
+            try:
+                event_handler.current_process.wait(timeout=0.25)
+            except subprocess.TimeoutExpired:
+                console.print("[red]⚠ Command did not terminate gracefully, killing it...[/red]")
+                if platform.system() != "Windows":
+                    try:
+                        os.killpg(os.getpgid(event_handler.current_process.pid), signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                else:
+                    event_handler.current_process.kill()
+                event_handler.current_process.wait()
 
     observer.join()
 
