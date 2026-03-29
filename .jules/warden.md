@@ -5,3 +5,11 @@ A subtle lifecycle risk was identified where poorly behaving subprocesses (such 
 
 Alignment / Deferred:
 Added a `timeout=0.25` bound to all `wait()` calls during subprocess termination, with a subsequent escalation to `SIGKILL` (via process groups) or `.kill()` (on Windows) to guarantee responsive operation. Documented the updated aggressive termination strategy in `README.md`. No dead code was pruned. Tagged and prepared release v0.1.1.
+
+## 2026-03-27 — Assessment & Lifecycle
+
+Observation / Pruned:
+Cleaned up `test_dir/` containing dummy files which were artifacts left behind by the previous agent's run. No functional or production changes were made.
+
+Alignment / Deferred:
+Version bumped to `0.1.2` as a patch release reflecting the cleanup.
