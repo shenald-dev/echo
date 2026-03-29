@@ -21,10 +21,47 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.debounce_thread = None
         self.last_event_time = 0.0
         self.last_event_path = None
+        self.is_shutting_down = False
+
+    def _terminate_process(self, process):
+        if not process or process.poll() is not None:
+            return
+
+        is_posix = platform.system() != "Windows"
+        if is_posix:
+            try:
+                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+        else:
+            process.terminate()
+
+        try:
+            process.wait(timeout=0.25)
+        except subprocess.TimeoutExpired:
+            console.print("[red]⚠ Command did not terminate gracefully, killing it...[/red]")
+            if is_posix:
+                try:
+                    os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            else:
+                process.kill()
+            process.wait()
+
+    def shutdown(self):
+        """Safely shuts down the handler and terminates any running process."""
+        self.is_shutting_down = True
+        with self.process_lock:
+            self._terminate_process(self.current_process)
 
     def _debounce_worker(self):
         while True:
             with self.timer_lock:
+                if self.is_shutting_down:
+                    self.debounce_thread = None
+                    return
+
                 now = time.time()
                 time_to_wait = (self.last_event_time + 0.25) - now
 
@@ -36,39 +73,27 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             if path_to_run is not None:
                 # We reached the debounce threshold, execute command
-                self._run_command(path_to_run)
+                if not self.is_shutting_down:
+                    self._run_command(path_to_run)
                 return
 
             # Sleep until the next check
             time.sleep(time_to_wait)
 
     def _run_command(self, event_path):
+        if self.is_shutting_down:
+            return
+
         console.print(f"\n[cyan]📡 Change detected in {event_path}. Executing: [yellow]{self.command}[/][/cyan]")
         is_posix = platform.system() != "Windows"
         try:
             with self.process_lock:
+                if self.is_shutting_down:
+                    return
+
                 if self.current_process and self.current_process.poll() is None:
                     console.print("[yellow]⚠ Terminating previous command...[/yellow]")
-                    if is_posix:
-                        try:
-                            os.killpg(os.getpgid(self.current_process.pid), signal.SIGTERM)
-                        except ProcessLookupError:
-                            pass
-                    else:
-                        self.current_process.terminate()
-
-                    try:
-                        self.current_process.wait(timeout=0.25)
-                    except subprocess.TimeoutExpired:
-                        console.print("[red]⚠ Command did not terminate gracefully, killing it...[/red]")
-                        if is_posix:
-                            try:
-                                os.killpg(os.getpgid(self.current_process.pid), signal.SIGKILL)
-                            except ProcessLookupError:
-                                pass
-                        else:
-                            self.current_process.kill()
-                        self.current_process.wait()
+                    self._terminate_process(self.current_process)
 
                 # Run the command with pipes to preserve output
                 kwargs = {}
@@ -99,6 +124,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
 
     def on_any_event(self, event):
+        if getattr(self, 'is_shutting_down', False):
+            return
+
         if event.is_directory:
             return
             
@@ -132,27 +160,7 @@ def main():
     except KeyboardInterrupt:
         observer.stop()
         console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        if event_handler.current_process and event_handler.current_process.poll() is None:
-            if platform.system() != "Windows":
-                try:
-                    os.killpg(os.getpgid(event_handler.current_process.pid), signal.SIGTERM)
-                except ProcessLookupError:
-                    pass
-            else:
-                event_handler.current_process.terminate()
-
-            try:
-                event_handler.current_process.wait(timeout=0.25)
-            except subprocess.TimeoutExpired:
-                console.print("[red]⚠ Command did not terminate gracefully, killing it...[/red]")
-                if platform.system() != "Windows":
-                    try:
-                        os.killpg(os.getpgid(event_handler.current_process.pid), signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                else:
-                    event_handler.current_process.kill()
-                event_handler.current_process.wait()
+        event_handler.shutdown()
 
     observer.join()
 
