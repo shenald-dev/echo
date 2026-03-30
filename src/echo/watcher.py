@@ -22,32 +22,36 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.last_event_time = 0.0
         self.last_event_path = None
         self.is_shutting_down = False
+        self.is_posix = platform.system() != "Windows"
 
     def _terminate_process(self, process):
         if not process or process.poll() is not None:
             return
 
-        is_posix = platform.system() != "Windows"
-        if is_posix:
-            try:
+        try:
+            if self.is_posix:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-            except ProcessLookupError:
-                pass
-        else:
-            process.terminate()
+            else:
+                process.terminate()
+        except OSError:
+            pass
 
         try:
             process.wait(timeout=0.25)
         except subprocess.TimeoutExpired:
             console.print("[red]⚠ Command did not terminate gracefully, killing it...[/red]")
-            if is_posix:
-                try:
+            try:
+                if self.is_posix:
                     os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-            else:
-                process.kill()
-            process.wait()
+                else:
+                    process.kill()
+            except OSError:
+                pass
+
+            try:
+                process.wait(timeout=0.25)
+            except subprocess.TimeoutExpired:
+                console.print("[red]⚠ Process refused to die. Abandoning.[/red]")
 
     def shutdown(self):
         """Safely shuts down the handler and terminates any running process."""
@@ -85,7 +89,6 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
 
         console.print(f"\n[cyan]📡 Change detected in {event_path}. Executing: [yellow]{self.command}[/][/cyan]")
-        is_posix = platform.system() != "Windows"
         try:
             with self.process_lock:
                 if self.is_shutting_down:
@@ -97,7 +100,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
                 # Run the command with pipes to preserve output
                 kwargs = {}
-                if is_posix:
+                if self.is_posix:
                     kwargs['start_new_session'] = True
 
                 process = subprocess.Popen(
@@ -112,6 +115,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
             process.wait()
 
             with self.process_lock:
+                if self.is_shutting_down:
+                    return
+
                 if self.current_process is process:
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
@@ -153,7 +159,20 @@ def main():
     observer.schedule(event_handler, args.path, recursive=True)
     
     console.print(f"[bold green]✨ Echo is watching [cyan]{args.path}[/] and will run [yellow]{args.cmd}[/][/bold green]")
-    observer.start()
+
+    try:
+        observer.start()
+    except OSError as e:
+        if "Inotify watch limit reached" in str(e) or getattr(e, "errno", None) == 28:
+            console.print(
+                "\n[bold red]✖ Error: OS inotify watch limit reached.[/bold red]\n"
+                "[yellow]Your system is configured to limit the number of files that can be watched.\n"
+                "You can fix this by increasing the limit. Run the following command:[/yellow]\n\n"
+                "  [cyan]echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p[/cyan]\n"
+            )
+            sys.exit(1)
+        raise
+
     try:
         while True:
             time.sleep(1)
