@@ -1,8 +1,5 @@
 import time
-import subprocess
-import threading
-import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from echo.watcher import CommandRunnerHandler
 
 def test_smart_reload():
@@ -59,12 +56,12 @@ def test_on_any_event_non_blocking():
     # Give the thread a little time to start and block in wait()
     time.sleep(0.3)
 
-    start_time = time.time()
+    start_time = time.monotonic()
 
     # Trigger third run. This should not block because we're using a separate timer lock
     handler.on_any_event(mock_event)
 
-    elapsed = time.time() - start_time
+    elapsed = time.monotonic() - start_time
     assert elapsed < 0.5, f"Watchdog event thread was blocked for {elapsed} seconds!"
 
     # Cleanup

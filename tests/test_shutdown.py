@@ -1,5 +1,4 @@
 import time
-import pytest
 from echo.watcher import CommandRunnerHandler
 from unittest.mock import MagicMock
 
