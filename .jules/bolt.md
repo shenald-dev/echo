@@ -29,3 +29,11 @@ When managing subprocesses, relying solely on `SIGTERM` and a blocking `.wait()`
 
 Action:
 Always use a timeout when waiting for a subprocess to terminate (e.g., `process.wait(timeout=0.25)`). If a `subprocess.TimeoutExpired` exception is caught, escalate to a forceful termination using `SIGKILL` (or `.kill()` on Windows) to guarantee the parent process can continue executing or shutdown cleanly.
+
+## 2023-10-24 — File event debouncing reliability
+
+Learning:
+Using `time.time()` for tracking relative durations in the debounce worker creates a reliability risk. `time.time()` is vulnerable to system clock shifts (e.g. NTP syncs or user changes), which can cause the debounce `time_to_wait` calculation to become negative unexpectedly or pause for incorrectly long durations.
+
+Action:
+Always use `time.monotonic()` for tracking relative time intervals and durations within the application and tests to ensure stable, reliable execution independent of system clock changes.
