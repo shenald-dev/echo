@@ -66,7 +66,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     self.debounce_thread = None
                     return
 
-                now = time.time()
+                now = time.monotonic()
                 time_to_wait = (self.last_event_time + 0.25) - now
 
                 if time_to_wait <= 0:
@@ -141,7 +141,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
 
         with self.timer_lock:
-            self.last_event_time = time.time()
+            self.last_event_time = time.monotonic()
             self.last_event_path = event.src_path
 
             if self.debounce_thread is None:

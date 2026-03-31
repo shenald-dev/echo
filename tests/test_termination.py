@@ -1,5 +1,4 @@
 import time
-import pytest
 from unittest.mock import MagicMock
 from echo.watcher import CommandRunnerHandler
 
@@ -17,7 +16,7 @@ def test_unkillable_process():
     assert p1 is not None
     assert p1.poll() is None
 
-    start_time = time.time()
+    start_time = time.monotonic()
     handler.on_any_event(mock_event)
 
     # Wait enough for debounce + timeout + spawn new
@@ -27,7 +26,7 @@ def test_unkillable_process():
     assert p2 is not p1
     assert p1.poll() is not None # P1 should be dead
 
-    elapsed = time.time() - start_time
+    elapsed = time.monotonic() - start_time
     assert elapsed < 3.0, "Should not have waited 5 seconds"
 
     if p2:
