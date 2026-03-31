@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3] - 2026-03-31
+
+### Changed
+* **[Reliability]:** Replaced `time.time()` with `time.monotonic()` in the file watcher and test suites for precise, stable tracking of relative time intervals, debouncing windows, and timeouts. This eliminates vulnerabilities caused by system clock adjustments.
+* **[Maintenance]:** Pruned unused module imports from test files to minimize codebase entropy.
+
 ## [0.1.1] - 2025-02-21
 
 ### Changed

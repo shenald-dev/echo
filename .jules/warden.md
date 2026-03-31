@@ -13,3 +13,11 @@ Cleaned up `test_dir/` containing dummy files which were artifacts left behind b
 
 Alignment / Deferred:
 Version bumped to `0.1.2` as a patch release reflecting the cleanup.
+
+## 2026-03-31 — Assessment & Lifecycle
+
+Observation / Pruned:
+Identified that `time.time()` was being used for relative time tracking, which is vulnerable to system clock adjustments (e.g. NTP syncs). Additionally, several unused imports were removed from the test files to reduce codebase entropy.
+
+Alignment / Deferred:
+Replaced all occurrences of `time.time()` with `time.monotonic()` in `src/echo/watcher.py` and test suites to guarantee stable duration tracking and event debouncing. Cleaned up unused test imports via `ruff`.
