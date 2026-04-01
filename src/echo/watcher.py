@@ -5,6 +5,7 @@ import signal
 import platform
 import subprocess
 import fnmatch
+import re
 import argparse
 import threading
 from watchdog.observers import Observer
@@ -25,7 +26,11 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         # Pre-compute exact vs wildcard patterns for faster matching
         self.exact_ignores = {p for p in self.ignore_patterns if '*' not in p and '?' not in p}
-        self.wildcard_ignores = [p for p in self.ignore_patterns if '*' in p or '?' in p]
+        wildcard_ignores = [p for p in self.ignore_patterns if '*' in p or '?' in p]
+        self.wildcard_regex = None
+        if wildcard_ignores:
+            regex_str = "|".join(f"(?:{fnmatch.translate(p)})" for p in wildcard_ignores)
+            self.wildcard_regex = re.compile(regex_str)
 
         self.current_process = None
         self.process_lock = threading.Lock()
@@ -148,11 +153,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not self.exact_ignores.isdisjoint(parts):
             return True
 
-        if self.wildcard_ignores:
+        if self.wildcard_regex:
             for part in parts:
-                for pattern in self.wildcard_ignores:
-                    if fnmatch.fnmatch(part, pattern):
-                        return True
+                if self.wildcard_regex.match(part):
+                    return True
         return False
 
     def on_any_event(self, event):
