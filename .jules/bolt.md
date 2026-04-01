@@ -37,3 +37,11 @@ Using `time.time()` for tracking relative durations in the debounce worker creat
 
 Action:
 Always use `time.monotonic()` for tracking relative time intervals and durations within the application and tests to ensure stable, reliable execution independent of system clock changes.
+
+## 2025-03-01 — Expensive wildcard fnmatch checks in hot paths
+
+Learning:
+Calling `fnmatch.fnmatch` inside a loop for wildcard filtering on high-volume file system events creates an O(N*M) performance bottleneck, as `fnmatch` evaluates patterns independently as strings.
+
+Action:
+Always pre-compile wildcard patterns into a single grouped regular expression using `re.compile("|".join(f"(?:{fnmatch.translate(p)})" for p in patterns))`. This reduces hot-path filtering complexity to O(N) by delegating evaluation to the optimized C regex engine.
