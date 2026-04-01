@@ -4,6 +4,7 @@ import time
 import signal
 import platform
 import subprocess
+import fnmatch
 import argparse
 import threading
 from watchdog.observers import Observer
@@ -13,8 +14,19 @@ from rich.console import Console
 console = Console()
 
 class CommandRunnerHandler(FileSystemEventHandler):
-    def __init__(self, command: str):
+    def __init__(self, command: str, ignore_patterns: list[str] | None = None):
         self.command = command
+
+        # Default ignore patterns
+        default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
+        if ignore_patterns:
+            default_ignores.extend(ignore_patterns)
+        self.ignore_patterns = default_ignores
+
+        # Pre-compute exact vs wildcard patterns for faster matching
+        self.exact_ignores = {p for p in self.ignore_patterns if '*' not in p and '?' not in p}
+        self.wildcard_ignores = [p for p in self.ignore_patterns if '*' in p or '?' in p]
+
         self.current_process = None
         self.process_lock = threading.Lock()
         self.timer_lock = threading.Lock()
@@ -128,6 +140,20 @@ class CommandRunnerHandler(FileSystemEventHandler):
         except Exception as e:
             console.print(f"[bold red]Error executing command: {e}[/bold red]")
 
+    def _is_ignored(self, path: str) -> bool:
+        if not path:
+            return False
+
+        parts = path.replace('\\', '/').split('/')
+        if not self.exact_ignores.isdisjoint(parts):
+            return True
+
+        if self.wildcard_ignores:
+            for part in parts:
+                for pattern in self.wildcard_ignores:
+                    if fnmatch.fnmatch(part, pattern):
+                        return True
+        return False
 
     def on_any_event(self, event):
         if getattr(self, 'is_shutting_down', False):
@@ -139,6 +165,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
         # Ignore read-only events to prevent redundant executions
         if getattr(event, 'event_type', '') in ('opened', 'closed_no_write'):
             return
+
+        # Fast-path ignore filter to prevent infinite loops from test/build artifacts
+        if getattr(event, 'src_path', None) and self._is_ignored(event.src_path):
+            # For moved events, check dest_path as well
+            dest_path = getattr(event, 'dest_path', None)
+            if not dest_path or self._is_ignored(dest_path):
+                return
 
         with self.timer_lock:
             self.last_event_time = time.monotonic()
@@ -152,9 +185,11 @@ def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
     parser.add_argument("--path", type=str, default=".", help="Directory to watch")
     parser.add_argument("--cmd", type=str, required=True, help="Command to execute on change")
+    parser.add_argument("--ignore", type=str, default="", help="Comma-separated list of extra ignore patterns (e.g. '*.tmp,build')")
     args = parser.parse_args()
 
-    event_handler = CommandRunnerHandler(args.cmd)
+    ignore_patterns = [p.strip() for p in args.ignore.split(",") if p.strip()] if args.ignore else None
+    event_handler = CommandRunnerHandler(args.cmd, ignore_patterns=ignore_patterns)
     observer = Observer()
     observer.schedule(event_handler, args.path, recursive=True)
     
