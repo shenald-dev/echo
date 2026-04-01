@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4] - 2026-04-01
+
+### Changed
+* **[Reliability]:** Migrated internal time tracking from `time.time()` to `time.monotonic()` to ensure debouncing stability against system clock shifts and NTP syncs.
+* **[Maintenance]:** Pruned unused dependencies and imports from the testing suite to reduce overall entropy.
+* **[Documentation]:** Synced README to reflect the stable time tracking behavior.
+
 ## [0.1.3] - 2026-03-31
 
 ### Changed
