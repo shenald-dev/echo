@@ -1,3 +1,11 @@
+## 2026-04-02 — Assessment & Lifecycle
+
+Observation / Pruned:
+A regression was identified where complex wildcard ignore patterns (like `src/*.tmp` or `build/*`) failed to match correctly due to the regex operating on individual path parts instead of the full normalized path.
+
+Alignment / Deferred:
+Updated the `_is_ignored` fast-path filter to normalize paths and check both exact and wildcard patterns against the full relative path before falling back to component intersection. Added unit tests for complex wildcard patterns. Prepared patch release v0.1.5.
+
 ## 2025-02-21 — Assessment & Lifecycle
 
 Observation / Pruned:
