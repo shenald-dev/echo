@@ -161,6 +161,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not self.exact_ignores.isdisjoint(parts):
             return True
 
+        # Check for exact and wildcard ignore patterns matching prefix directories
+        for i in range(1, len(parts)):
+            prefix = "/".join(parts[:i])
+            if prefix in self.exact_ignores:
+                return True
+            if self.wildcard_regex and self.wildcard_regex.match(prefix):
+                return True
+
         if self.wildcard_regex:
             for part in parts:
                 if self.wildcard_regex.match(part):

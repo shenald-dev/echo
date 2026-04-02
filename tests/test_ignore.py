@@ -29,6 +29,16 @@ def test_is_ignored_wildcard_match():
     assert handler._is_ignored("test.txt") is False
     assert handler._is_ignored("docs/index.html") is False
 
+def test_is_ignored_compound_path_match():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["src/build", "docs/temp", "src/*.tmp"])
+
+    assert handler._is_ignored("src/build/test.txt") is True
+    assert handler._is_ignored("docs/temp/index.html") is True
+    assert handler._is_ignored("src/my_folder.tmp/test.txt") is True
+
+    assert handler._is_ignored("src/test.txt") is False
+    assert handler._is_ignored("docs/index.html") is False
+
 def test_ignored_events_do_not_trigger():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
 
