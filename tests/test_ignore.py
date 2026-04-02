@@ -24,6 +24,19 @@ def test_is_ignored_wildcard_match():
 
     assert handler._is_ignored("test.txt") is False
 
+def test_is_ignored_path_like_match():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["src/foo.py", "src/*.tmp", "build/*"])
+
+    assert handler._is_ignored("src/foo.py") is True
+    assert handler._is_ignored("./src/foo.py") is True
+    assert handler._is_ignored("src/bar.tmp") is True
+    assert handler._is_ignored("./src/bar.tmp") is True
+    assert handler._is_ignored("build/output.txt") is True
+    assert handler._is_ignored("./build/output.txt") is True
+
+    assert handler._is_ignored("src/foo.txt") is False
+    assert handler._is_ignored("src/bar/foo.py") is False
+
 def test_ignored_events_do_not_trigger():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
 
