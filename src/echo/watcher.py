@@ -149,9 +149,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not path:
             return False
 
-        normalized_path = path.replace('\\', '/')
-        if normalized_path.startswith('./'):
-            normalized_path = normalized_path[2:]
+        normalized_path = path.replace("\\", "/").removeprefix("./")
 
         if normalized_path in self.exact_ignores:
             return True

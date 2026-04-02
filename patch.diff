@@ -1,0 +1,16 @@
+--- src/echo/watcher.py
++++ src/echo/watcher.py
+@@ -149,11 +149,7 @@
+         if not path:
+             return False
+
+-<<<<<<< HEAD
+-        normalized_path = path.replace('\\', '/')
+-        if normalized_path.startswith('./'):
+-            normalized_path = normalized_path[2:]
+-=======
+         normalized_path = path.replace('\\', '/').removeprefix('./')
+->>>>>>> origin/main
+
+         if normalized_path in self.exact_ignores:
+             return True

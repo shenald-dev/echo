@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.5] - 2026-04-02
+
+### Changed
+* **[Bugfix]:** Fixed a regression in path ignore filtering where complex wildcard patterns (e.g., `src/*.tmp`) failed to match correctly. Normalization and full-path evaluation ensures strict isolation of monitored directories.
+
 ## [0.1.4] - 2026-04-01
 
 ### Changed
