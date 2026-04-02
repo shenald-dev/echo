@@ -45,3 +45,10 @@ Calling `fnmatch.fnmatch` inside a loop for wildcard filtering on high-volume fi
 
 Action:
 Always pre-compile wildcard patterns into a single grouped regular expression using `re.compile("|".join(f"(?:{fnmatch.translate(p)})" for p in patterns))`. This reduces hot-path filtering complexity to O(N) by delegating evaluation to the optimized C regex engine.
+## 2024-05-30 — Watchdog Ignore Matching Inaccuracy
+
+Learning:
+The `_is_ignored` pattern matching incorrectly split the file path by `/` and evaluated ignores via `isdisjoint()` directly against individual file segments. As a result, explicit folder paths (`src/foo.py`) or path-based wildcards (`build/*`) were not triggering proper exclusion. Watchdog also often prepends `./` to paths from the root, requiring strip operations before evaluation.
+
+Action:
+Evaluate exact string and wildcard regex ignores against the full relative path string *first* (stripping leading `./` where needed). Retain the path-segment loop solely for directory-wide fallbacks (e.g., `node_modules`).
