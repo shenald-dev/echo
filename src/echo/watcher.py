@@ -15,8 +15,9 @@ from rich.console import Console
 console = Console()
 
 class CommandRunnerHandler(FileSystemEventHandler):
-    def __init__(self, command: str, ignore_patterns: list[str] | None = None):
+    def __init__(self, command: str, ignore_patterns: list[str] | None = None, base_path: str = "."):
         self.command = command
+        self.base_path = os.path.abspath(base_path)
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
@@ -149,6 +150,12 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not path:
             return False
 
+        if os.path.isabs(path):
+            try:
+                path = os.path.relpath(path, self.base_path)
+            except ValueError:
+                pass
+
         normalized_path = path.replace('\\', '/').removeprefix('./')
 
         if normalized_path in self.exact_ignores:
@@ -209,7 +216,7 @@ def main():
     args = parser.parse_args()
 
     ignore_patterns = [p.strip() for p in args.ignore.split(",") if p.strip()] if args.ignore else None
-    event_handler = CommandRunnerHandler(args.cmd, ignore_patterns=ignore_patterns)
+    event_handler = CommandRunnerHandler(args.cmd, ignore_patterns=ignore_patterns, base_path=args.path)
     observer = Observer()
     observer.schedule(event_handler, args.path, recursive=True)
     

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.6] - 2026-04-03
+
+### Changed
+* **[Reliability]:** Added base path tracking and `os.path.relpath` resolution to the ignore filtering mechanism to correctly apply patterns when `watchdog` surfaces absolute file paths.
+
 ## [0.1.5] - 2026-04-02
 
 ### Changed

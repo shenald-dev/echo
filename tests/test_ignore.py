@@ -29,6 +29,15 @@ def test_is_ignored_wildcard_match():
     assert handler._is_ignored("test.txt") is False
     assert handler._is_ignored("docs/index.html") is False
 
+def test_is_ignored_absolute_path():
+    import os
+    base_path = os.path.abspath("/app")
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["src/*.tmp", "docs/build/*"], base_path=base_path)
+
+    assert handler._is_ignored(os.path.abspath("/app/src/test.tmp")) is True
+    assert handler._is_ignored(os.path.abspath("/app/docs/build/index.html")) is True
+    assert handler._is_ignored(os.path.abspath("/app/src/test.txt")) is False
+
 def test_is_ignored_compound_path_match():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["src/build", "docs/temp", "src/*.tmp"])
 
