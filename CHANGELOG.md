@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.6] - 2026-04-02
+
+### Changed
+* **[Reliability]:** Bound LRU caching directly to the watcher instance to prevent cross-instance memory leaks when rapidly re-instantiating.
+* **[Reliability]:** Enforced strict relative path evaluation via `os.path.relpath` for complex filter evaluations.
+
 ## [0.1.5] - 2026-04-02
 
 ### Changed
