@@ -1,9 +1,15 @@
 # Changelog
 
-## [0.1.6] - 2026-04-03
+## [0.1.7] - 2026-04-03
 
 ### Changed
 * **[Bugfix]:** Fixed moved event path resolution logic to correctly trigger commands when an ignored file is moved or renamed to a non-ignored valid path.
+
+## [0.1.6] - 2026-04-02
+
+### Changed
+* **[Reliability]:** Bound LRU caching directly to the watcher instance to prevent cross-instance memory leaks when rapidly re-instantiating.
+* **[Reliability]:** Enforced strict relative path evaluation via `os.path.relpath` for complex filter evaluations.
 
 ## [0.1.5] - 2026-04-02
 
