@@ -43,7 +43,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.is_shutting_down = False
         self.is_posix = platform.system() != "Windows"
 
-        # Cache _is_ignored per instance to avoid memory leaks with lru_cache on methods
+        # Bind LRU cache to instance to prevent memory leaks across instances
         self._is_ignored = functools.lru_cache(maxsize=4096)(self._is_ignored_impl)
 
     def _terminate_process(self, process):
