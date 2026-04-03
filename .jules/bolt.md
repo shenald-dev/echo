@@ -5,3 +5,6 @@ The `_is_ignored` function handles rapid string normalization, iteration over di
 
 Action:
 Decorated the `_is_ignored` function with an explicitly bounded `@functools.lru_cache(maxsize=2048)`. This creates a fast-path resolution dictionary preventing expensive recalculations during burst file operations, speeding up filtering by roughly 20x. Bounding the size prevents slow memory leak build-ups over long-running watcher lifecycles.
+2025-04-03 — Handle moved events safely in watcher
+Learning: When handling 'moved' events from `watchdog`, if the source path is ignored but the destination path is not, using the ignored source path can prevent the event from being handled correctly.
+Action: Always check both `src_path` and `dest_path` for 'moved' events, and fallback to `dest_path` if it's valid while `src_path` is ignored, ensuring commands execute appropriately on valid destinations.

@@ -69,3 +69,17 @@ def test_ignored_events_do_not_trigger():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_moved_event_ignored_src_valid_dest():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
+
+    # Mock 'moved' event from ignored src to valid dest
+    mock_event = MagicMock()
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = "test.tmp"
+    mock_event.dest_path = "test.txt"
+
+    handler.on_any_event(mock_event)
+
+    assert handler.last_event_path == "test.txt", f"Expected last_event_path to be 'test.txt', got {handler.last_event_path}"
