@@ -45,3 +45,10 @@ Calling `fnmatch.fnmatch` inside a loop for wildcard filtering on high-volume fi
 
 Action:
 Always pre-compile wildcard patterns into a single grouped regular expression using `re.compile("|".join(f"(?:{fnmatch.translate(p)})" for p in patterns))`. This reduces hot-path filtering complexity to O(N) by delegating evaluation to the optimized C regex engine.
+## 2025-03-08 — Expensive Ignore Checks on Repeated File Paths
+
+Learning:
+Running complex ignore path checks (involving regular expression matching and string manipulation) on every file system event (creation, modification, etc.) creates a significant performance bottleneck, especially during burst events or when interacting with large directories.
+
+Action:
+Utilize `functools.lru_cache` to cache the results of path ignore checks. This drastically reduces CPU overhead by bypassing the expensive matching logic for repeatedly processed paths, turning an O(N) operation into an O(1) cache lookup for warm paths.
