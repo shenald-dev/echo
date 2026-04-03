@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.6] - 2026-04-03
+
+### Changed
+* **[Bugfix]:** Fixed moved event path resolution logic to correctly trigger commands when an ignored file is moved or renamed to a non-ignored valid path.
+
 ## [0.1.5] - 2026-04-02
 
 ### Changed
