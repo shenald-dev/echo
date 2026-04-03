@@ -16,8 +16,9 @@ from rich.console import Console
 console = Console()
 
 class CommandRunnerHandler(FileSystemEventHandler):
-    def __init__(self, command: str, ignore_patterns: list[str] | None = None):
+    def __init__(self, command: str, base_path: str = ".", ignore_patterns: list[str] | None = None):
         self.command = command
+        self.base_path = base_path
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
@@ -150,6 +151,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
             console.print(f"[bold red]Error executing command: {e}[/bold red]")
 
     def _is_ignored_impl(self, path: str) -> bool:
+        try:
+            path = os.path.relpath(path, self.base_path)
+        except ValueError:
+            pass
         if not path:
             return False
 
@@ -165,18 +170,21 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not self.exact_ignores.isdisjoint(parts):
             return True
 
-        # Check for exact and wildcard ignore patterns matching prefix directories
-        for i in range(1, len(parts)):
-            prefix = "/".join(parts[:i])
-            if prefix in self.exact_ignores:
-                return True
-            if self.wildcard_regex and self.wildcard_regex.match(prefix):
-                return True
-
         if self.wildcard_regex:
             for part in parts:
                 if self.wildcard_regex.match(part):
                     return True
+
+        # Check for exact and wildcard ignore patterns matching cumulative prefix directories
+        if len(parts) > 2:
+            prefix = parts[0]
+            for part in parts[1:-1]:
+                prefix = f"{prefix}/{part}"
+                if prefix in self.exact_ignores:
+                    return True
+                if self.wildcard_regex and self.wildcard_regex.match(prefix):
+                    return True
+
         return False
 
     def on_any_event(self, event):
@@ -213,7 +221,7 @@ def main():
     args = parser.parse_args()
 
     ignore_patterns = [p.strip() for p in args.ignore.split(",") if p.strip()] if args.ignore else None
-    event_handler = CommandRunnerHandler(args.cmd, ignore_patterns=ignore_patterns)
+    event_handler = CommandRunnerHandler(args.cmd, base_path=args.path, ignore_patterns=ignore_patterns)
     observer = Observer()
     observer.schedule(event_handler, args.path, recursive=True)
     

@@ -37,3 +37,12 @@ Identified that `time.time()` was being used for relative time tracking, which i
 
 Alignment / Deferred:
 Replaced all occurrences of `time.time()` with `time.monotonic()` in `src/echo/watcher.py` and test suites to guarantee stable duration tracking and event debouncing. Cleaned up unused test imports via `ruff`.
+
+## 2026-04-03 — Assessment & Lifecycle
+
+Observation / Pruned:
+- Bound `functools.lru_cache` to `CommandRunnerHandler` instances to prevent process memory leaks across instances.
+- Added `os.path.relpath(path, self.base_path)` fallback to enforce accurate isolation of relative paths prior to evaluation against filters.
+
+Alignment / Deferred:
+- Ensured system path dependencies correctly evaluate wildcard ignores natively against prefix accumulations. No explicit version bumps aside from release tag.
