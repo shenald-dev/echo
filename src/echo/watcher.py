@@ -8,6 +8,7 @@ import fnmatch
 import re
 import argparse
 import threading
+import functools
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from rich.console import Console
@@ -145,6 +146,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         except Exception as e:
             console.print(f"[bold red]Error executing command: {e}[/bold red]")
 
+    @functools.lru_cache(maxsize=2048)
     def _is_ignored(self, path: str) -> bool:
         if not path:
             return False
