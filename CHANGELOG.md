@@ -33,3 +33,4 @@
 
 ### Changed
 * **[Maintenance]:** Removed unused `test_dir` leftover from previous development cycles.
+* **[Performance]:** Memoized ignore filter fast path via instance-bound LRU cache to accelerate event processing and prevent memory leaks.

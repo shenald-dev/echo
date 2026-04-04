@@ -10,6 +10,7 @@
 - **🔄 Smart Reloads**: Automatically terminates running processes if a new file change is detected. If processes become unresponsive or ignore termination signals, Echo forcefully escalates to `SIGKILL` after a short timeout to prevent deadlocks.
 - **⏱️ Stable Debouncing**: Leverages monotonic clocks internally to guarantee reliable duration tracking, avoiding bugs related to system clock shifts and NTP syncs.
 - **⚙️ Crash Recovery**: Restarts automatically if encountering an unexpected system error.
+- **🚀 High Performance**: Memoizes the ignore filter fast path via an instance-bound LRU cache, preventing repeated path evaluations during high-throughput file events (like dependency installs).
 
 ## Quick Start
 ```bash

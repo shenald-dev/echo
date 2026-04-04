@@ -46,3 +46,9 @@ Observation / Pruned:
 
 Alignment / Deferred:
 - Ensured system path dependencies correctly evaluate wildcard ignores natively against prefix accumulations. No explicit version bumps aside from release tag.
+2025-02-18 — Assessment & Lifecycle
+Observation / Pruned:
+Confirmed that the `_is_ignored` function's fast path optimization successfully reduces repeated filtering evaluations during burst file events using an explicitly bounded instance-level LRU cache.
+
+Alignment / Deferred:
+Updated README.md to document the high-performance file event handling feature. Verified that maxsize=4096 adequately prevents unbounded memory leak risks over long-running lifecycles. All test coverage passes without architectural degradation.
