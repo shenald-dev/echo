@@ -69,3 +69,29 @@ def test_ignored_events_do_not_trigger():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_moved_from_ignored_to_tracked():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
+
+    mock_event = MagicMock()
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = "ignored_file.tmp"
+    mock_event.dest_path = "valid_file.txt"
+
+    handler.on_any_event(mock_event)
+
+    assert handler.last_event_path == "valid_file.txt", f"Expected valid_file.txt, got {handler.last_event_path}"
+
+def test_moved_from_tracked_to_ignored():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
+
+    mock_event = MagicMock()
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = "valid_file.txt"
+    mock_event.dest_path = "ignored_file.tmp"
+
+    handler.on_any_event(mock_event)
+
+    assert handler.last_event_path == "valid_file.txt", f"Expected valid_file.txt, got {handler.last_event_path}"
