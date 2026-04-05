@@ -5,3 +5,6 @@ The `_is_ignored` function handles rapid string normalization, iteration over di
 
 Action:
 Decorated the `_is_ignored` function with an explicitly bounded `@functools.lru_cache(maxsize=2048)`. This creates a fast-path resolution dictionary preventing expensive recalculations during burst file operations, speeding up filtering by roughly 20x. Bounding the size prevents slow memory leak build-ups over long-running watcher lifecycles.
+2026-04-03 — Fix 'moved' event bug
+Learning: watchdog's 'moved' event triggers when atomic saves occur (ignored src to valid dest), which bypasses normal event filters if only src_path is checked.
+Action: Always evaluate dest_path on 'moved' events to ensure proper command triggers and tracking.

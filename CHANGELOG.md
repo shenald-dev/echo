@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.7] - 2026-04-03
+
+### Changed
+* **[Bugfix]:** Fixed an issue where moved events were incorrectly ignored when the source path matched an ignore pattern but the destination path did not. The watcher now correctly evaluates the destination path and triggers commands when an ignored file is moved to a monitored location.
+
 ## [0.1.6] - 2026-04-02
 
 ### Changed
