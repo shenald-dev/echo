@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.7] - 2025-04-05
+
+### Changed
+* **[Reliability]:** Normalized inputs for custom ignore patterns ensuring valid wildcard mapping against Windows style backslashes (`\`) and implicit prefixes (`./`).
+* **[Bugfix]:** Evaluated both `src_path` and `dest_path` for watchdog `moved` events. A command correctly executes when moving from an ignored path into a watched path.
+
 ## [0.1.6] - 2026-04-02
 
 ### Changed

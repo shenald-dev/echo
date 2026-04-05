@@ -69,3 +69,30 @@ def test_ignored_events_do_not_trigger():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_moved_event_ignored_src():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
+
+    # Mock 'moved' event where src is ignored but dest is not
+    mock_event = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = "test.tmp"
+    mock_event.dest_path = "test.txt"
+
+    handler.on_any_event(mock_event)
+
+    time.sleep(0.35)
+
+    assert handler.last_event_path == "test.txt", "Should use dest_path when src_path is ignored"
+    assert handler.current_process is not None, "Process should be started"
+
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
+
+def test_ignore_pattern_normalization():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["./temp_dir", "windows\\path"])
+
+    assert handler._is_ignored("temp_dir/file.txt") is True
+    assert handler._is_ignored("windows/path/file.txt") is True
