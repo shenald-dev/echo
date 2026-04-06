@@ -24,7 +24,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
         if ignore_patterns:
             default_ignores.extend(ignore_patterns)
-        self.ignore_patterns = default_ignores
+        self.ignore_patterns = [p.replace('\\', '/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
         self.exact_ignores = {p for p in self.ignore_patterns if '*' not in p and '?' not in p}
@@ -199,15 +199,19 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
-        if getattr(event, 'src_path', None) and self._is_ignored(event.src_path):
+        src_path = getattr(event, 'src_path', None)
+        dest_path = getattr(event, 'dest_path', None)
+        trigger_path = src_path
+
+        if src_path and self._is_ignored(src_path):
             # For moved events, check dest_path as well
-            dest_path = getattr(event, 'dest_path', None)
             if not dest_path or self._is_ignored(dest_path):
                 return
+            trigger_path = dest_path
 
         with self.timer_lock:
             self.last_event_time = time.monotonic()
-            self.last_event_path = event.src_path
+            self.last_event_path = trigger_path
 
             if self.debounce_thread is None:
                 self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
