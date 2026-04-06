@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.7] - 2026-04-03
+
+### Changed
+* **[Performance]:** Memoized `_is_ignored` fast path to accelerate event processing and avoid CPU spikes during high-throughput file operations.
+
 ## [0.1.6] - 2026-04-02
 
 ### Changed

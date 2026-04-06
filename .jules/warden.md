@@ -46,3 +46,9 @@ Observation / Pruned:
 
 Alignment / Deferred:
 - Ensured system path dependencies correctly evaluate wildcard ignores natively against prefix accumulations. No explicit version bumps aside from release tag.
+2026-04-03 — Assessment & Lifecycle
+Observation / Pruned:
+Observed a substantial performance improvement where `functools.lru_cache` was used to memoize `_is_ignored` evaluations. The codebase is clean with 0 lines of dead code detected by vulture.
+
+Alignment / Deferred:
+Updated README.md to reflect the new high-throughput performance characteristics.
