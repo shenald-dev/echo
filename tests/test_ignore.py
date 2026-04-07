@@ -69,3 +69,45 @@ def test_ignored_events_do_not_trigger():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_moved_events_trigger_correctly():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
+
+    # Mock event where src_path is ignored but dest_path is valid
+    mock_event = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = "test.tmp"
+    mock_event.dest_path = "test.txt"
+
+    handler.on_any_event(mock_event)
+
+    assert handler.last_event_path == "test.txt", f"Expected last_event_path to be 'test.txt', got {handler.last_event_path}"
+
+    # Wait for the debounce threshold just in case
+    time.sleep(0.35)
+
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
+
+def test_moved_events_trigger_correctly_when_dest_ignored():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
+
+    # Mock event where src_path is valid but dest_path is ignored
+    mock_event = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = "test.txt"
+    mock_event.dest_path = "test.tmp"
+
+    handler.on_any_event(mock_event)
+
+    assert handler.last_event_path == "test.txt", f"Expected last_event_path to be 'test.txt', got {handler.last_event_path}"
+
+    # Wait for the debounce threshold just in case
+    time.sleep(0.35)
+
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()

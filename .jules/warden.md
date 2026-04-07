@@ -1,3 +1,11 @@
+## 2026-04-07 — Assessment & Lifecycle
+
+Observation / Pruned:
+A logic error in handling watchdog 'moved' events was discovered where an ignored `src_path` would prevent the watcher from assessing a valid `dest_path`. This resulted in the watcher ignoring legitimate file creations and changes during renaming and moved event sequences.
+
+Alignment / Deferred:
+Corrected `on_any_event` block in `src/echo/watcher.py` to correctly verify the event against either path before dropping the event. Created regression tests within `tests/test_ignore.py` to prevent regression. Version bumped to `0.1.7`.
+
 ## 2026-04-02 — Assessment & Lifecycle
 
 Observation / Pruned:
