@@ -69,3 +69,45 @@ def test_ignored_events_do_not_trigger():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_moved_event_dest_ignored():
+    handler = CommandRunnerHandler("echo test")
+
+    mock_event = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = "valid_file.py"
+    mock_event.dest_path = ".git/some_file"
+
+    handler.on_any_event(mock_event)
+
+    # Wait for debounce
+    time.sleep(0.35)
+
+    # Check last_event_path
+    assert handler.last_event_path == "valid_file.py", f"Expected valid_file.py, got {handler.last_event_path}"
+
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
+
+def test_moved_event_src_ignored():
+    handler = CommandRunnerHandler("echo test")
+
+    mock_event = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = ".git/some_file"
+    mock_event.dest_path = "valid_file.py"
+
+    handler.on_any_event(mock_event)
+
+    # Wait for debounce
+    time.sleep(0.35)
+
+    # Check last_event_path
+    assert handler.last_event_path == "valid_file.py", f"Expected valid_file.py, got {handler.last_event_path}"
+
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
