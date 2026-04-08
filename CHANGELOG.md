@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.7] - 2026-04-03
+
+### Changed
+* **[Reliability]:** Fixed moved event handling to correctly evaluate and trigger using `dest_path` when `src_path` is ignored.
+
 ## [0.1.6] - 2026-04-02
 
 ### Changed

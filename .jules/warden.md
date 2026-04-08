@@ -46,3 +46,9 @@ Observation / Pruned:
 
 Alignment / Deferred:
 - Ensured system path dependencies correctly evaluate wildcard ignores natively against prefix accumulations. No explicit version bumps aside from release tag.
+2026-04-03 — Assessment & Lifecycle
+Observation / Pruned:
+Fixed bug in `on_any_event` for moved events to correctly use `dest_path` if `src_path` is ignored. Zero lines of dead code removed.
+
+Alignment / Deferred:
+Documented fix in CHANGELOG.md and bumped version to 0.1.7. Deferred dependency updates as no significant updates are available.
