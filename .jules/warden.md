@@ -46,9 +46,11 @@ Observation / Pruned:
 
 Alignment / Deferred:
 - Ensured system path dependencies correctly evaluate wildcard ignores natively against prefix accumulations. No explicit version bumps aside from release tag.
-2026-04-03 — Assessment & Lifecycle
+
+## 2026-04-05 — Assessment & Lifecycle
+
 Observation / Pruned:
-Observed a substantial performance improvement where `functools.lru_cache` was used to memoize `_is_ignored` evaluations. The codebase is clean with 0 lines of dead code detected by vulture.
+The previous optimization agent bounded `functools.lru_cache` directly to `CommandRunnerHandler` instances to prevent process memory leaks across instances during rapid path matching. Tests and dead code elimination tools were executed successfully.
 
 Alignment / Deferred:
-Updated README.md to reflect the new high-throughput performance characteristics.
+Version bumped to `0.1.7` as a patch release reflecting the optimization and assurance. Updated README.md to reflect the new high-throughput performance characteristics.
