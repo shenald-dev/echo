@@ -42,6 +42,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.last_event_path = None
         self.is_shutting_down = False
         self.is_posix = platform.system() != "Windows"
+        self.shutdown_event = threading.Event()
 
         # Bind LRU cache to instance to prevent memory leaks across instances
         self._is_ignored = functools.lru_cache(maxsize=4096)(self._is_ignored_impl)
@@ -78,6 +79,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
     def shutdown(self):
         """Safely shuts down the handler and terminates any running process."""
         self.is_shutting_down = True
+        self.shutdown_event.set()
         with self.process_lock:
             self._terminate_process(self.current_process)
 
@@ -103,8 +105,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     self._run_command(path_to_run)
                 return
 
-            # Sleep until the next check
-            time.sleep(time_to_wait)
+            # Sleep until the next check, but wake up instantly on shutdown
+            self.shutdown_event.wait(timeout=time_to_wait)
 
     def _run_command(self, event_path):
         if self.is_shutting_down:
