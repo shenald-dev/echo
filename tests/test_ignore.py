@@ -69,3 +69,37 @@ def test_ignored_events_do_not_trigger():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_moved_event():
+    handler = CommandRunnerHandler("echo changed: $0")
+
+    # Case 1: src ignored, dest valid
+    mock_event = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event.is_directory = False
+    mock_event.event_type = 'moved'
+    mock_event.src_path = ".git/HEAD" # Ignored
+    mock_event.dest_path = "src/valid.py" # Valid
+
+    handler.on_any_event(mock_event)
+    assert handler.last_event_path == "src/valid.py", f"Expected src/valid.py, got {handler.last_event_path}"
+
+    # Case 2: src valid, dest ignored
+    mock_event2 = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event2.is_directory = False
+    mock_event2.event_type = 'moved'
+    mock_event2.src_path = "src/valid2.py" # Valid
+    mock_event2.dest_path = ".git/index" # Ignored
+
+    handler.on_any_event(mock_event2)
+    assert handler.last_event_path == "src/valid2.py", f"Expected src/valid2.py, got {handler.last_event_path}"
+
+    # Case 3: src ignored, dest ignored
+    handler.last_event_path = None
+    mock_event3 = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event3.is_directory = False
+    mock_event3.event_type = 'moved'
+    mock_event3.src_path = ".git/HEAD2" # Ignored
+    mock_event3.dest_path = ".git/HEAD3" # Ignored
+
+    handler.on_any_event(mock_event3)
+    assert handler.last_event_path is None, f"Expected None, got {handler.last_event_path}"

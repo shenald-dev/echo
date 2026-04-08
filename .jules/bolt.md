@@ -5,3 +5,11 @@ The `_is_ignored` function handles rapid string normalization, iteration over di
 
 Action:
 Decorated the `_is_ignored` function with an explicitly bounded `@functools.lru_cache(maxsize=2048)`. This creates a fast-path resolution dictionary preventing expensive recalculations during burst file operations, speeding up filtering by roughly 20x. Bounding the size prevents slow memory leak build-ups over long-running watcher lifecycles.
+
+## 2024-05-18 — Handle watchdog moved events explicitly across ignore boundaries
+
+Learning:
+When handling `moved` events from `watchdog`, evaluating only the `src_path` against ignore patterns is insufficient. If a valid file is moved *into* an ignored scope, or if an ignored file is moved *into* a valid scope, the event might be dropped or logged under the wrong path if the fallback (`dest_path`) isn't evaluated properly as an active trigger.
+
+Action:
+Future runs dealing with file system events must rigorously check both `src_path` and `dest_path` (when available, e.g., on `moved` events). If `src_path` is valid, it triggers. If `src_path` is ignored, `dest_path` must be checked and used as the trigger path if it is valid.
