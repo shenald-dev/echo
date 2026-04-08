@@ -24,7 +24,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
         if ignore_patterns:
             default_ignores.extend(ignore_patterns)
-        self.ignore_patterns = default_ignores
+        self.ignore_patterns = [p.replace('\\', '/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
         self.exact_ignores = {p for p in self.ignore_patterns if '*' not in p and '?' not in p}
