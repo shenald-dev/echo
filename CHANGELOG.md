@@ -1,8 +1,9 @@
 # Changelog
 
-## [0.1.7]
+## [0.1.7] - 2026-04-05
 
 ### Changed
+* **[Performance]:** Bounded LRU cache directly to watcher instances to dramatically accelerate rapid path matching during burst operations while preventing cross-instance memory leaks.
 * **[Bugfix]:** Fixed moved event handling so that if src is ignored but dest is valid, the dest path is used to trigger the command.
 
 ## [0.1.6] - 2026-04-02
