@@ -199,15 +199,20 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
-        if getattr(event, 'src_path', None) and self._is_ignored(event.src_path):
-            # For moved events, check dest_path as well
-            dest_path = getattr(event, 'dest_path', None)
-            if not dest_path or self._is_ignored(dest_path):
+        event_path = getattr(event, 'src_path', None)
+
+        is_src_ignored = event_path and self._is_ignored(event_path)
+        dest_path = getattr(event, 'dest_path', None)
+        is_dest_ignored = dest_path and self._is_ignored(dest_path)
+
+        if is_src_ignored:
+            if not dest_path or is_dest_ignored:
                 return
+            event_path = dest_path
 
         with self.timer_lock:
             self.last_event_time = time.monotonic()
-            self.last_event_path = event.src_path
+            self.last_event_path = event_path
 
             if self.debounce_thread is None:
                 self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
