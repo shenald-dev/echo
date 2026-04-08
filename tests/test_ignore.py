@@ -40,7 +40,7 @@ def test_is_ignored_compound_path_match():
     assert handler._is_ignored("docs/index.html") is False
 
 def test_ignored_events_do_not_trigger():
-    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp"])
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp", "ignored_dir"])
 
     # Mock event for ignored path
     mock_event_ignored = MagicMock(spec=["is_directory", "event_type", "src_path"])
@@ -53,6 +53,43 @@ def test_ignored_events_do_not_trigger():
     time.sleep(0.35)
 
     assert handler.current_process is None, "Process should not be started for ignored event"
+
+    # Mock moved event where dest_path is ignored but src_path is valid
+    mock_event_moved_dest_ignored = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event_moved_dest_ignored.is_directory = False
+    mock_event_moved_dest_ignored.event_type = 'moved'
+    mock_event_moved_dest_ignored.src_path = "test.txt"
+    mock_event_moved_dest_ignored.dest_path = "test.tmp"
+
+    handler.on_any_event(mock_event_moved_dest_ignored)
+
+    time.sleep(0.35)
+
+    assert handler.current_process is not None, "Process should be started if src_path is valid even if dest_path is ignored"
+
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
+        handler.current_process = None
+
+    # Mock moved event where src_path is ignored but dest_path is valid
+    mock_event_moved_valid_dest = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event_moved_valid_dest.is_directory = False
+    mock_event_moved_valid_dest.event_type = 'moved'
+    mock_event_moved_valid_dest.src_path = "ignored_dir/file.txt"
+    mock_event_moved_valid_dest.dest_path = "valid_dir/file.txt"
+
+    handler.on_any_event(mock_event_moved_valid_dest)
+
+    time.sleep(0.35)
+
+    assert handler.current_process is not None, "Process should be started for valid dest_path"
+    assert handler.last_event_path == "valid_dir/file.txt", "last_event_path should be updated to dest_path"
+
+    if handler.current_process:
+        handler.current_process.terminate()
+        handler.current_process.wait()
+        handler.current_process = None
 
     # Mock event for valid path
     mock_event_valid = MagicMock(spec=["is_directory", "event_type", "src_path"])

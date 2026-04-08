@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.7] - 2026-04-05
+
+### Changed
+* **[Performance]:** Bounded LRU cache directly to watcher instances to dramatically accelerate rapid path matching during burst operations while preventing cross-instance memory leaks.
+
 ## [0.1.6] - 2026-04-02
 
 ### Changed
