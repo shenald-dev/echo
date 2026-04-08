@@ -200,11 +200,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
         event_path = getattr(event, 'src_path', None)
-        dest_path = getattr(event, 'dest_path', None)
 
-        if event_path and self._is_ignored(event_path):
-            # For moved events, check dest_path as well
-            if not dest_path or self._is_ignored(dest_path):
+        is_src_ignored = event_path and self._is_ignored(event_path)
+        dest_path = getattr(event, 'dest_path', None)
+        is_dest_ignored = dest_path and self._is_ignored(dest_path)
+
+        if is_src_ignored:
+            if not dest_path or is_dest_ignored:
                 return
             event_path = dest_path
 

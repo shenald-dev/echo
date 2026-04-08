@@ -1,9 +1,9 @@
 # Changelog
 
-## [0.1.7] - 2026-04-03
+## [0.1.7] - 2026-04-05
 
 ### Changed
-* **[Reliability]:** Fixed moved event handling to correctly evaluate and trigger using `dest_path` when `src_path` is ignored.
+* **[Performance]:** Bounded LRU cache directly to watcher instances to dramatically accelerate rapid path matching during burst operations while preventing cross-instance memory leaks.
 
 ## [0.1.6] - 2026-04-02
 
