@@ -3,6 +3,7 @@
 ## [0.1.7] - 2026-04-07
 
 ### Changed
+* **[Performance]:** Bounded LRU cache directly to watcher instances to dramatically accelerate rapid path matching during burst operations while preventing cross-instance memory leaks.
 * **[Reliability]:** Fixed moved events tracking where valid files moved into ignored scopes (or vice versa) were not correctly triggering file change events.
 
 ## [0.1.6] - 2026-04-02
