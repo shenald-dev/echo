@@ -9,6 +9,7 @@
 - **⚡ Unblocked & Multi-threaded**: Runs execution in background threads so your file-watching event loop never pauses.
 - **🔄 Smart Reloads**: Automatically terminates running processes if a new file change is detected. If processes become unresponsive or ignore termination signals, Echo forcefully escalates to `SIGKILL` after a short timeout to prevent deadlocks.
 - **⏱️ Stable Debouncing**: Leverages monotonic clocks internally to guarantee reliable duration tracking, avoiding bugs related to system clock shifts and NTP syncs.
+- **🚀 Fast Event-Driven Shutdown**: Uses thread-safe events to instantly unblock background timers during exit, eliminating artificial sleep latency and ensuring clean shutdowns.
 - **⚙️ Crash Recovery**: Restarts automatically if encountering an unexpected system error.
 
 ## Quick Start
