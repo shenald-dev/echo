@@ -44,3 +44,4 @@
 
 ### Changed
 * **[Maintenance]:** Removed unused `test_dir` leftover from previous development cycles.
+* **[Reliability]:** Simplify return code checking for intentionally terminated processes to correctly handle SIGKILL edge cases.

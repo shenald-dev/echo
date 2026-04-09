@@ -60,3 +60,4 @@ Observation / Pruned:
 Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+Observation/Pruned: Replaced brittle platform-specific subprocess return code checks (-15 or 1) with an intent-based flag (`_echo_terminated`), reliably muting error logs for any intended watcher-driven restart (including escalate-to-SIGKILL edge cases yielding -9).
