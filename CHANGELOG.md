@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.8] - 2026-04-09
+
+### Changed
+* **[Performance]:** Eliminated artificial shutdown latency by replacing blocking `time.sleep()` with thread-safe `threading.Event().wait()` in the debounce background worker, resulting in instant teardown on termination signals.
+* **[Bugfix]:** Fixed an issue where `watchdog` moved events were not properly evaluating the destination path against ignore patterns, ensuring correctly triggered commands when files are moved into a watched scope.
+
 ## [0.1.7] - 2026-04-05
 
 ### Changed

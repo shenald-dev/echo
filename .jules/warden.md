@@ -54,3 +54,9 @@ The previous optimization agent bounded `functools.lru_cache` directly to `Comma
 
 Alignment / Deferred:
 Version bumped to `0.1.7` as a patch release reflecting the optimization and assurance. No explicit updates deferred.
+
+2026-04-09 — Assessment & Lifecycle
+Observation / Pruned:
+Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
+Alignment / Deferred:
+Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
