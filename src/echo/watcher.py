@@ -56,6 +56,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             else:
                 process.terminate()
+            setattr(process, '_echo_terminated', True)
         except OSError:
             pass
 
@@ -145,7 +146,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.current_process is process:
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
-                    elif process.returncode == -15: # SIGTERM
+                    elif process.returncode == -15 or (not self.is_posix and process.returncode == 1 and getattr(process, '_echo_terminated', False)): # SIGTERM or Windows termination
                         console.print("[yellow]✔ Command terminated by reload.[/yellow]")
                     else:
                         console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
@@ -178,8 +179,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     return True
 
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
-        if len(parts) > 2:
+        if len(parts) > 1:
             prefix = parts[0]
+            if prefix in self.exact_ignores:
+                return True
+            if self.wildcard_regex and self.wildcard_regex.match(prefix):
+                return True
+
             for part in parts[1:-1]:
                 prefix = f"{prefix}/{part}"
                 if prefix in self.exact_ignores:
