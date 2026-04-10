@@ -52,11 +52,11 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
 
         try:
+            setattr(process, '_echo_terminated', True)
             if self.is_posix:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             else:
                 process.terminate()
-            setattr(process, '_echo_terminated', True)
         except OSError:
             pass
 
@@ -146,7 +146,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.current_process is process:
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
-                    elif process.returncode == -15 or (not self.is_posix and process.returncode == 1 and getattr(process, '_echo_terminated', False)): # SIGTERM or Windows termination
+                    elif getattr(process, '_echo_terminated', False): # Process was deliberately terminated
                         console.print("[yellow]✔ Command terminated by reload.[/yellow]")
                     else:
                         console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")

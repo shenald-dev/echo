@@ -29,3 +29,11 @@ When building cumulative directory prefixes to check against ignore patterns (e.
 
 Action:
 Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
+
+## 2026-04-10 — Reliable Subprocess Termination Detection
+
+Learning:
+Mapping platform-specific OS signals (e.g., exit code `-15` on POSIX or `1` on Windows) to a deliberate command reload masked legitimate command failures and missed `SIGKILL` edge cases where the return code wasn't as expected, making error handling unreliable. Additionally, `OSError`s thrown during the termination signal could prevent recording the intended termination state.
+
+Action:
+Never rely on subprocess exit codes to infer watcher reload intentions. Exclusively use an intent flag (e.g., `setattr(process, '_echo_terminated', True)`) that is set *before* invoking OS termination signals to guarantee the action is tracked reliably, even if the signal command fails.
