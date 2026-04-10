@@ -60,3 +60,11 @@ Observation / Pruned:
 Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+
+## 2026-04-10 — Assessment & Lifecycle
+
+Observation / Pruned:
+Identified that process termination logic was brittle, relying on platform-specific exit codes (`-15` on POSIX, `1` on Windows) to detect intentional reloads. This masked legitimate crashes. Pruned this check to evaluate solely the intent-based `getattr(process, '_echo_terminated', False)` flag, which accurately models the reload request across all platforms.
+
+Alignment / Deferred:
+Updated the core condition block in `src/echo/watcher.py` to solely check the `_echo_terminated` flag instead of OS-specific codes. No dependencies were bumped.

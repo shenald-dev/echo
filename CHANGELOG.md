@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.9] - 2026-04-10
+
+### Changed
+* **[Reliability]:** Hardened subprocess termination detection across POSIX and Windows by discarding brittle OS exit code checks (`-15`, `1`) in favor of an intent-based internal termination flag, accurately preserving actual process failures while gracefully suppressing intentional reload logs.
+
 ## [0.1.8] - 2026-04-09
 
 ### Changed
