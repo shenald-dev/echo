@@ -29,3 +29,7 @@ When building cumulative directory prefixes to check against ignore patterns (e.
 
 Action:
 Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
+
+2024-04-11 — Termination Intent Mapping vs OS Signal Exit Codes
+Learning: Relying on platform-specific exit codes (e.g., `-15` or Windows `1`) to determine deliberate process termination by the watcher masks true failures and escalates edge cases where signals fail but process logic still exits.
+Action: Exclusively verify an explicit intent flag (`_echo_terminated`) set *before* executing OS kill signals, guaranteeing reload actions are accurately detected and logged independently of OS behaviors.
