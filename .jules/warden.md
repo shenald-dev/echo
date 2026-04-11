@@ -60,3 +60,12 @@ Observation / Pruned:
 Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+
+## 2026-04-11 — Assessment & Lifecycle
+
+Observation / Pruned:
+The previous optimization tracking intent for process termination to distinguish it from a regular OS error (`_echo_terminated`) was only completely verified for Windows, but the POSIX counterpart still relied on `-15` check, risking masking legitimate command failures if a real SIGTERM was received from outside the watcher.
+Pruned standard platform checking and enforced the `_echo_terminated` flag check for POSIX as well, as that provides true semantic intent.
+
+Alignment / Deferred:
+Updated `.jules/warden.md` and `CHANGELOG.md` to reflect unified platform termination tracking. Cut release `0.1.9`.

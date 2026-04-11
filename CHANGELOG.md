@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.9] - 2026-04-11
+
+### Changed
+* **[Reliability]:** Unified process termination tracking across operating systems by using an explicit `_echo_terminated` flag. This prevents actual crash errors or externally sent `SIGTERM` signals from being incorrectly reported as deliberate watcher reloads on POSIX systems.
+
 ## [0.1.8] - 2026-04-09
 
 ### Changed
