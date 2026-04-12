@@ -60,3 +60,9 @@ Observation / Pruned:
 Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+
+2026-04-10 — Assessment & Lifecycle
+Observation / Pruned:
+Observed CI/thread scheduling flakiness in the test suite due to overly tight debounce timeout assertions in `test_ignore.py`, `test_shutdown.py`, and `test_watcher.py`.
+Alignment / Deferred:
+Increased `time.sleep()` waiting durations from values like `0.3` and `0.35` to `0.5` seconds to comfortably accommodate the `0.25` seconds trailing-edge window across varied environments without causing thread deadlocks. Verified stability and completely pruned test entropy.

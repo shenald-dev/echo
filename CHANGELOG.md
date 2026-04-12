@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.9] - 2026-04-10
+
+### Changed
+* **[Reliability]:** Stabilized the automated test suite by increasing the trailing-edge debounce `time.sleep()` assertions to `0.5` seconds, eliminating CI-related flakiness caused by tight thread scheduling constraints.
+
 ## [0.1.8] - 2026-04-09
 
 ### Changed
