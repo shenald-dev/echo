@@ -51,12 +51,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not process or process.poll() is not None:
             return
 
+        setattr(process, '_echo_terminated', True)
+
         try:
             if self.is_posix:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             else:
                 process.terminate()
-            setattr(process, '_echo_terminated', True)
         except OSError:
             pass
 
@@ -146,7 +147,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.current_process is process:
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
-                    elif process.returncode == -15 or (not self.is_posix and process.returncode == 1 and getattr(process, '_echo_terminated', False)): # SIGTERM or Windows termination
+                    elif getattr(process, '_echo_terminated', False):
                         console.print("[yellow]✔ Command terminated by reload.[/yellow]")
                     else:
                         console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
@@ -217,6 +218,11 @@ class CommandRunnerHandler(FileSystemEventHandler):
             if not dest_path or is_dest_ignored:
                 return
             event_path = dest_path
+        elif event_path and dest_path:
+            # If src is valid but it's a move event, prefer dest if it's also valid.
+            # If dest is ignored but src is valid, keep src so it triggers.
+            if not is_dest_ignored:
+                event_path = dest_path
 
         with self.timer_lock:
             self.last_event_time = time.monotonic()

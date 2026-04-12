@@ -44,3 +44,5 @@
 
 ### Changed
 * **[Maintenance]:** Removed unused `test_dir` leftover from previous development cycles.
+* **[Reliability]:** Improved process termination state tracking to prevent legitimate reloads from being incorrectly reported as crashes due to varying OS exit codes.
+* **[Correctness]:** Fixed file move event handling to ensure the destination path is correctly evaluated and passed to the execution environment.

@@ -60,3 +60,13 @@ Observation / Pruned:
 Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+## 2025-05-18 — Reliability Overhaul
+
+Observation:
+The watcher used platform-specific return codes (like `-15` and `1`) to deduce if a reload correctly terminated the previous run. This brittle assumption caused valid reloads to log as crashes if the process returned custom codes on SIGTERM. Additionally, the `_echo_terminated` intent flag was set *after* system calls that could raise `OSError`, meaning the intent was lost on failure. Watchdog `moved` events were ignoring the `dest_path` if `src_path` was valid.
+
+Pruned:
+Removed platform-specific exit code checks in favor of a robust intent-based `_echo_terminated` flag verification.
+
+Alignment:
+Moved intent tracking before risky OS system calls. Adjusted event routing to properly capture valid file destinations on rename/move operations. Verified changes using test suite. Release pending.
