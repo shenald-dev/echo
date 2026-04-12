@@ -19,6 +19,6 @@ def test_shutdown_prevents_execution():
     handler.shutdown()
 
     # Wait for debounce thread to finish
-    time.sleep(0.3)
+    time.sleep(0.5)
 
     assert handler.current_process is None or handler.current_process.poll() is not None

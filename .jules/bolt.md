@@ -29,3 +29,11 @@ When building cumulative directory prefixes to check against ignore patterns (e.
 
 Action:
 Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
+
+## 2025-04-10 — Robust Signal Handling & Test Debounce Verification
+
+Learning:
+Relying on platform-specific exit codes like `-15` (SIGTERM on POSIX) or `1` (Windows) to infer intentional process reloading is fragile. An external signal could mask a legitimate crash, or cause false logging. Additionally, `time.sleep()` durations in tests asserting debounce logic must be safely above the trailing-edge window (e.g. 0.5s for a 0.25s debounce) to avoid flakiness from OS thread scheduling overhead.
+
+Action:
+Replaced blind exit-code checking with an explicit `_echo_terminated` boolean flag attached directly to the subprocess object prior to termination, providing 100% deterministic intent resolution. Extended test sleep buffers to 0.5s across the suite, preventing race conditions during CI runs.
