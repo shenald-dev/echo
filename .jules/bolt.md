@@ -29,3 +29,10 @@ When building cumulative directory prefixes to check against ignore patterns (e.
 
 Action:
 Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
+## 2024-05-15 — Test and watcher termination reliability
+
+Learning:
+Tests involving the file watcher must account for the 0.25-second trailing-edge debounce window by using a time.sleep() duration comfortably longer than the debounce window (e.g., 0.5 to 1.0 seconds) before asserting process state. Shorter durations (like 0.35s) are prone to flakiness due to CI or thread scheduling overhead, especially when running `pytest-cov`. Additionally, OS-level return code checks for deliberate termination in subprocesses are fragile; tracking intentional termination using an explicit instance attribute (e.g., `_echo_terminated`) is safer.
+
+Action:
+Ensure sleep times in future watcher tests are sufficiently long (>=0.5s), and avoid hardcoding OS exit codes for control flow tracking in background process lifecycles.

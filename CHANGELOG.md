@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.9] - 2024-05-15
+
+### Fixed
+* **[Reliability]:** Eliminated flakey test behaviors by safely extending sleep thresholds to accommodate debounce windows.
+* **[Reliability]:** Improved background process lifecycle management to track intended termination states reliably instead of matching OS-specific error codes.
+
 ## [0.1.8] - 2026-04-09
 
 ### Changed
