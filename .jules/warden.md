@@ -60,3 +60,9 @@ Observation / Pruned:
 Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+
+2026-04-13 — Assessment & Lifecycle
+Observation / Pruned:
+The previous optimization agent introduced a bug by incorrectly mapping OS-specific process termination signals in `_terminate_process` and subsequent exit codes checks. This resulted in `test_unkillable_process` failing with exit code -9. I fixed this by unconditionally setting `_echo_terminated` before checking the exit code.
+Alignment / Deferred:
+Aligned the process termination logic to safely record the termination intent prior to issuing the system kill command. No dependencies required upgrading.

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.9] - 2024-05-24
+
+* **Fix:** Fix exit code check in termination tracking logic to prevent masking legitimate command failures.
+
 ## [0.1.8] - 2026-04-09
 
 ### Changed
