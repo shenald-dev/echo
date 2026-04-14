@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.9] - 2026-04-10
+
+### Changed
+* **[Bugfix]:** Fixed an issue with process tracking where exit status codes triggered by process termination code via watchdog were not accurately matching process state.
+* **[Bugfix]:** Ensure watchdog moved events accurately evaluate `dest_path` and `src_path` without returning premature failure states on ignore rule matching.
+
 ## [0.1.8] - 2026-04-09
 
 ### Changed

@@ -51,12 +51,12 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not process or process.poll() is not None:
             return
 
+        setattr(process, '_echo_terminated', True)
         try:
             if self.is_posix:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             else:
                 process.terminate()
-            setattr(process, '_echo_terminated', True)
         except OSError:
             pass
 
@@ -146,7 +146,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.current_process is process:
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
-                    elif process.returncode == -15 or (not self.is_posix and process.returncode == 1 and getattr(process, '_echo_terminated', False)): # SIGTERM or Windows termination
+                    elif getattr(process, '_echo_terminated', False):
                         console.print("[yellow]✔ Command terminated by reload.[/yellow]")
                     else:
                         console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
@@ -213,10 +213,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
         dest_path = getattr(event, 'dest_path', None)
         is_dest_ignored = dest_path and self._is_ignored(dest_path)
 
-        if is_src_ignored:
-            if not dest_path or is_dest_ignored:
+        if dest_path is not None:
+            if is_src_ignored and is_dest_ignored:
                 return
-            event_path = dest_path
+            if is_src_ignored and not is_dest_ignored:
+                event_path = dest_path
+        else:
+            if is_src_ignored:
+                return
 
         with self.timer_lock:
             self.last_event_time = time.monotonic()

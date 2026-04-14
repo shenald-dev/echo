@@ -29,3 +29,11 @@ When building cumulative directory prefixes to check against ignore patterns (e.
 
 Action:
 Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
+## 2026-04-10 — Process tracking logic
+
+Learning:
+When managing a process state and tracking graceful reloads using flags, assigning the flag after terminating a process in python `subprocess` wrappers opens the state up to being incorrectly reported as crashed. In the file watcher, setting `_echo_terminated` must happen prior to OS signaling.
+In addition, watchdog's 'moved' event does not implicitly handle paths. If either the src_path or dest_path fails an ignore check, you can prematurely prevent a process restart for the correct non-ignored path if the other fails.
+
+Action:
+Ensure complex file system events accurately evaluate dest and src paths individually, avoiding blanket false checks based on short-circuiting logic. Set intentionality flags like `_echo_terminated` on child processes BEFORE `os.killpg` or `terminate` calls so `OSError` catch blocks do not skip assignment.
