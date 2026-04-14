@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.9] - 2026-04-14
+
+### Changed
+* **[Reliability]:** Stabilized test suite assertions by correctly aligning `time.sleep` durations with the trailing-edge 0.25-second debounce window. Tests now accommodate normal CI or coverage execution overhead without failing.
+
 ## [0.1.8] - 2026-04-09
 
 ### Changed

@@ -60,3 +60,11 @@ Observation / Pruned:
 Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+
+## 2026-04-14 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed flaky test behavior in `test_ignore.py` and `test_watcher.py` due to insufficient sleep duration (`0.35s`) accommodating the 0.25s debounce window along with testing overhead like `pytest-cov`. This frequently led to false-positive test failures when asserting process states.
+
+Alignment / Deferred:
+Adjusted `time.sleep()` calls in testing suites from `0.35s` to `1.0s` to comfortably exceed the trailing-edge debounce window. This completely stabilized the adversarial QA check. Prepared release v0.1.9 to capture the alignment.
