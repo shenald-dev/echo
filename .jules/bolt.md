@@ -29,3 +29,11 @@ When building cumulative directory prefixes to check against ignore patterns (e.
 
 Action:
 Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
+
+## 2026-04-10 — Test Flakiness & Process Intent Flags
+
+Learning:
+Tests relying on time tracking for debounce windows (0.25s) are susceptible to failure under CI or coverage overhead (e.g. `pytest-cov`) if the wait durations (like `0.35s`) are too close to the boundary. Additionally, `watchdog` moved events may incorrectly drop valid source paths if destination paths are ignored.
+
+Action:
+Increased debounce sleep assertions to `0.6s` to provide adequate margin for execution overhead, completely resolving flakiness. Modified `watchdog` ignore logic to accurately retain the source event path if the destination is ignored.

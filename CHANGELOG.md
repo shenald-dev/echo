@@ -1,3 +1,6 @@
+## v0.1.9
+* **[Reliability]:** Addressed test flakiness under CI bounds and corrected destination evaluation for moved file system events.
+
 # Changelog
 
 ## [0.1.8] - 2026-04-09

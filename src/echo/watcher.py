@@ -51,12 +51,12 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not process or process.poll() is not None:
             return
 
+        setattr(process, '_echo_terminated', True)
         try:
             if self.is_posix:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             else:
                 process.terminate()
-            setattr(process, '_echo_terminated', True)
         except OSError:
             pass
 
@@ -216,6 +216,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if is_src_ignored:
             if not dest_path or is_dest_ignored:
                 return
+            event_path = dest_path
+        elif dest_path and not is_dest_ignored:
             event_path = dest_path
 
         with self.timer_lock:

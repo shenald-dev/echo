@@ -60,3 +60,11 @@ Observation / Pruned:
 Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+
+## 2026-04-10 — Assessment & Lifecycle
+
+Observation / Pruned:
+Discovered that `watchdog` moved events dropped valid source events if the destination was ignored. Also diagnosed and resolved test flakiness under `pytest-cov` resulting from short wait bounds (`0.35s`) over the `0.25s` trailing-edge debounce. Reordering termination intent flag settings solved a potential masking issue.
+
+Alignment / Deferred:
+Increased sleep timers to `0.6s` in test suites. Fixed ignore path extraction. Cut and tagged release `v0.1.9`.
