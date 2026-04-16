@@ -13,6 +13,7 @@ def test_smart_reload():
     handler.on_any_event(mock_event)
 
     # Should start a process
+    # Sleep interval is 0.5s to comfortably clear the 0.25s debounce window and avoid flaky CI behavior.
     time.sleep(0.5)
     first_process = handler.current_process
     assert first_process is not None

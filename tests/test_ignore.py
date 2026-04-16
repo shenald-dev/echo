@@ -50,6 +50,7 @@ def test_ignored_events_do_not_trigger():
 
     handler.on_any_event(mock_event_ignored)
 
+    # Sleep interval is 0.5s to comfortably clear the 0.25s debounce window and avoid flaky CI behavior.
     time.sleep(0.5)
 
     assert handler.current_process is None, "Process should not be started for ignored event"

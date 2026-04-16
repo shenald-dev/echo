@@ -10,6 +10,7 @@ def test_unkillable_process():
     mock_event.src_path = "test.py"
 
     handler.on_any_event(mock_event)
+    # Sleep interval is 0.5s to comfortably clear the 0.25s debounce window and avoid flaky CI behavior.
     time.sleep(0.5)
 
     p1 = handler.current_process
