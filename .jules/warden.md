@@ -61,6 +61,14 @@ Observed structural latency reduction in watcher shutdown loop via Event unblock
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
 
+## 2026-04-10 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed correct handling of top-level directory ignore rules by evaluating the initial path part directly. Additionally, verified robust Windows termination signal handling preventing misattribution of intentional reloads as failures. No dead code required pruning.
+
+Alignment / Deferred:
+Synced test suites to assert top-level ignores and Windows-specific exit conditions. Reverting or deleting was not needed as structural checks passed successfully. Prepared release v0.1.9.
+
 2026-04-10 — Assessment & Lifecycle
 Observation / Pruned:
 Observed CI/thread scheduling flakiness in the test suite due to overly tight debounce timeout assertions in `test_ignore.py`, `test_shutdown.py`, and `test_watcher.py`.
