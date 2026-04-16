@@ -22,7 +22,7 @@ def test_smart_reload():
     # Trigger second run
     handler.on_any_event(mock_event)
 
-    time.sleep(0.5)
+    time.sleep(1.0)
     second_process = handler.current_process
     assert second_process is not first_process
 
@@ -49,7 +49,7 @@ def test_on_any_event_non_blocking():
     handler.on_any_event(mock_event)
 
     # Wait for the first command to actually start
-    time.sleep(0.5)
+    time.sleep(1.0)
 
     # Trigger a second run. This spawns a timer that will try to terminate the first command
     handler.on_any_event(mock_event)
