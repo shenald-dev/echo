@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.9] - 2026-04-10
+
+### Changed
+* **[Bugfix]:** Fixed an issue where the initial directory prefix was not evaluated against ignore rules, ensuring top-level directories are correctly ignored.
+* **[Reliability]:** Added intent flags to correctly process expected exit codes on Windows to avoid misattributing expected graceful process reloading as an execution failure.
+
 ## [0.1.8] - 2026-04-09
 
 ### Changed
