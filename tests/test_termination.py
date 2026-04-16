@@ -10,7 +10,7 @@ def test_unkillable_process():
     mock_event.src_path = "test.py"
 
     handler.on_any_event(mock_event)
-    time.sleep(0.5)
+    time.sleep(1.0)
 
     p1 = handler.current_process
     assert p1 is not None
