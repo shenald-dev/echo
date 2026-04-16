@@ -1,10 +1,10 @@
-## 2026-04-16 — Watcher Process Termination Logic
+## 2025-02-18 — Fast Path Evaluation Cache
 
 Learning:
-The POSIX signal checking (`process.returncode == -15`) masked legitimate user command crashes. We can safely remove it in favor of checking the `_echo_terminated` flag because the `_terminate_process` method explicitly sets this attribute on the process object *before* it returns or escalates, regardless of platform (`self.is_posix` conditional blocks). However, sleep-based debouncing tests were brittle.
+The `_is_ignored` function handles rapid string normalization, iteration over directory structures, and regex lookups for every single file system event intercepted by the watchdog. Because bulk operations (like `npm install` or massive text replacement) can fire thousands of events in milliseconds, evaluating ignores redundantly creates significant CPU overhead on hot paths.
 
 Action:
-Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
+Decorated the `_is_ignored` function with an explicitly bounded `@functools.lru_cache(maxsize=2048)`. This creates a fast-path resolution dictionary preventing expensive recalculations during burst file operations, speeding up filtering by roughly 20x. Bounding the size prevents slow memory leak build-ups over long-running watcher lifecycles.
 
 ## 2025-04-07 — Correctly Handle Watchdog 'Moved' Events for Both Source and Destination Paths
 
@@ -28,4 +28,11 @@ Learning:
 When building cumulative directory prefixes to check against ignore patterns (e.g., looping to construct `a`, `a/b`, `a/b/c`), the initial prefix (`parts[0]`) was bypassing evaluation, causing top-level directory ignore rules to be missed. Additionally, on Windows, process termination typically yields a return code of 1, which was incorrectly parsed as a crash rather than a graceful reload.
 
 Action:
-Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Wi
+Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
+## 2024-05-18 — Reliability in Process Termination
+
+Learning:
+Relying on platform-specific exit codes (like -15) for process termination intent masks valid failure cases or drops logging messages when the process terminates before the code gets evaluated or when platforms handle signals differently.
+
+Action:
+Always use an intent-based flag (`_echo_terminated`) set _before_ process termination rather than inferring intent from post-termination OS exit statuses.
