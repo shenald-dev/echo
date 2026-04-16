@@ -51,6 +51,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not process or process.poll() is not None:
             return
 
+        # Set an intent flag before termination to prevent race conditions during exit code evaluation
         setattr(process, '_echo_terminated', True)
         try:
             if self.is_posix:
