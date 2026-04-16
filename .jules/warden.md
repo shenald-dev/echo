@@ -70,3 +70,11 @@ Removed platform-specific exit code checks in favor of a robust intent-based `_e
 
 Alignment:
 Moved intent tracking before risky OS system calls. Adjusted event routing to properly capture valid file destinations on rename/move operations. Verified changes using test suite. Release pending.
+
+## 2026-04-10 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed correct handling of top-level directory ignore rules by evaluating the initial path part directly. Additionally, verified robust Windows termination signal handling preventing misattribution of intentional reloads as failures. No dead code required pruning.
+
+Alignment / Deferred:
+Synced test suites to assert top-level ignores and Windows-specific exit conditions. Reverting or deleting was not needed as structural checks passed successfully. Prepared release v0.1.9.
