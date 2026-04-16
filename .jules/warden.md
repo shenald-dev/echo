@@ -69,3 +69,11 @@ Pruned standard platform checking and enforced the `_echo_terminated` flag check
 
 Alignment / Deferred:
 Updated `.jules/warden.md` and `CHANGELOG.md` to reflect unified platform termination tracking. Cut release `0.1.9`.
+
+## 2026-04-10 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed correct handling of top-level directory ignore rules by evaluating the initial path part directly. Additionally, verified robust Windows termination signal handling preventing misattribution of intentional reloads as failures. No dead code required pruning.
+
+Alignment / Deferred:
+Synced test suites to assert top-level ignores and Windows-specific exit conditions. Reverting or deleting was not needed as structural checks passed successfully. Prepared release v0.1.9.

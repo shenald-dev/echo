@@ -4,6 +4,8 @@
 
 ### Changed
 * **[Reliability]:** Unified process termination tracking across operating systems by using an explicit `_echo_terminated` flag. This prevents actual crash errors or externally sent `SIGTERM` signals from being incorrectly reported as deliberate watcher reloads on POSIX systems.
+* **[Bugfix]:** Fixed an issue where the initial directory prefix was not evaluated against ignore rules, ensuring top-level directories are correctly ignored.
+* **[Reliability]:** Added intent flags to correctly process expected exit codes on Windows to avoid misattributing expected graceful process reloading as an execution failure.
 
 ## [0.1.8] - 2026-04-09
 

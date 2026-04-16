@@ -147,6 +147,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
                     elif getattr(process, '_echo_terminated', False): # Terminated by reload
+
                         console.print("[yellow]✔ Command terminated by reload.[/yellow]")
                     else:
                         console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
