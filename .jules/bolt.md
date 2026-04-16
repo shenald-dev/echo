@@ -5,7 +5,6 @@ The POSIX signal checking (`process.returncode == -15`) masked legitimate user c
 
 Action:
 Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
-Decorated the `_is_ignored` function with an explicitly bounded `@functools.lru_cache(maxsize=2048)`. This creates a fast-path resolution dictionary preventing expensive recalculations during burst file operations, speeding up filtering by roughly 20x. Bounding the size prevents slow memory leak build-ups over long-running watcher lifecycles.
 
 ## 2025-04-07 — Correctly Handle Watchdog 'Moved' Events for Both Source and Destination Paths
 
@@ -29,11 +28,4 @@ Learning:
 When building cumulative directory prefixes to check against ignore patterns (e.g., looping to construct `a`, `a/b`, `a/b/c`), the initial prefix (`parts[0]`) was bypassing evaluation, causing top-level directory ignore rules to be missed. Additionally, on Windows, process termination typically yields a return code of 1, which was incorrectly parsed as a crash rather than a graceful reload.
 
 Action:
-Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
-## 2024-05-18 — Reliability in Process Termination
-
-Learning:
-Relying on platform-specific exit codes (like -15) for process termination intent masks valid failure cases or drops logging messages when the process terminates before the code gets evaluated or when platforms handle signals differently.
-
-Action:
-Always use an intent-based flag (`_echo_terminated`) set _before_ process termination rather than inferring intent from post-termination OS exit statuses.
+Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Wi
