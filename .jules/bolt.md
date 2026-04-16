@@ -5,6 +5,7 @@ The POSIX signal checking (`process.returncode == -15`) masked legitimate user c
 
 Action:
 Decorated the `_is_ignored` function with an explicitly bounded `@functools.lru_cache(maxsize=2048)`. This creates a fast-path resolution dictionary preventing expensive recalculations during burst file operations, speeding up filtering by roughly 20x. Bounding the size prevents slow memory leak build-ups over long-running watcher lifecycles.
+Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
 
 ## 2025-04-07 — Correctly Handle Watchdog 'Moved' Events for Both Source and Destination Paths
 
@@ -28,14 +29,5 @@ Learning:
 When building cumulative directory prefixes to check against ignore patterns (e.g., looping to construct `a`, `a/b`, `a/b/c`), the initial prefix (`parts[0]`) was bypassing evaluation, causing top-level directory ignore rules to be missed. Additionally, on Windows, process termination typically yields a return code of 1, which was incorrectly parsed as a crash rather than a graceful reload.
 
 Action:
-Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) before calling `.terminate()` so the exit code 1 can be properly disambiguated from actual failures.
-
-## 2026-04-10 — Test Flakiness & Process Intent Flags
-
-Learning:
-Tests relying on time tracking for debounce windows (0.25s) are susceptible to failure under CI or coverage overhead (e.g. `pytest-cov`) if the wait durations (like `0.35s`) are too close to the boundary. Additionally, `watchdog` moved events may incorrectly drop valid source paths if destination paths are ignored.
-
-Action:
-Increased debounce sleep assertions to `0.6s` to provide adequate margin for execution overhead, completely resolving flakiness. Modified `watchdog` ignore logic to accurately retain the source event path if the destination is ignored.
-Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
-Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
+Ensure the first prefix string in an ignore path evaluation is directly verified against exact and wildcard patterns before appending the rest of the path parts. For Windows process management, explicitly attach an intent flag (e.g. `_echo_terminated = True`) befor
+... (truncated)
