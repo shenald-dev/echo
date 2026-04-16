@@ -1,8 +1,15 @@
 # Changelog
 
-## [0.1.9] - 2024-05-24
+## [0.1.10] - 2026-04-13
 
-* **Fix:** Fix exit code check in termination tracking logic to prevent masking legitimate command failures.
+### Changed
+* **[Bugfix]:** Fix exit code check in termination tracking logic to prevent masking legitimate command failures by unconditionally setting termination intent before issuing kill commands.
+
+## [0.1.9] - 2026-04-10
+
+### Changed
+* **[Bugfix]:** Fixed an issue where the initial directory prefix was not evaluated against ignore rules, ensuring top-level directories are correctly ignored.
+* **[Reliability]:** Added intent flags to correctly process expected exit codes on Windows to avoid misattributing expected graceful process reloading as an execution failure.
 
 ## [0.1.8] - 2026-04-09
 
