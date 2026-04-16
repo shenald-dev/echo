@@ -68,3 +68,11 @@ Observed correct handling of top-level directory ignore rules by evaluating the 
 
 Alignment / Deferred:
 Synced test suites to assert top-level ignores and Windows-specific exit conditions. Reverting or deleting was not needed as structural checks passed successfully. Prepared release v0.1.9.
+
+## 2024-04-16 — Assessment & Lifecycle
+
+Observation / Pruned:
+Discovered and fixed a correctness bug in path filtering where ignore patterns ending in a trailing slash (like `build/`) failed to normalize correctly against incoming paths, allowing ignored files to trigger the watcher. Pruned scratch test files safely.
+
+Alignment / Deferred:
+The debounce timeout edge cases are generally robust. No large refactors were required; kept scope minimal by modifying one line for `.rstrip('/')`.
