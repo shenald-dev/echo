@@ -32,3 +32,27 @@ def test_unkillable_process():
     if p2:
         p2.kill()
         p2.wait()
+
+def test_termination_flag_set():
+    handler = CommandRunnerHandler("sleep 5")
+
+    mock_event = MagicMock()
+    mock_event.is_directory = False
+    mock_event.src_path = "test.py"
+
+    handler.on_any_event(mock_event)
+    time.sleep(0.5)
+
+    p1 = handler.current_process
+    assert p1 is not None
+    assert p1.poll() is None
+
+    # Simulate shutdown to trigger termination
+    handler.shutdown()
+    time.sleep(0.5)
+
+    assert getattr(p1, '_echo_terminated', False) is True
+
+    if p1.poll() is None:
+        p1.kill()
+        p1.wait()
