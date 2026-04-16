@@ -51,6 +51,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not process or process.poll() is not None:
             return
 
+        # Set intent flag prior to sending OS signals so that the event
+        # loop accurately interprets the eventual exit as a reload,
+        # rather than masking crashes with vague posix exit codes.
         setattr(process, '_echo_terminated', True)
         try:
             if self.is_posix:
@@ -146,7 +149,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.current_process is process:
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
-                    elif getattr(process, '_echo_terminated', False):
+                    elif getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
                         console.print("[yellow]✔ Command terminated by reload.[/yellow]")
                     else:
                         console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
