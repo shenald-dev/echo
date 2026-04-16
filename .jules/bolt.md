@@ -1,9 +1,10 @@
-## 2025-02-18 — Fast Path Evaluation Cache
+## 2026-04-16 — Watcher Process Termination Logic
 
 Learning:
-The `_is_ignored` function handles rapid string normalization, iteration over directory structures, and regex lookups for every single file system event intercepted by the watchdog. Because bulk operations (like `npm install` or massive text replacement) can fire thousands of events in milliseconds, evaluating ignores redundantly creates significant CPU overhead on hot paths.
+The POSIX signal checking (`process.returncode == -15`) masked legitimate user command crashes. We can safely remove it in favor of checking the `_echo_terminated` flag because the `_terminate_process` method explicitly sets this attribute on the process object *before* it returns or escalates, regardless of platform (`self.is_posix` conditional blocks). However, sleep-based debouncing tests were brittle.
 
 Action:
+<<<<<<< HEAD
 Decorated the `_is_ignored` function with an explicitly bounded `@functools.lru_cache(maxsize=2048)`. This creates a fast-path resolution dictionary preventing expensive recalculations during burst file operations, speeding up filtering by roughly 20x. Bounding the size prevents slow memory leak build-ups over long-running watcher lifecycles.
 
 ## 2025-04-07 — Correctly Handle Watchdog 'Moved' Events for Both Source and Destination Paths
@@ -36,3 +37,6 @@ Tests involving the file watcher must account for the 0.25-second trailing-edge 
 
 Action:
 Ensure sleep times in future watcher tests are sufficiently long (>=0.5s), and avoid hardcoding OS exit codes for control flow tracking in background process lifecycles.
+=======
+Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
+>>>>>>> origin/main

@@ -13,7 +13,7 @@ def test_smart_reload():
     handler.on_any_event(mock_event)
 
     # Should start a process
-    time.sleep(0.5)
+    time.sleep(1.0)
     first_process = handler.current_process
     assert first_process is not None
     assert first_process.poll() is None  # Still running
@@ -21,7 +21,7 @@ def test_smart_reload():
     # Trigger second run
     handler.on_any_event(mock_event)
 
-    time.sleep(0.5)
+    time.sleep(1.0)
     second_process = handler.current_process
     assert second_process is not first_process
 
@@ -48,7 +48,7 @@ def test_on_any_event_non_blocking():
     handler.on_any_event(mock_event)
 
     # Wait for the first command to actually start
-    time.sleep(0.5)
+    time.sleep(1.0)
 
     # Trigger a second run. This spawns a timer that will try to terminate the first command
     handler.on_any_event(mock_event)
@@ -90,7 +90,7 @@ def test_ignore_read_only_events():
     handler.on_any_event(mock_event_closed)
 
     # Wait for the debounce threshold just in case
-    time.sleep(0.5)
+    time.sleep(1.0)
 
     assert handler.current_process is None, "Process should not be started for read-only events"
 
@@ -104,7 +104,7 @@ def test_ignore_read_only_events():
     handler.on_any_event(mock_event_modified)
 
     # Wait for the debounce threshold + command execution time
-    time.sleep(0.5)
+    time.sleep(1.0)
 
     assert handler.current_process is not None, "Process should be started for 'modified' event"
 

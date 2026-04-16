@@ -1,10 +1,16 @@
 # Changelog
 
-## [0.1.9] - 2024-05-15
+## [0.1.10] - 2024-05-15
 
 ### Fixed
 * **[Reliability]:** Eliminated flakey test behaviors by safely extending sleep thresholds to accommodate debounce windows.
 * **[Reliability]:** Improved background process lifecycle management to track intended termination states reliably instead of matching OS-specific error codes.
+
+## [0.1.9] - 2026-04-10
+
+### Changed
+* **[Bugfix]:** Fixed an issue where the initial directory prefix was not evaluated against ignore rules, ensuring top-level directories are correctly ignored.
+* **[Reliability]:** Added intent flags to correctly process expected exit codes on Windows to avoid misattributing expected graceful process reloading as an execution failure.
 
 ## [0.1.8] - 2026-04-09
 
