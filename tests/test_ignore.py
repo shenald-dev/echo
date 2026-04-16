@@ -106,3 +106,10 @@ def test_ignored_events_do_not_trigger():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_trailing_slashes_in_ignores():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["build/", "temp\\", "docs//"])
+
+    assert handler._is_ignored("build/index.js") is True, "build/index.js should be ignored"
+    assert handler._is_ignored("temp/index.js") is True, "temp/index.js should be ignored"
+    assert handler._is_ignored("docs/index.js") is True, "docs/index.js should be ignored"

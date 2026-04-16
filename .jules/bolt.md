@@ -5,3 +5,7 @@ The POSIX signal checking (`process.returncode == -15`) masked legitimate user c
 
 Action:
 Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
+
+2024-04-16 — Trailing Slashes in Ignore Patterns
+Learning: Directory ignore patterns supplied with trailing slashes (e.g., `build/`) fail to match because internal paths are normalized without them.
+Action: Ensure `ignore_patterns` list comprehensions strip trailing slashes (`.rstrip('/')`) alongside other normalizations to guarantee robust matching.

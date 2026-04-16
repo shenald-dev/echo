@@ -50,3 +50,7 @@
 
 ### Changed
 * **[Maintenance]:** Removed unused `test_dir` leftover from previous development cycles.
+
+## [0.1.10] - 2024-04-16
+
+* **Fix:** Normalize ignore patterns by stripping trailing slashes (e.g., `build/` becomes `build`), preventing bugs where valid directory ignore rules failed to match.
