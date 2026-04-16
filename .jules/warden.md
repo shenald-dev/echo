@@ -42,29 +42,5 @@ Replaced all occurrences of `time.time()` with `time.monotonic()` in `src/echo/w
 
 Observation / Pruned:
 - Bound `functools.lru_cache` to `CommandRunnerHandler` instances to prevent process memory leaks across instances.
-- Added `os.path.relpath(path, self.base_path)` fallback to enforce accurate isolation of relative paths prior to evaluation against filters.
-
-Alignment / Deferred:
-- Ensured system path dependencies correctly evaluate wildcard ignores natively against prefix accumulations. No explicit version bumps aside from release tag.
-
-## 2026-04-05 — Assessment & Lifecycle
-
-Observation / Pruned:
-The previous optimization agent bounded `functools.lru_cache` directly to `CommandRunnerHandler` instances to prevent process memory leaks across instances during rapid path matching. Tests and dead code elimination tools were executed successfully.
-
-Alignment / Deferred:
-Version bumped to `0.1.7` as a patch release reflecting the optimization and assurance. No explicit updates deferred.
-
-2026-04-09 — Assessment & Lifecycle
-Observation / Pruned:
-Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
-Alignment / Deferred:
-Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
-
-## 2026-04-10 — Assessment & Lifecycle
-
-Observation / Pruned:
-Discovered that `watchdog` moved events dropped valid source events if the destination was ignored. Also diagnosed and resolved test flakiness under `pytest-cov` resulting from short wait bounds (`0.35s`) over the `0.25s` trailing-edge debounce. Reordering termination intent flag settings solved a potential masking issue.
-
-Alignment / Deferred:
-Increased sleep timers to `0.6s` in test suites. Fixed ignore path extraction. Cut and tagged release `v0.1.9`.
+- Added `os.path.relpath(path, self.base_path)` fallback to enforce accurate isolation of relative paths prior to evaluation a
+... (truncated)
