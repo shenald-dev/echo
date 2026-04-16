@@ -42,22 +42,5 @@ Replaced all occurrences of `time.time()` with `time.monotonic()` in `src/echo/w
 
 Observation / Pruned:
 - Bound `functools.lru_cache` to `CommandRunnerHandler` instances to prevent process memory leaks across instances.
-- Added `os.path.relpath(path, self.base_path)` fallback to enforce accurate isolation of relative paths prior to evaluation against filters.
-
-Alignment / Deferred:
-- Ensured system path dependencies correctly evaluate wildcard ignores natively against prefix accumulations. No explicit version bumps aside from release tag.
-
-## 2026-04-05 — Assessment & Lifecycle
-
-Observation / Pruned:
-The previous optimization agent bounded `functools.lru_cache` directly to `CommandRunnerHandler` instances to prevent process memory leaks across instances during rapid path matching. Tests and dead code elimination tools were executed successfully.
-
-Alignment / Deferred:
-Version bumped to `0.1.7` as a patch release reflecting the optimization and assurance. No explicit updates deferred.
-
-2026-04-09 — Assessment & Lifecycle
-Observation / Pruned:
-Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
-Alignment / Deferred:
-Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
-Observation/Pruned: Replaced brittle platform-specific subprocess return code checks (-15 or 1) with an intent-based flag (`_echo_terminated`), reliably muting error logs for any intended watcher-driven restart (including escalate-to-SIGKILL edge cases yielding -9).
+- Added `os.path.relpath(path, self.base_path)` fallback to enforce accurate isolation of relative paths prior to evaluation a
+... (truncated)
