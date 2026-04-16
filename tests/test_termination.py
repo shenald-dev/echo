@@ -32,3 +32,30 @@ def test_unkillable_process():
     if p2:
         p2.kill()
         p2.wait()
+
+from unittest.mock import patch
+import subprocess
+
+def test_terminate_process_oserror_sets_flag():
+    handler = CommandRunnerHandler("echo 1")
+
+    mock_process = MagicMock(spec=subprocess.Popen)
+    mock_process.poll.return_value = None
+    mock_process.pid = 1234
+
+    with patch('os.killpg', side_effect=OSError("Process not found")):
+        handler._terminate_process(mock_process)
+
+    assert getattr(mock_process, '_echo_terminated', False) is True
+
+def test_terminate_process_windows_oserror_sets_flag():
+    handler = CommandRunnerHandler("echo 1")
+    handler.is_posix = False
+
+    mock_process = MagicMock(spec=subprocess.Popen)
+    mock_process.poll.return_value = None
+    mock_process.terminate.side_effect = OSError("Access denied")
+
+    handler._terminate_process(mock_process)
+
+    assert getattr(mock_process, '_echo_terminated', False) is True

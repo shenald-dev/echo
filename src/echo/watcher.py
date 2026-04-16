@@ -51,6 +51,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not process or process.poll() is not None:
             return
 
+        # Set intent flag before termination to ensure it's recorded even if OSError occurs
         setattr(process, '_echo_terminated', True)
         try:
             if self.is_posix:
