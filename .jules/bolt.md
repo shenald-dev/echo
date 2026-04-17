@@ -9,3 +9,11 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 2024-04-16 — Trailing Slashes in Ignore Patterns
 Learning: Directory ignore patterns supplied with trailing slashes (e.g., `build/`) fail to match because internal paths are normalized without them.
 Action: Ensure `ignore_patterns` list comprehensions strip trailing slashes (`.rstrip('/')`) alongside other normalizations to guarantee robust matching.
+
+## 2026-04-17 — Eager Evaluation & Intent Flag Placement
+
+Learning:
+Eager evaluation inside `watchdog` hot paths (like `on_any_event`) causes redundant cache lookups and array iterations. Specifically, evaluating `_is_ignored(dest_path)` before checking if `src_path` is ignored costs CPU time for every valid "moved" file event. Also, placing intent flags (like `setattr(process, '_echo_terminated', True)`) *after* the OS termination call is unsafe: if the process exits right before termination and throws `OSError`, the intent flag is never set.
+
+Action:
+Always lazy-evaluate expensive filters in event-loop hot paths. Always set intent flags *before* executing fallible OS-level state changes to guarantee accurate state tracking in exception handlers.

@@ -54,3 +54,9 @@
 ## [0.1.10] - 2024-04-16
 
 * **Fix:** Normalize ignore patterns by stripping trailing slashes (e.g., `build/` becomes `build`), preventing bugs where valid directory ignore rules failed to match.
+
+## [0.1.11] - 2026-04-17
+
+### Changed
+* **[Performance]:** Optimized `on_any_event` by lazy-evaluating destination paths during moved events, saving redundant ignore checks.
+* **[Reliability]:** Hardened termination logic to set intent flags *before* making OS-level termination calls, preventing false failure logs when processes end concurrently.
