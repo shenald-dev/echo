@@ -17,3 +17,11 @@ Eager evaluation inside `watchdog` hot paths (like `on_any_event`) causes redund
 
 Action:
 Always lazy-evaluate expensive filters in event-loop hot paths. Always set intent flags *before* executing fallible OS-level state changes to guarantee accurate state tracking in exception handlers.
+
+## 2026-04-17 — Dead Code in Reload Termination Feedback
+
+Learning:
+When managing subprocesses, if a reload starts a new process, the class attribute `self.current_process` is reassigned immediately. Therefore, in the wait block of the *old* process, checking `self.current_process is process` will evaluate to `False`. This renders any termination reporting logic nested within that block as dead code, leading to silent reloads.
+
+Action:
+Evaluate termination flags (`_echo_terminated`) independently of the "current process" identity check to ensure the correct system feedback is provided regardless of race conditions during reassignment.
