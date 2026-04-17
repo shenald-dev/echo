@@ -76,3 +76,11 @@ Discovered and fixed a correctness bug in path filtering where ignore patterns e
 
 Alignment / Deferred:
 The debounce timeout edge cases are generally robust. No large refactors were required; kept scope minimal by modifying one line for `.rstrip('/')`.
+
+## 2026-04-17 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the event loop by lazy evaluating the destination path during moved events, preventing redundant cache hits. Also verified that intent flags are set prior to `process.terminate()`, eliminating race condition misattributions. No dead code was found; the system is extremely lean.
+
+Alignment / Deferred:
+Synced the `CHANGELOG.md` with plain English explanations of the performance and reliability improvements. Version bumped to v0.1.11 as a patch release.
