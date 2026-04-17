@@ -213,6 +213,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         dest_path = getattr(event, 'dest_path', None)
 
         if is_src_ignored:
+            # Lazy-evaluate dest_path only if src_path is ignored to save CPU cycles on valid moved events
             is_dest_ignored = dest_path and self._is_ignored(dest_path)
             if not dest_path or is_dest_ignored:
                 return
