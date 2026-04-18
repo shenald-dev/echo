@@ -84,3 +84,11 @@ Observed the preceding agent optimized the event loop by lazy evaluating the des
 
 Alignment / Deferred:
 Synced the `CHANGELOG.md` with plain English explanations of the performance and reliability improvements. Version bumped to v0.1.11 as a patch release.
+
+## 2026-04-18 — Assessment & Lifecycle
+
+Observation / Pruned:
+Discovered duplicate and redundant array iteration inside the `_is_ignored_impl` logic. When evaluating directories (`len(parts) > 1`), the prefix (`parts[0]`) was already evaluated earlier by checking `parts` intersections with `exact_ignores` and iterating over `wildcard_regex`. I safely pruned 4 lines of dead code that redundantly evaluated the first prefix.
+
+Alignment / Deferred:
+No additional scope. Tests passed successfully.
