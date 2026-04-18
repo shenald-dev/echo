@@ -145,7 +145,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
                 if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
                     console.print("[yellow]✔ Command terminated by reload.[/yellow]")
-                elif self.current_process is process:
+                else:
                     if process.returncode == 0:
                         console.print("[green]✔ Command executed successfully.[/green]")
                     else:
