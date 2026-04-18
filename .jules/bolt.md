@@ -25,3 +25,11 @@ When managing subprocesses, if a reload starts a new process, the class attribut
 
 Action:
 Evaluate termination flags (`_echo_terminated`) independently of the "current process" identity check to ensure the correct system feedback is provided regardless of race conditions during reassignment.
+
+## 2024-04-18 — Process Termination Reporting Dead Code
+
+Learning:
+When evaluating a subprocess's intent-based termination flags after `process.wait()`, guarding the reporting logic with `self.current_process is process` causes it to become dead code. During a command reload, `self.current_process` is reassigned to the new process before the old process's wait block completes, thus failing to report successful execution or failure.
+
+Action:
+Ensure post-termination reporting logic unconditionally logs the outcome when the intention-based check (`_echo_terminated`) is not met, instead of restricting it to the current process reference.
