@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.12] - 2026-04-19
+
+### Changed
+* **[Reliability]:** Assured the fix for process completion logging. Removed the identity check that caused silent reloads. Assured tests pass.
+
+## [0.1.10] - 2024-04-16
+
+* **Fix:** Normalize ignore patterns by stripping trailing slas
+... (truncated)
+
 ## [0.1.9] - 2026-04-10
 
 ### Changed
@@ -41,24 +51,12 @@
 * **[Reliability]:** Replaced `time.time()` with `time.monotonic()` in the file watcher and test suites for precise, stable tracking of relative time intervals, debouncing windows, and timeouts. This eliminates vulnerabilities caused by system clock adjustments.
 * **[Maintenance]:** Pruned unused module imports from test files to minimize codebase entropy.
 
-## [0.1.1] - 2025-02-21
-
-### Changed
-* **[Reliability]:** Implemented a timeout for process termination during file change events and graceful shutdowns. Echo now escalates to forceful termination (`SIGKILL`) to prevent thread deadlocks and application starvation if processes ignore standard termination signals (`SIGTERM`).
-
 ## [0.1.2] - 2026-03-27
 
 ### Changed
 * **[Maintenance]:** Removed unused `test_dir` leftover from previous development cycles.
 
-## [0.1.10] - 2024-04-16
-
-* **Fix:** Normalize ignore patterns by stripping trailing slashes (e.g., `build/` becomes `build`), preventing bugs where valid directory ignore rules failed to match.
-
-## [0.1.11] - 2026-04-17
+## [0.1.1] - 2025-02-21
 
 ### Changed
-* **[Performance]:** Optimized `on_any_event` by lazy-evaluating destination paths during moved events, saving redundant ignore checks.
-* **[Reliability]:** Hardened termination logic to set intent flags *before* making OS-level termination calls, preventing false failure logs when processes end concurrently.
-
-* **Performance:** Pruned redundant initial prefix iteration from cumulative directory ignore matches.
+* **[Reliability]:** Implemented a timeout for process termination during file change events and graceful shutdowns. Echo now escalates to forceful termination (`SIGKILL`) to prevent thread deadlocks and application starvation if processes ignore standard termination signals (`SIGTERM`).
