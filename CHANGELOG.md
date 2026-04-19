@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.12] - 2026-04-19
+
+### Changed
+* **[Reliability]:** Assured the fix for process completion logging. Removed the identity check that caused silent reloads. Assured tests pass.
+
 ## [0.1.9] - 2026-04-10
 
 ### Changed
