@@ -33,3 +33,11 @@ When evaluating a subprocess's intent-based termination flags after `process.wai
 
 Action:
 Ensure post-termination reporting logic unconditionally logs the outcome when the intention-based check (`_echo_terminated`) is not met, instead of restricting it to the current process reference.
+
+## 2026-04-18 — Redundant Ignore Evaluation Optimization
+
+Learning:
+In hot paths like `_is_ignored_impl` inside `watchdog` loops, repetitive checks that perform operations already inherently satisfied by earlier checks cost unnecessary CPU cycles. For example, explicitly evaluating whether the first directory layer `parts[0]` matches exact ignores and wildcards is wasteful, as `exact_ignores.isdisjoint(parts)` and iterating over `parts` already validates it earlier in the function.
+
+Action:
+Avoid redundant state re-evaluation on subsets of data in the file watcher's hot path by explicitly reviewing the cascade of earlier boolean checks.
