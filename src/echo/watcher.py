@@ -154,14 +154,22 @@ class CommandRunnerHandler(FileSystemEventHandler):
             console.print(f"[bold red]Error executing command: {e}[/bold red]")
 
     def _is_ignored_impl(self, path: str) -> bool:
-        try:
-            path = os.path.relpath(path, self.base_path)
-        except ValueError:
-            pass
+        if os.path.isabs(path):
+            try:
+                path = os.path.relpath(path, self.base_path)
+            except ValueError:
+                pass
+        elif self.base_path != "." and path.startswith(self.base_path + os.sep):
+            path = path[len(self.base_path) + 1:]
+
         if not path:
             return False
 
         normalized_path = path.replace('\\', '/').removeprefix('./')
+
+        parts = normalized_path.split('/')
+        if parts[0] in self.exact_ignores:
+            return True
 
         if normalized_path in self.exact_ignores:
             return True
@@ -169,7 +177,6 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if self.wildcard_regex and self.wildcard_regex.match(normalized_path):
             return True
 
-        parts = normalized_path.split('/')
         if not self.exact_ignores.isdisjoint(parts):
             return True
 

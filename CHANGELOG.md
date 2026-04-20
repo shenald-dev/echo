@@ -1,3 +1,6 @@
+## [0.1.13] - 2026-04-20
+* **[Performance]:** Optimized `_is_ignored` file path filtering hot path to use string slicing instead of OS-level relative path resolution, dramatically improving response times and CPU usage during large directory changes (e.g., `npm install`).
+
 # Changelog
 
 ## [0.1.12] - 2026-04-19

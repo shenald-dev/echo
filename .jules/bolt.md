@@ -41,3 +41,10 @@ In hot paths like `_is_ignored_impl` inside `watchdog` loops, repetitive checks 
 
 Action:
 Avoid redundant state re-evaluation on subsets of data in the file watcher's hot path by explicitly reviewing the cascade of earlier boolean checks.
+## 2026-04-20 — File Event Path Normalization Overhead
+
+Learning:
+Inside hot paths like file watchers, Python's `os.path.relpath` is surprisingly expensive because it relies on `os.path.abspath`, which invokes system calls (`getcwd`). Furthermore, performing regex checks before simple string/set matching on high-hit ignored directories (like `node_modules`) scales poorly during mass file drops.
+
+Action:
+Avoid `os.path.relpath` for already-relative paths when possible (using string manipulation), and always front-load O(1) set-based rejection lookups ahead of regex operations.

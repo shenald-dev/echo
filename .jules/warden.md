@@ -92,3 +92,10 @@ Observed the preceding agent optimized the process completion logging by removin
 
 Alignment / Deferred:
 Version bumped to v0.1.12 as a patch release reflecting the assurance of the logging logic. Updated CHANGELOG.md. No major dependencies were out of date.
+## 2026-04-20 — Assessment & Lifecycle
+
+Observation / Pruned:
+Identified an expensive performance bottleneck in the `_is_ignored_impl` hot path: unconditional calls to `os.path.relpath(path, self.base_path)` triggered slow OS-level `stat` and `getcwd()` syscalls. Additionally, evaluation of heavy wildcard regex matching was happening before simple O(1) set lookups for exactly-ignored root directories (like `node_modules`).
+
+Alignment / Deferred:
+Optimized path normalization to bypass `relpath` entirely for relative paths using string slicing. Reordered evaluation to check `parts[0]` against `exact_ignores` before performing wildcard matches, drastically reducing CPU time during bulk file operations (e.g. `npm install` inside the project). Tests run to verify correctness. Tagged and prepared release `v0.1.13`.
