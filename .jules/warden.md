@@ -43,4 +43,47 @@ Replaced all occurrences of `time.time()` with `time.monotonic()` in `src/echo/w
 Observation / Pruned:
 - Bound `functools.lru_cache` to `CommandRunnerHandler` instances to prevent process memory leaks across instances.
 - Added `os.path.relpath(path, self.base_path)` fallback to enforce accurate isolation of relative paths prior to evaluation a
-... (truncated)
+... (truncated middle section) ...
+on successfully eliminated up to 0.25s of blocking.
+Alignment / Deferred:
+Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
+
+## 2026-04-10 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed correct handling of top-level directory ignore rules by evaluating the initial path part directly. Additionally, verified robust Windows termination signal handling preventing misattribution of intentional reloads as failures. No dead code required pruning.
+
+Alignment / Deferred:
+Synced test suites to assert top-level ignores and Windows-specific exit conditions. Reverting or deleting was not needed as structural checks passed successfully. Prepared release v0.1.9.
+
+## 2024-04-16 — Assessment & Lifecycle
+
+Observation / Pruned:
+Discovered and fixed a correctness bug in path filtering where ignore patterns ending in a trailing slash (like `build/`) failed to normalize correctly against incoming paths, allowing ignored files to trigger the watcher. Pruned scratch test files safely.
+
+Alignment / Deferred:
+The debounce timeout edge cases are generally robust. No large refactors were required; kept scope minimal by modifying one line for `.rstrip('/')`.
+
+## 2026-04-17 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the event loop by lazy evaluating the destination path during moved events, preventing redundant cache hits. Also verified that intent flags are set prior to `process.terminate()`, eliminating race condition misattributions. No dead code was found; the system is extremely lean.
+
+Alignment / Deferred:
+Synced the `CHANGELOG.md` with plain English explanations of the performance and reliability improvements. Version bumped to v0.1.11 as a patch release.
+
+## 2026-04-19 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the process completion logging by removing the strict identity check `self.current_process is process`, ensuring correct status reporting even across reloads. No dead code required pruning. Confirmed structural soundness and tests pass.
+
+Alignment / Deferred:
+Version bumped to v0.1.12 as a patch release reflecting the assurance of the logging logic. Updated CHANGELOG.md. No major dependencies were out of date.
+
+## 2026-04-19 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the ignore file watcher hot path by eliminating redundant prefix directory matching. Specifically, the `_is_ignored_impl` logic was streamlined to skip evaluating `parts[0]` against ignores because earlier checks (`exact_ignores.isdisjoint(parts)` and iterating over `parts`) implicitly guarantee it. No dead code required pruning. Confirmed structural soundness and tests pass.
+
+Alignment / Deferred:
+Version bumped to v0.1.13 as a patch release reflecting the performance optimization. Updated CHANGELOG.md. No major dependencies were out of date.
