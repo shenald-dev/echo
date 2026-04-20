@@ -41,6 +41,7 @@ In hot paths like `_is_ignored_impl` inside `watchdog` loops, repetitive checks 
 
 Action:
 Avoid redundant state re-evaluation on subsets of data in the file watcher's hot path by explicitly reviewing the cascade of earlier boolean checks.
+
 ## 2026-04-20 — File Event Path Normalization Overhead
 
 Learning:
