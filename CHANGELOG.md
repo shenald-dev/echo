@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.13] - 2026-04-19
+
+### Changed
+* **[Performance]:** Optimized the file event hot path by eliminating redundant cumulative prefix evaluation for directory ignores, marginally decreasing CPU usage for deeply nested paths.
+
 ## [0.1.12] - 2026-04-19
 
 ### Changed
