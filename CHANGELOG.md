@@ -1,14 +1,24 @@
 # Changelog
 
+## [0.1.13] - 2026-04-19
+
+### Changed
+* **[Performance]:** Optimized the file event hot path by eliminating redundant cumulative prefix evaluation for directory ignores, marginally decreasing CPU usage for deeply nested paths.
+
 ## [0.1.12] - 2026-04-19
 
 ### Changed
 * **[Reliability]:** Assured the fix for process completion logging. Removed the identity check that caused silent reloads. Assured tests pass.
 
+## [0.1.11] - 2026-04-17
+
+### Changed
+* **[Performance]:** Optimized `on_any_event` by lazy-evaluating destination paths during moved events, saving redundant ignore checks.
+* **[Reliability]:** Hardened termination logic to set intent flags *before* making OS-level termination calls, preventing false failure logs when processes end concurrently.
+
 ## [0.1.10] - 2024-04-16
 
-* **Fix:** Normalize ignore patterns by stripping trailing slas
-... (truncated)
+* **Fix:** Normalize ignore patterns by stripping trailing slashes (e.g., `build/` becomes `build`), preventing bugs where valid directory ignore rules failed to match.
 
 ## [0.1.9] - 2026-04-10
 
