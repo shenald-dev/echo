@@ -19,6 +19,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
     def __init__(self, command: str, base_path: str = ".", ignore_patterns: list[str] | None = None):
         self.command = command
         self.base_path = base_path
+        self._abs_base_path = os.path.abspath(base_path) + os.sep
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
@@ -154,10 +155,15 @@ class CommandRunnerHandler(FileSystemEventHandler):
             console.print(f"[bold red]Error executing command: {e}[/bold red]")
 
     def _is_ignored_impl(self, path: str) -> bool:
-        try:
-            path = os.path.relpath(path, self.base_path)
-        except ValueError:
-            pass
+        if path.startswith(self._abs_base_path):
+            path = path[len(self._abs_base_path):]
+        elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
+            path = "."
+        else:
+            try:
+                path = os.path.relpath(path, self.base_path)
+            except ValueError:
+                pass
         if not path:
             return False
 
