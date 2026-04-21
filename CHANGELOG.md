@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.14] - 2026-04-20
+
+### Changed
+* **[Performance]:** Optimized file event path normalization in the watchdog hot path by replacing `os.path.relpath` with pre-computed fast string slicing. This significantly reduces CPU overhead during high-volume filesystem events.
+
+
 ## [0.1.13] - 2026-04-19
 
 ### Changed
