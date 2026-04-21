@@ -49,3 +49,10 @@ Learning:
 
 Action:
 When implementing `watchdog` ignore filters, normalize absolute event paths to relative paths against the watched `base_path` to ensure wildcard patterns match correctly. For optimal performance, pre-compute the absolute base path with a trailing separator and use a fast string slice (`if path.startswith(self._abs_base_path): path = path[len(self._abs_base_path):]`) before falling back to `os.path.relpath` (wrapped in a `try/except ValueError`).
+## 2026-04-21 — Fix path prefix accumulation bug in file ignore logic
+
+Learning:
+An off-by-one bug in array slicing (`parts[1:-1]`) during path matching caused the file watcher to skip exact matching against the full, multi-part path itself. This falsely allowed events on ignored files to trigger commands when the target file path was within a matched ignore directory.
+
+Action:
+Ensure accumulation loops over path components include all elements of the sequence up to the leaf node (i.e., using `parts[1:]`) so that multi-part file patterns are reliably validated against exact ignores.

@@ -187,10 +187,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
         if len(parts) > 1:
             prefix = parts[0]
-            # prefix (parts[0]) is already evaluated via earlier exact match isdisjoint()
-            # and wildcard iteration logic. Do not redundantly evaluate the first prefix.
+            # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
+            # and wildcard matching, so we start accumulating from the second part.
 
-            for part in parts[1:-1]:
+            for part in parts[1:]:
                 prefix = f"{prefix}/{part}"
                 if prefix in self.exact_ignores:
                     return True
