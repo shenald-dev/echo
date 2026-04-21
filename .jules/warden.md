@@ -42,9 +42,22 @@ Replaced all occurrences of `time.time()` with `time.monotonic()` in `src/echo/w
 
 Observation / Pruned:
 - Bound `functools.lru_cache` to `CommandRunnerHandler` instances to prevent process memory leaks across instances.
-- Added `os.path.relpath(path, self.base_path)` fallback to enforce accurate isolation of relative paths prior to evaluation a
-... (truncated middle section) ...
-on successfully eliminated up to 0.25s of blocking.
+- Added `os.path.relpath(path, self.base_path)` fallback to enforce accurate isolation of relative paths prior to evaluation against filters.
+
+Alignment / Deferred:
+- Ensured system path dependencies correctly evaluate wildcard ignores natively against prefix accumulations. No explicit version bumps aside from release tag.
+
+## 2026-04-05 — Assessment & Lifecycle
+
+Observation / Pruned:
+The previous optimization agent bounded `functools.lru_cache` directly to `CommandRunnerHandler` instances to prevent process memory leaks across instances during rapid path matching. Tests and dead code elimination tools were executed successfully.
+
+Alignment / Deferred:
+Version bumped to `0.1.7` as a patch release reflecting the optimization and assurance. No explicit updates deferred.
+
+2026-04-09 — Assessment & Lifecycle
+Observation / Pruned:
+Observed structural latency reduction in watcher shutdown loop via Event unblocking. Previous optimization successfully eliminated up to 0.25s of blocking.
 Alignment / Deferred:
 Synced feature documentation to README and recorded the moved-event evaluation bugfix. Cut and tagged version 0.1.8.
 
@@ -72,18 +85,10 @@ Observed the preceding agent optimized the event loop by lazy evaluating the des
 Alignment / Deferred:
 Synced the `CHANGELOG.md` with plain English explanations of the performance and reliability improvements. Version bumped to v0.1.11 as a patch release.
 
-## 2026-04-19 — Assessment & Lifecycle
+## 2026-04-18 — Assessment & Lifecycle
 
 Observation / Pruned:
-Observed the preceding agent optimized the process completion logging by removing the strict identity check `self.current_process is process`, ensuring correct status reporting even across reloads. No dead code required pruning. Confirmed structural soundness and tests pass.
+Discovered duplicate and redundant array iteration inside the `_is_ignored_impl` logic. When evaluating directories (`len(parts) > 1`), the prefix (`parts[0]`) was already evaluated earlier by checking `parts` intersections with `exact_ignores` and iterating over `wildcard_regex`. I safely pruned 4 lines of dead code that redundantly evaluated the first prefix.
 
 Alignment / Deferred:
-Version bumped to v0.1.12 as a patch release reflecting the assurance of the logging logic. Updated CHANGELOG.md. No major dependencies were out of date.
-
-## 2026-04-19 — Assessment & Lifecycle
-
-Observation / Pruned:
-Observed the preceding agent optimized the ignore file watcher hot path by eliminating redundant prefix directory matching. Specifically, the `_is_ignored_impl` logic was streamlined to skip evaluating `parts[0]` against ignores because earlier checks (`exact_ignores.isdisjoint(parts)` and iterating over `parts`) implicitly guarantee it. No dead code required pruning. Confirmed structural soundness and tests pass.
-
-Alignment / Deferred:
-Version bumped to v0.1.13 as a patch release reflecting the performance optimization. Updated CHANGELOG.md. No major dependencies were out of date.
+No additional scope. Tests passed successfully.

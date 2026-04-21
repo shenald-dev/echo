@@ -113,3 +113,10 @@ def test_trailing_slashes_in_ignores():
     assert handler._is_ignored("build/index.js") is True, "build/index.js should be ignored"
     assert handler._is_ignored("temp/index.js") is True, "temp/index.js should be ignored"
     assert handler._is_ignored("docs/index.js") is True, "docs/index.js should be ignored"
+
+def test_two_component_paths():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["a"])
+    assert handler._is_ignored("a/b") is True, "Two-component path should be correctly ignored if part matches"
+
+    handler_wildcard = CommandRunnerHandler("echo 1", ignore_patterns=["src*"])
+    assert handler_wildcard._is_ignored("src/b") is True, "Two-component path with wildcard should be correctly ignored"
