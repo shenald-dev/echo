@@ -113,3 +113,17 @@ def test_trailing_slashes_in_ignores():
     assert handler._is_ignored("build/index.js") is True, "build/index.js should be ignored"
     assert handler._is_ignored("temp/index.js") is True, "temp/index.js should be ignored"
     assert handler._is_ignored("docs/index.js") is True, "docs/index.js should be ignored"
+
+def test_ignored_directory_trigger_does_not_trigger():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["ignored_dir/"])
+
+    mock_event = MagicMock(spec=["is_directory", "event_type", "src_path"])
+    mock_event.is_directory = False
+    mock_event.event_type = 'modified'
+    mock_event.src_path = "ignored_dir/test.txt"
+
+    handler.on_any_event(mock_event)
+
+    time.sleep(1.0)
+
+    assert handler.current_process is None, "Process should not be started for file inside ignored directory"
