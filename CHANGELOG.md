@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.16] - 2026-04-22
+
+### Changed
+* **[Performance]:** Eliminated redundant top-level evaluations of exact ignores and wildcards in the file watcher's hot path, reducing evaluation overhead by relying on the iterative path splitting logic.
+
 ## [0.1.15] - 2026-04-21
 
 ### Changed
