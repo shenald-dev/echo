@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.15] - 2026-04-21
+
+### Changed
+* **[Bugfix]:** Fixed an off-by-one bug in the ignore logic to ensure the full multi-part path is evaluated against exact ignore patterns.
+
 ## [0.1.14] - 2026-04-20
 
 ### Changed
