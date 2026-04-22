@@ -64,3 +64,10 @@ When providing `stdout` or `stderr` arguments to `subprocess.Popen`, passing `sy
 
 Action:
 Always wrap custom stream targets with a safety check for `.fileno()`, falling back to `None` to safely inherit system-level descriptors. Always include `[` when distinguishing wildcard paths from static paths.
+## 2026-04-22 — Ignore Pattern Caching and Redundancy
+
+Learning:
+Inside the `_is_ignored_impl` hot path, `normalized_path in self.exact_ignores` and `self.wildcard_regex.match(normalized_path)` are inherently redundant. `isdisjoint()` evaluates every split part individually. When `normalized_path` itself has no slashes, it is `parts[0]` and caught there. When `normalized_path` contains slashes, the `if len(parts) > 1:` loop explicitly rebuilds the exact same string on the final iteration (e.g. `foo/bar` becomes `prefix` on final loop) and matches it.
+
+Action:
+Removed the top-level checks to save string hashing and regex matching latency on deep recursive paths.
