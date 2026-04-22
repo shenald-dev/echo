@@ -113,3 +113,15 @@ def test_trailing_slashes_in_ignores():
     assert handler._is_ignored("build/index.js") is True, "build/index.js should be ignored"
     assert handler._is_ignored("temp/index.js") is True, "temp/index.js should be ignored"
     assert handler._is_ignored("docs/index.js") is True, "docs/index.js should be ignored"
+
+def test_character_class_wildcard_match():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["[a-z].tmp"])
+
+    # Must correctly categorize as wildcard and compile regex
+    assert handler.wildcard_regex is not None
+    assert "[a-z].tmp" not in handler.exact_ignores
+
+    assert handler._is_ignored("a.tmp") is True
+    assert handler._is_ignored("z.tmp") is True
+    assert handler._is_ignored("1.tmp") is False
+    assert handler._is_ignored("A.tmp") is False

@@ -112,3 +112,16 @@ def test_ignore_read_only_events():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+def test_stdout_capture_compatibility(capsys):  # noqa: ARG001
+    """Verify that _run_command doesn't crash when sys.stdout lacks a fileno (like in pytest capsys)."""
+    handler = CommandRunnerHandler("echo test_capture")
+
+    # We pass a simple command and invoke _run_command manually
+    # capsys captures stdout, making sys.stdout.fileno() throw io.UnsupportedOperation
+    handler._run_command("test.py")
+    _ = capsys.readouterr()  # Suppress vulture unused warning
+
+    assert handler.current_process is not None
+    handler.current_process.wait()
+    assert handler.current_process.returncode == 0

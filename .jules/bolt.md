@@ -56,3 +56,11 @@ An off-by-one bug in array slicing (`parts[1:-1]`) during path matching caused t
 
 Action:
 Ensure accumulation loops over path components include all elements of the sequence up to the leaf node (i.e., using `parts[1:]`) so that multi-part file patterns are reliably validated against exact ignores.
+
+## 2026-04-22 — Stream Redirection & Regex Parsing
+
+Learning:
+When providing `stdout` or `stderr` arguments to `subprocess.Popen`, passing `sys.stdout` or `sys.stderr` directly causes a crash (`io.UnsupportedOperation: fileno`) in test environments (e.g., pytest's `capsys`) or GUI wrappers where the streams lack a `.fileno()` method. Additionally, when identifying wildcard patterns for `fnmatch` evaluation, character class brackets `[` must be checked alongside `*` and `?`, otherwise patterns like `[a-z].tmp` are incorrectly treated as exact match strings.
+
+Action:
+Always wrap custom stream targets with a safety check for `.fileno()`, falling back to `None` to safely inherit system-level descriptors. Always include `[` when distinguishing wildcard paths from static paths.
