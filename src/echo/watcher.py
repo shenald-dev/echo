@@ -28,8 +28,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.ignore_patterns = [p.replace('\\', '/').rstrip('/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
-        self.exact_ignores = {p for p in self.ignore_patterns if '*' not in p and '?' not in p}
-        wildcard_ignores = [p for p in self.ignore_patterns if '*' in p or '?' in p]
+        self.exact_ignores = {p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))}
+        wildcard_ignores = [p for p in self.ignore_patterns if any(c in p for c in ('*', '?', '['))]
         self.wildcard_regex = None
         if wildcard_ignores:
             regex_str = "|".join(f"(?:{fnmatch.translate(p)})" for p in wildcard_ignores)
@@ -47,6 +47,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         # Bind LRU cache to instance to prevent memory leaks across instances
         self._is_ignored = functools.lru_cache(maxsize=4096)(self._is_ignored_impl)
+
+
+    def _get_stream(self, stream):
+        try:
+            stream.fileno()
+            return stream
+        except Exception:
+            return None
 
     def _terminate_process(self, process):
         if not process or process.poll() is not None:
@@ -132,8 +140,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 process = subprocess.Popen(
                     self.command,
                     shell=True,
-                    stdout=sys.stdout,
-                    stderr=sys.stderr,
+                    stdout=self._get_stream(sys.stdout),
+                    stderr=self._get_stream(sys.stderr),
                     **kwargs
                 )
                 self.current_process = process
