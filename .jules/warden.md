@@ -107,3 +107,10 @@ Observed the preceding agent optimized the event path normalization by pre-compu
 
 Alignment / Deferred:
 Version bumped to v0.1.14 as a patch release reflecting the hot path optimization. Updated CHANGELOG.md. Verified test coverage and linter checks.
+## 2026-04-21 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the ignore logic path matching by fixing an off-by-one bug where the full path was skipped. I ran full tests and verified structural soundness. Verified dead code elimination tools. The system remains clean.
+
+Alignment / Deferred:
+Version bumped to `0.1.15` as a patch release. Upgraded greenlet. Updated CHANGELOG.md.
