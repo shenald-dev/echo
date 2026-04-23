@@ -121,3 +121,10 @@ Identified and pruned redundant top-level evaluations of exact ignores and wildc
 
 Alignment / Deferred:
 Deferred complex graph-based ignore caching. Iterative accumulation provides O(n) performance bound by depth limits (rarely >20).
+## 2026-04-23 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the ignore file watcher hot path by eliminating redundant top-level exact and wildcard pattern match checks inside `_is_ignored_impl`. Assured the logic remains sound across recursive file systems.
+
+Alignment / Deferred:
+Version bumped to `0.1.17` as a patch release. Updated CHANGELOG.md.
