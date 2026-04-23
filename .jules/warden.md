@@ -121,3 +121,11 @@ Identified and pruned redundant top-level evaluations of exact ignores and wildc
 
 Alignment / Deferred:
 Deferred complex graph-based ignore caching. Iterative accumulation provides O(n) performance bound by depth limits (rarely >20).
+
+## 2026-04-23 — Assessment & Lifecycle
+
+Observation / Pruned:
+Resolved an inefficient path normalization logic root cause where `os.path.abspath('/') + os.sep` generated redundant double separators.
+
+Alignment / Deferred:
+Performance improvements are localized to the root directory `base_path` instantiation, all tests and CI validation successfully reflect optimized state.

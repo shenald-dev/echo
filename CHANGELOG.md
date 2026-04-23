@@ -86,3 +86,5 @@
 ### Changed
 * **[Performance]:** Optimized `on_any_event` by lazy-evaluating destination paths during moved events, saving redundant ignore checks.
 * **[Reliability]:** Hardened termination logic to set intent flags *before* making OS-level termination calls, preventing false failure logs when processes end concurrently.
+
+* **[Performance]:** Resolved an inefficient path normalization issue where absolute base paths using root (`/`) resulted in double separators (`//`), failing fast-path ignoring checks.
