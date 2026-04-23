@@ -71,3 +71,11 @@ Inside the `_is_ignored_impl` hot path, `normalized_path in self.exact_ignores` 
 
 Action:
 Removed the top-level checks to save string hashing and regex matching latency on deep recursive paths.
+
+## 2026-04-23 — Fix _abs_base_path to properly use os.path.join and handle root directory matching
+
+Learning:
+Using string concatenation with `os.sep` for `_abs_base_path` can cause issues when `os.path.abspath` returns a path that already has a separator (e.g. root directory `/`), resulting in `//` and failing the prefix check in `_is_ignored_impl`.
+
+Action:
+Use `os.path.join(os.path.abspath(base_path), '')` to safely handle trailing separators, and update `_is_ignored_impl` to check if `path` exactly matches `self._abs_base_path` (e.g. root directory). This prevents expensive `os.path.relpath` fallbacks for valid ignore pattern matching.

@@ -19,7 +19,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
     def __init__(self, command: str, base_path: str = ".", ignore_patterns: list[str] | None = None):
         self.command = command
         self.base_path = base_path
-        self._abs_base_path = os.path.abspath(base_path) + os.sep
+        self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
