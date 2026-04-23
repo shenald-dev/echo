@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.17] - 2026-04-23
+
+### Changed
+* **[Lifecycle]:** Assured the hot-path ignore logic optimization.
+
 ## [0.1.16] - 2026-04-22
 
 ### Changed
