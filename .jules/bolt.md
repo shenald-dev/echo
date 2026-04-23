@@ -79,3 +79,10 @@ Using string concatenation with `os.sep` for `_abs_base_path` can cause issues w
 
 Action:
 Use `os.path.join(os.path.abspath(base_path), '')` to safely handle trailing separators, and update `_is_ignored_impl` to check if `path` exactly matches `self._abs_base_path` (e.g. root directory). This prevents expensive `os.path.relpath` fallbacks for valid ignore pattern matching.
+## 2026-04-23 — Ignore Pattern Caching and Redundancy
+
+Learning:
+Inside the `_is_ignored_impl` hot path, `normalized_path in self.exact_ignores` and `self.wildcard_regex.match(normalized_path)` are inherently redundant. `isdisjoint()` evaluates every split part individually. When `normalized_path` itself has no slashes, it is `parts[0]` and caught there. When `normalized_path` contains slashes, the `if len(parts) > 1:` loop explicitly rebuilds the exact same string on the final iteration (e.g. `foo/bar` becomes `prefix` on final loop) and matches it.
+
+Action:
+Removed the top-level checks to save string hashing and regex matching latency on deep recursive paths.
