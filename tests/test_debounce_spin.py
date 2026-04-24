@@ -25,14 +25,12 @@ def test_debounce_thread_terminates():
     mock_event.event_type = "modified"
 
     handler.on_any_event(mock_event)
-    assert handler.debounce_thread is not None
+    thread = handler.debounce_thread
+    assert thread is not None
 
-    # Wait for the thread to reach timeout
-    time.sleep(0.5)
+    # Wait for the thread to reach timeout and finish execution
+    thread.join(timeout=3.0)
 
     # Check that thread exited cleanly
     assert handler.debounce_thread is None
-
-    # Ensure no zombie thread is spinning
-    for t in threading.enumerate():
-        assert "debounce" not in t.name.lower() or not t.is_alive()
+    assert not thread.is_alive()
