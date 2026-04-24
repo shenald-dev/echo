@@ -94,3 +94,11 @@ If the `_debounce_worker` thread receives an event with no valid `path_to_run` (
 
 Action:
 Ensure the background `_debounce_worker` thread unconditionally terminates (via `return`) when `time_to_wait <= 0`, executing the command only if the path is valid and no shutdown is requested. Added early returns in `on_any_event` to prevent spawning timers for invalid paths entirely.
+
+## 2026-04-24 — Test Suite Thread Synchronization Reliability
+
+Learning:
+Tests involving thread execution (like the file watcher's debounce or shutdown threads) must not rely on `time.sleep()` for waiting. Under CI/coverage load, these static sleeps are prone to flakiness due to scheduling overhead, causing assertions against thread termination state to falsely fail.
+
+Action:
+Instead of `time.sleep()`, tests should capture the thread reference and explicitly wait for it to finish using `thread.join(timeout=...)` (e.g., `timeout=2.0` or `3.0`). This ensures deterministic assertions regarding thread lifecycle state and prevents intermittent CI failures.

@@ -15,10 +15,14 @@ def test_shutdown_prevents_execution():
     # Wait a bit, but less than debounce threshold (0.25)
     time.sleep(0.1)
 
+    # Capture thread reference before shutdown
+    thread = handler.debounce_thread
+
     # Simulate shutdown
     handler.shutdown()
 
-    # Wait for debounce thread to finish
-    time.sleep(0.3)
+    # Wait for debounce thread to finish via event instantly instead of sleep
+    if thread:
+        thread.join(timeout=2.0)
 
     assert handler.current_process is None or handler.current_process.poll() is not None
