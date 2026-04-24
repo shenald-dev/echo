@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.18] - 2026-04-24
+
+### Changed
+* **[Lifecycle]:** Assured the optimization of the hot path ignore checks.
+
+
 ## [0.1.17] - 2026-04-23
 
 ### Changed
