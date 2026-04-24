@@ -86,3 +86,11 @@ Inside the `_is_ignored_impl` hot path, `normalized_path in self.exact_ignores` 
 
 Action:
 Removed the top-level checks to save string hashing and regex matching latency on deep recursive paths.
+
+## 2026-04-24 — CPU Spin Bug in File Watcher Debounce Worker
+
+Learning:
+If the `_debounce_worker` thread receives an event with no valid `path_to_run` (e.g. from an ignored file or empty path string) and `time_to_wait` reaches `<= 0`, it skips the execution block and attempts to `wait` on the shutdown event. Because `time_to_wait <= 0`, `wait(timeout)` returns immediately, causing an infinite while-loop that consumes 100% CPU. Additionally, `on_any_event` allowed falsely truthy null-path events to spawn the debounce thread.
+
+Action:
+Ensure the background `_debounce_worker` thread unconditionally terminates (via `return`) when `time_to_wait <= 0`, executing the command only if the path is valid and no shutdown is requested. Added early returns in `on_any_event` to prevent spawning timers for invalid paths entirely.

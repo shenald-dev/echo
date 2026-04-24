@@ -109,9 +109,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 else:
                     path_to_run = None
 
-            if path_to_run is not None:
-                # We reached the debounce threshold, execute command
-                if not self.is_shutting_down:
+            if time_to_wait <= 0:
+                if path_to_run is not None and not self.is_shutting_down:
+                    # We reached the debounce threshold, execute command
                     self._run_command(path_to_run)
                 return
 
@@ -223,6 +223,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
             if not dest_path or is_dest_ignored:
                 return
             event_path = dest_path
+
+        if not event_path:
+            return
 
         with self.timer_lock:
             self.last_event_time = time.monotonic()
