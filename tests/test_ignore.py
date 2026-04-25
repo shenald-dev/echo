@@ -50,7 +50,8 @@ def test_ignored_events_do_not_trigger():
 
     handler.on_any_event(mock_event_ignored)
 
-    time.sleep(1.0)
+    # Wait for the debounce threshold to pass
+    time.sleep(0.35)
 
     assert handler.current_process is None, "Process should not be started for ignored event"
 
@@ -63,7 +64,10 @@ def test_ignored_events_do_not_trigger():
 
     handler.on_any_event(mock_event_moved_dest_ignored)
 
-    time.sleep(1.0)
+    # Wait for the process to start
+    start_time = time.monotonic()
+    while handler.current_process is None and time.monotonic() - start_time < 3.0:
+        time.sleep(0.05)
 
     assert handler.current_process is not None, "Process should be started if src_path is valid even if dest_path is ignored"
 
@@ -81,7 +85,10 @@ def test_ignored_events_do_not_trigger():
 
     handler.on_any_event(mock_event_moved_valid_dest)
 
-    time.sleep(1.0)
+    # Wait for the process to start
+    start_time = time.monotonic()
+    while handler.current_process is None and time.monotonic() - start_time < 3.0:
+        time.sleep(0.05)
 
     assert handler.current_process is not None, "Process should be started for valid dest_path"
     assert handler.last_event_path == "valid_dir/file.txt", "last_event_path should be updated to dest_path"
@@ -99,7 +106,10 @@ def test_ignored_events_do_not_trigger():
 
     handler.on_any_event(mock_event_valid)
 
-    time.sleep(1.0)
+    # Wait for the process to start
+    start_time = time.monotonic()
+    while handler.current_process is None and time.monotonic() - start_time < 3.0:
+        time.sleep(0.05)
 
     assert handler.current_process is not None, "Process should be started for valid event"
 

@@ -10,8 +10,10 @@ def test_unkillable_process():
     mock_event.src_path = "test.py"
 
     handler.on_any_event(mock_event)
-    time.sleep(1.0)
-
+    # Wait for process to start
+    start_time_wait = time.monotonic()
+    while handler.current_process is None and time.monotonic() - start_time_wait < 3.0:
+        time.sleep(0.05)
     p1 = handler.current_process
     assert p1 is not None
     assert p1.poll() is None
@@ -20,7 +22,9 @@ def test_unkillable_process():
     handler.on_any_event(mock_event)
 
     # Wait enough for debounce + timeout + spawn new
-    time.sleep(1.0)
+    start_time_wait = time.monotonic()
+    while (handler.current_process is None or handler.current_process is p1) and time.monotonic() - start_time_wait < 3.0:
+        time.sleep(0.05)
 
     p2 = handler.current_process
     assert p2 is not p1
