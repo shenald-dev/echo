@@ -1,4 +1,3 @@
-import time
 from echo.watcher import CommandRunnerHandler
 from unittest.mock import MagicMock
 
@@ -11,9 +10,6 @@ def test_shutdown_prevents_execution():
 
     # Trigger event
     handler.on_any_event(mock_event)
-
-    # Wait a bit, but less than debounce threshold (0.25)
-    time.sleep(0.1)
 
     # Capture thread reference before shutdown
     thread = handler.debounce_thread

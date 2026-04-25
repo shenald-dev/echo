@@ -54,13 +54,18 @@ def test_on_any_event_non_blocking():
     handler.on_any_event(mock_event)
 
     # Wait for the first command to actually start
-    time.sleep(1.0)
+    start_time_wait = time.monotonic()
+    while handler.current_process is None and time.monotonic() - start_time_wait < 3.0:
+        time.sleep(0.05)
+    first_process = handler.current_process
 
     # Trigger a second run. This spawns a timer that will try to terminate the first command
     handler.on_any_event(mock_event)
 
-    # Give the thread a little time to start and block in wait()
-    time.sleep(0.3)
+    # Give the thread a little time to start and reach _terminate_process
+    start_time_wait = time.monotonic()
+    while handler.current_process is first_process and time.monotonic() - start_time_wait < 3.0:
+        time.sleep(0.05)
 
     start_time = time.monotonic()
 
@@ -95,10 +100,7 @@ def test_ignore_read_only_events():
     handler.on_any_event(mock_event_opened)
     handler.on_any_event(mock_event_closed)
 
-    # Wait for the debounce threshold just in case
-    # Wait for the debounce threshold just in case
-    time.sleep(0.35)
-
+    assert handler.debounce_thread is None, "Thread should not be started for read-only events"
     assert handler.current_process is None, "Process should not be started for read-only events"
 
     # Mock 'modified' event
