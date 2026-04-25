@@ -50,9 +50,7 @@ def test_ignored_events_do_not_trigger():
 
     handler.on_any_event(mock_event_ignored)
 
-    # Wait for the debounce threshold to pass
-    time.sleep(0.35)
-
+    assert handler.debounce_thread is None, "Thread should not be started for ignored event"
     assert handler.current_process is None, "Process should not be started for ignored event"
 
     # Mock moved event where dest_path is ignored but src_path is valid
