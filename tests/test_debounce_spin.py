@@ -1,5 +1,3 @@
-import time
-import threading
 from echo.watcher import CommandRunnerHandler
 from unittest.mock import MagicMock
 

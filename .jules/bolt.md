@@ -100,5 +100,11 @@ Ensure the background `_debounce_worker` thread unconditionally terminates (via 
 Learning:
 Tests involving thread execution (like the file watcher's debounce or shutdown threads) must not rely on `time.sleep()` for waiting. Under CI/coverage load, these static sleeps are prone to flakiness due to scheduling overhead, causing assertions against thread termination state to falsely fail.
 
+
+## 2026-04-24 — Test Suite Dynamic Polling Fix
+
+Learning:
+Using `.join()` unconditionally to replace `time.sleep()` in test cases is a flawed approach because `join()` halts the test thread until the target thread completely finishes its execution. For file watcher tests involving processes that are expected to be running or terminating, the assertions need to test an intermediate state. Unconditional joins bypass this intermediate state and test the end state, missing the intent.
+
 Action:
-Instead of `time.sleep()`, tests should capture the thread reference and explicitly wait for it to finish using `thread.join(timeout=...)` (e.g., `timeout=2.0` or `3.0`). This ensures deterministic assertions regarding thread lifecycle state and prevents intermittent CI failures.
+Instead of `time.sleep()`, tests should use dynamic polling mechanisms (`while handler.current_process is None` coupled with short `time.sleep(0.05)` cycles and a maximum timeout) to efficiently wait only until the desired intermediate condition is met. This ensures the tests run significantly faster while preventing flakiness.
