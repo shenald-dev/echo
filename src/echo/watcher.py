@@ -12,6 +12,7 @@ import functools
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from rich.console import Console
+from rich.markup import escape
 
 console = Console()
 
@@ -122,7 +123,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if self.is_shutting_down:
             return
 
-        console.print(f"\n[cyan]📡 Change detected in {event_path}. Executing: [yellow]{self.command}[/][/cyan]")
+        console.print(f"\n[cyan]📡 Change detected in {escape(str(event_path))}. Executing: [yellow]{escape(str(self.command))}[/][/cyan]")
         try:
             with self.process_lock:
                 if self.is_shutting_down:
@@ -247,7 +248,7 @@ def main():
     observer = Observer()
     observer.schedule(event_handler, args.path, recursive=True)
     
-    console.print(f"[bold green]✨ Echo is watching [cyan]{args.path}[/] and will run [yellow]{args.cmd}[/][/bold green]")
+    console.print(f"[bold green]✨ Echo is watching [cyan]{escape(str(args.path))}[/] and will run [yellow]{escape(str(args.cmd))}[/][/bold green]")
 
     try:
         observer.start()

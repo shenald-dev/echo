@@ -108,3 +108,11 @@ Using `.join()` unconditionally to replace `time.sleep()` in test cases is a fla
 
 Action:
 Instead of `time.sleep()`, tests should use dynamic polling mechanisms (`while handler.current_process is None` coupled with short `time.sleep(0.05)` cycles and a maximum timeout) to efficiently wait only until the desired intermediate condition is met. This ensures the tests run significantly faster while preventing flakiness.
+
+## 2026-04-24 — Rich Markup Error Bug
+
+Learning:
+When passing raw user strings containing square brackets (like file paths, directories, or bash commands) into `rich.console.print` format strings, `rich` attempts to parse them as style markup tags (e.g., `[red]`). If the string inside the brackets is not a valid tag, or if there's a typo/unclosed tag, the library throws a `MarkupError` exception which will crash the thread executing the print statement.
+
+Action:
+Always use `rich.markup.escape(str(variable))` before injecting unvalidated user-provided strings into `rich` print statements to guarantee safe output.
