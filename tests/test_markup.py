@@ -1,5 +1,7 @@
 import time
 from echo.watcher import CommandRunnerHandler
+import subprocess
+
 from unittest.mock import MagicMock
 
 def test_rich_markup_crash_escaping():
@@ -24,3 +26,23 @@ def test_rich_markup_crash_escaping():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
+
+def test_rich_error_crash():
+    handler = CommandRunnerHandler("echo test")
+
+    class MockException(Exception):
+        def __str__(self):
+            return "File not found: [missing.py]"
+
+    original_popen = subprocess.Popen
+
+    def fake_popen(*args, **kwargs):
+        raise MockException()
+
+    subprocess.Popen = fake_popen
+    try:
+        # this should crash rich with MarkupError if not escaped
+        handler._run_command("test.txt")
+    finally:
+        subprocess.Popen = original_popen

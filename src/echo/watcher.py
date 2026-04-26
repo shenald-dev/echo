@@ -161,7 +161,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     else:
                         console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
         except Exception as e:
-            console.print(f"[bold red]Error executing command: {e}[/bold red]")
+            console.print(f"[bold red]Error executing command: {escape(str(e))}[/bold red]")
 
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
