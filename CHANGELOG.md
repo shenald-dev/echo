@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.19] - 2026-04-26
+
+### Changed
+* **[Reliability]:** Optimized test suite stability by replacing arbitrary static `time.sleep()` calls with dynamic polling, resolving flakiness when evaluating intermediate process states.
+
 ## [0.1.18] - 2026-04-24
 
 ### Changed
