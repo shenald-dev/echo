@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.20] - 2026-04-27
+
+### Changed
+* **[Reliability]:** Fixed a bug where `rich` would crash with a `MarkupError` if user-provided strings (like exceptions or filenames) contained unescaped markup tags like `[bracket]`.
+
 ## [0.1.19] - 2026-04-26
 
 ### Changed

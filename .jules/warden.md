@@ -144,3 +144,11 @@ Observed the preceding agent optimized the ignore file watcher hot path by compl
 
 Alignment / Deferred:
 Version bumped to `0.1.18` as a patch release. Updated CHANGELOG.md.
+
+## 2026-04-27 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized console logging by escaping string inputs before passing them into `rich.console.print`, successfully preventing `MarkupError` exceptions when user-provided data contains tag-like bracket characters. Verified structural soundness and successful test execution without crashes.
+
+Alignment / Deferred:
+Version bumped to `0.1.20` as a patch release reflecting the crash fix. No dead code required pruning.
