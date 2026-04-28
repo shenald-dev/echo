@@ -21,7 +21,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.command = command
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
-        # _base_prefix ensures a trailing separator so we don't accidentally match substring directories (like 'src-tests' for 'src')
+        # _base_prefix ensures a trailing separator (unlike base_path which may not) so we don't accidentally match substring directories (like 'src-tests' for 'src')
         self._base_prefix = os.path.join(self.base_path, '')
 
         # Default ignore patterns
