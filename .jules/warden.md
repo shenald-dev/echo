@@ -152,3 +152,11 @@ Observed the preceding agent optimized console logging by escaping string inputs
 
 Alignment / Deferred:
 Version bumped to `0.1.20` as a patch release reflecting the crash fix. No dead code required pruning.
+
+## 2026-04-28 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the ignore file watcher hot path by pre-computing `_base_prefix` for fast string slicing of relative paths, mitigating `os.path.relpath` overhead during burst events. The `.removeprefix('./')` call was also removed to prevent potential path resolution regressions. Assured the logic remains structurally sound, and the test suite passes.
+
+Alignment / Deferred:
+Version bumped to `0.1.21` as a patch release. Updated CHANGELOG.md. No dead code or dependency upgrades required.
