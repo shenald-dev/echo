@@ -133,3 +133,15 @@ def test_character_class_wildcard_match():
     assert handler._is_ignored("z.tmp") is True
     assert handler._is_ignored("1.tmp") is False
     assert handler._is_ignored("A.tmp") is False
+
+def test_is_ignored_base_path_edge_cases():
+    handler_empty = CommandRunnerHandler("echo 1", base_path="")
+    assert handler_empty._is_ignored("test.tmp") is False
+    assert handler_empty._is_ignored("node_modules/test.js") is True
+
+    handler_trailing = CommandRunnerHandler("echo 1", base_path="src/")
+    assert handler_trailing._is_ignored("src/node_modules/test.js") is True
+    assert handler_trailing._is_ignored("src/test.txt") is False
+
+    handler_substring = CommandRunnerHandler("echo 1", base_path="src")
+    assert handler_substring._is_ignored("src-test/test.js") is False
