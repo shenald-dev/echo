@@ -21,6 +21,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.command = command
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
+        self._base_prefix = os.path.join(self.base_path, '')
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
@@ -166,6 +167,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
             path = path[len(self._abs_base_path):]
+        elif path.startswith(self._base_prefix):
+            path = path[len(self._base_prefix):]
         elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
         else:
@@ -176,7 +179,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not path:
             return False
 
-        normalized_path = path.replace('\\', '/').removeprefix('./')
+        normalized_path = path.replace('\\', '/')
 
         parts = normalized_path.split('/')
         if not self.exact_ignores.isdisjoint(parts):

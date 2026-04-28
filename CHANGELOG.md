@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.21] - 2026-04-28
+
+### Changed
+* **[Performance]:** Optimized the file event hot path by pre-computing directory prefixes to use fast string slicing instead of `os.path.relpath`.
+* **[Reliability]:** Removed blanket `.removeprefix('./')` calls on event paths to prevent unexpected path resolution regressions.
+
 ## [0.1.20] - 2026-04-27
 
 ### Changed
