@@ -160,3 +160,11 @@ Observed the preceding agent optimized the ignore file watcher hot path by pre-c
 
 Alignment / Deferred:
 Version bumped to `0.1.21` as a patch release. Updated CHANGELOG.md. No dead code or dependency upgrades required.
+
+## 2026-04-29 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized process lifecycle management by adding a POSIX SIGTERM signal handler. This prevents child process leaks when the application is terminated by process managers or containers. Verified test execution, linting, and dead code pruning without issues. No unused imports or variables were found.
+
+Alignment / Deferred:
+Version bumped to `0.1.22` as a patch release. Updated CHANGELOG.md. No heavy pruning or major dependency updates required.
