@@ -168,3 +168,11 @@ Observed the preceding agent optimized process lifecycle management by adding a 
 
 Alignment / Deferred:
 Version bumped to `0.1.22` as a patch release. Updated CHANGELOG.md. No heavy pruning or major dependency updates required.
+
+## 2026-04-29 — Assessment & Lifecycle
+
+Observation / Pruned:
+Fixed a correctness bug in `watcher.py` where deep multi-part ignore patterns were not correctly matching if the prefix directory was evaluated starting from deeper nodes. Tests appended and release 0.1.23 cut.
+
+Alignment / Deferred:
+Performance profile of O(N^2) matching indicates sub-millisecond overhead. No immediate refactoring to Aho-Corasick trie needed.

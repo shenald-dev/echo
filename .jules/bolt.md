@@ -132,3 +132,11 @@ Command-line file watchers and daemon tools usually listen for KeyboardInterrupt
 
 Action:
 Always register a SIGTERM handler on POSIX systems (`if platform.system() != "Windows"`) that performs the same graceful shutdown and subprocess termination steps as the KeyboardInterrupt handler.
+
+## 2026-04-29 — Fix subpath ignore matching bug
+
+Learning:
+Discovered that the file watcher ignore filter failed to match multi-part patterns (like `node_modules/express`) if the matched directory wasn't at the root of the path being evaluated (e.g. `src/node_modules/express`). We refactored to check all contiguous subpaths. Although this makes the string prefix loop O(N^2) relative to path depth, path depths are small (N<20), so the sub-millisecond overhead is trivial compared to the correctness gain.
+
+Action:
+Future runs should remember that path evaluation algorithms shouldn't incorrectly bind their starting boundaries unless explicitly required by a `^` style regex construct.

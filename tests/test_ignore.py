@@ -133,3 +133,16 @@ def test_character_class_wildcard_match():
     assert handler._is_ignored("z.tmp") is True
     assert handler._is_ignored("1.tmp") is False
     assert handler._is_ignored("A.tmp") is False
+
+def test_is_ignored_subpath_matching():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["node_modules/express", "b/c", "docs/build"])
+
+    # Prefix matches starting deeper in the path
+    assert handler._is_ignored("src/node_modules/express/index.js") is True
+    assert handler._is_ignored("a/b/c/d.py") is True
+    assert handler._is_ignored("src/docs/build/output.txt") is True
+
+    # Negative matches
+    # src/node_modules is ignored by default
+    assert handler._is_ignored("src/my_folder/other/index.js") is False
+    assert handler._is_ignored("a/b/d.py") is False

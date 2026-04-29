@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.23] - 2026-04-29
+
+### Changed
+* **[Reliability]:** Fixed a bug in the ignore pattern matching where deep subpaths (e.g. `node_modules/express`) were not correctly ignored if they were not the starting prefix.
+
 ## [0.1.22] - 2026-04-29
 
 ### Changed
