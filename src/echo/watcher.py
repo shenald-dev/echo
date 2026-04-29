@@ -266,6 +266,15 @@ def main():
             sys.exit(1)
         raise
 
+    def handle_sigterm(signum, frame):
+        observer.stop()
+        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        event_handler.shutdown()
+        sys.exit(0)
+
+    if platform.system() != "Windows":
+        signal.signal(signal.SIGTERM, handle_sigterm)
+
     try:
         while True:
             time.sleep(1)
