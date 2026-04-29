@@ -273,7 +273,8 @@ def main():
         sys.exit(0)
 
     if platform.system() != "Windows":
-        signal.signal(signal.SIGTERM, handle_sigterm)
+        if signal.getsignal(signal.SIGTERM) != handle_sigterm:
+            signal.signal(signal.SIGTERM, handle_sigterm)
 
     try:
         while True:
