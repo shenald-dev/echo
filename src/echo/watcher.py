@@ -266,10 +266,13 @@ def main():
             sys.exit(1)
         raise
 
-    def handle_sigterm(signum, frame):
-        observer.stop()
-        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        event_handler.shutdown()
+    def handle_sigterm(_signum, _frame):
+        try:
+            observer.stop()
+            console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+            event_handler.shutdown()
+        except Exception:
+            pass
         sys.exit(0)
 
     if platform.system() != "Windows":
