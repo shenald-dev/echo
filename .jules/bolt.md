@@ -124,3 +124,11 @@ Inside the `_is_ignored_impl` hot path in `watchdog`, calling `os.path.relpath` 
 
 Action:
 Pre-compute `_base_prefix` during initialization (`os.path.join(self.base_path, '')`) and use it in `startswith()` alongside `_abs_base_path` for fast string slicing. Also removed the blind `.removeprefix('./')` behavior to improve robustness.
+
+## 2026-04-28 — Pre-computing `_base_prefix` for Fast-Path Slicing
+
+Learning:
+Inside the `_is_ignored_impl` hot path in `watchdog`, calling `os.path.relpath` for relative event paths when they could be sliced using `len(self._base_prefix)` introduced measurable latency in high-volume events. Additionally, generically calling `.removeprefix('./')` on paths could cause unexpected resolution regressions.
+
+Action:
+Pre-compute `_base_prefix` during initialization (`os.path.join(self.base_path, '')`) and use it in `startswith()` alongside `_abs_base_path` for fast string slicing. Also removed the blind `.removeprefix('./')` behavior to improve robustness.
