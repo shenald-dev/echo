@@ -117,7 +117,6 @@ When passing raw user strings containing square brackets (like file paths, direc
 Action:
 Always use `rich.markup.escape(str(variable))` before injecting unvalidated user-provided strings into `rich` print statements to guarantee safe output.
 
-
 ## 2026-04-28 — Pre-computing `_base_prefix` for Fast-Path Slicing
 
 Learning:
@@ -125,3 +124,11 @@ Inside the `_is_ignored_impl` hot path in `watchdog`, calling `os.path.relpath` 
 
 Action:
 Pre-compute `_base_prefix` during initialization (`os.path.join(self.base_path, '')`) and use it in `startswith()` alongside `_abs_base_path` for fast string slicing. Also removed the blind `.removeprefix('./')` behavior to improve robustness.
+
+## 2026-04-29 — Reliability Fix for SIGTERM
+
+Learning:
+Command-line file watchers and daemon tools usually listen for KeyboardInterrupt (SIGINT) to clean up subprocesses gracefully. However, they often ignore SIGTERM, which is the standard termination signal sent by containers (Docker/K8s) and process managers. Ignoring SIGTERM causes the main watcher to die instantly, leaking running child processes in the background indefinitely and causing resource exhaustion.
+
+Action:
+Always register a SIGTERM handler on POSIX systems (`if platform.system() != "Windows"`) that performs the same graceful shutdown and subprocess termination steps as the KeyboardInterrupt handler.

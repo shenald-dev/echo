@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.22] - 2026-04-29
+
+### Changed
+* **[Reliability]:** Added a SIGTERM signal handler to ensure proper cleanup of subprocesses during graceful shutdowns initiated by containers and process managers.
+
 ## [0.1.21] - 2026-04-28
 
 ### Changed
