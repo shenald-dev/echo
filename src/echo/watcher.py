@@ -33,6 +33,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.exact_ignores = {p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))}
         wildcard_ignores = [p for p in self.ignore_patterns if any(c in p for c in ('*', '?', '['))]
         self.wildcard_regex = None
+        self._has_compound_ignores = any('/' in p for p in self.ignore_patterns)
         if wildcard_ignores:
             regex_str = "|".join(f"(?:{fnmatch.translate(p)})" for p in wildcard_ignores)
             self.wildcard_regex = re.compile(regex_str)
@@ -171,6 +172,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
             path = path[len(self._base_prefix):]
         elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
+        elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."):
+            pass
         else:
             try:
                 path = os.path.relpath(path, self.base_path)
@@ -191,7 +194,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     return True
 
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
-        if len(parts) > 1:
+        if self._has_compound_ignores and len(parts) > 1:
             prefix = parts[0]
             # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
             # and wildcard matching, so we start accumulating from the second part.

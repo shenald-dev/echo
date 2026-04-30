@@ -1,6 +1,6 @@
 [project]
 name = "echo-watcher"
-version = "0.1.22"
+version = "0.1.23"
 description = "📡 Lightweight file watcher. Trigger commands on changes. <5MB RAM, single binary."
 authors = [
     { name = "shenald-dev", email = "bot@shenald.dev" }
@@ -17,4 +17,3 @@ echo-watch = "echo.watcher:main"
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
-]
