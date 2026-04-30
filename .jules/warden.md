@@ -172,7 +172,15 @@ Version bumped to `0.1.22` as a patch release. Updated CHANGELOG.md. No heavy pr
 ## 2026-04-29 — Assessment & Lifecycle
 
 Observation / Pruned:
-Fixed a correctness bug in `watcher.py` where deep multi-part ignore patterns were not correctly matching if the prefix directory was evaluated starting from deeper nodes. Tests appended and release 0.1.23 cut.
+Fixed a correctness bug in `watcher.py` where deep multi-part ignore patterns were not correctly matching if the prefix directory was evaluated starting from deeper nodes. Tests appended and release 0.1.24 cut.
 
 Alignment / Deferred:
 Performance profile of O(N^2) matching indicates sub-millisecond overhead. No immediate refactoring to Aho-Corasick trie needed.
+
+## 2026-04-30 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the ignore file watcher hot paths by explicitly bypassing `os.path.relpath` for the common case, and short-circuiting compound directory evaluations when no slash-based ignore patterns exist. Verified test execution, linting, and dead code pruning without issues. No unused imports or variables were found. No heavy pruning required.
+
+Alignment / Deferred:
+Version bumped to `0.1.23` as a patch release. Updated CHANGELOG.md.

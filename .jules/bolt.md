@@ -140,3 +140,12 @@ Discovered that the file watcher ignore filter failed to match multi-part patter
 
 Action:
 Future runs should remember that path evaluation algorithms shouldn't incorrectly bind their starting boundaries unless explicitly required by a `^` style regex construct.
+
+## 2026-04-29 — Ignore Filter Relpath & Compound Loop Overhead
+
+Learning:
+Inside the `_is_ignored_impl` hot path, `os.path.relpath` is computationally expensive because it inherently resolves absolute paths. While optimizations existed for exact prefix matching, simple relative paths (e.g., `src/file.py`) against a `.` base path would fall through and trigger a `relpath` call, slowing down high-volume events. Additionally, reconstructing cumulative directory prefixes (`foo`, `foo/bar`) to test against exact/wildcard ignores consumes significant CPU cycles and is entirely unnecessary if the user specified no compound ignore patterns (i.e., no slashes in any pattern).
+
+Action:
+In `watchdog` event path normalization, bypass the computationally expensive `os.path.relpath` for the common case where `base_path` is `.` and the path is already relative by adding a fast-path condition: `elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."): pass`.
+To optimize ignore pattern matching in hot loops, pre-compute a flag during initialization (e.g., `self._has_compound_ignores = any('/' in p for p in self.ignore_patterns)`) and use it to short-circuit the evaluation of compound directory paths if no slash-based ignore patterns exist.
