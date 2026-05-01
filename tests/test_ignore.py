@@ -126,7 +126,7 @@ def test_character_class_wildcard_match():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["[a-z].tmp"])
 
     # Must correctly categorize as wildcard and compile regex
-    assert handler.wildcard_regex is not None
+    assert handler.simple_wildcard_regex is not None
     assert "[a-z].tmp" not in handler.exact_ignores
 
     assert handler._is_ignored("a.tmp") is True
