@@ -149,3 +149,11 @@ Inside the `_is_ignored_impl` hot path, `os.path.relpath` is computationally exp
 Action:
 In `watchdog` event path normalization, bypass the computationally expensive `os.path.relpath` for the common case where `base_path` is `.` and the path is already relative by adding a fast-path condition: `elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."): pass`.
 To optimize ignore pattern matching in hot loops, pre-compute a flag during initialization (e.g., `self._has_compound_ignores = any('/' in p for p in self.ignore_patterns)`) and use it to short-circuit the evaluation of compound directory paths if no slash-based ignore patterns exist.
+
+## 2026-05-01 — Wildcard Regex Split Optimization
+
+Learning:
+Inside the file watcher's `_is_ignored_impl` hot path, applying a combined wildcard regex that includes both simple patterns (e.g. `*.tmp`) and compound patterns (e.g. `src/*.tmp`) to individual path segments (`parts`) and cumulative directory prefixes (`prefix`) is redundant and computationally wasteful. A simple wildcard pattern incorrectly evaluated against a cumulative prefix path loop wastes time, and a compound wildcard will never match a simple directory segment.
+
+Action:
+Split wildcard patterns into `simple_wildcards` (no slashes) and `compound_wildcards` (contains slashes), and compile them into separate regular expressions (`simple_wildcard_regex` and `compound_wildcard_regex`). Only apply the simple regex when iterating over individual parts, and apply the compound regex when accumulating the directory prefix. This optimization prevents unnecessary regex checks in the hot path.

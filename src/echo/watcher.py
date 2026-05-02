@@ -32,11 +32,18 @@ class CommandRunnerHandler(FileSystemEventHandler):
         # Pre-compute exact vs wildcard patterns for faster matching
         self.exact_ignores = {p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))}
         wildcard_ignores = [p for p in self.ignore_patterns if any(c in p for c in ('*', '?', '['))]
-        self.wildcard_regex = None
+
+        simple_wildcards = [p for p in wildcard_ignores if '/' not in p]
+        compound_wildcards = [p for p in wildcard_ignores if '/' in p]
+
+        self.simple_wildcard_regex = None
+        self.compound_wildcard_regex = None
         self._has_compound_ignores = any('/' in p for p in self.ignore_patterns)
-        if wildcard_ignores:
-            regex_str = "|".join(f"(?:{fnmatch.translate(p)})" for p in wildcard_ignores)
-            self.wildcard_regex = re.compile(regex_str)
+
+        if simple_wildcards:
+            self.simple_wildcard_regex = re.compile("|".join(f"(?:{fnmatch.translate(p)})" for p in simple_wildcards))
+        if compound_wildcards:
+            self.compound_wildcard_regex = re.compile("|".join(f"(?:{fnmatch.translate(p)})" for p in compound_wildcards))
 
         self.current_process = None
         self.process_lock = threading.Lock()
@@ -188,9 +195,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not self.exact_ignores.isdisjoint(parts):
             return True
 
-        if self.wildcard_regex:
+        if self.simple_wildcard_regex:
             for part in parts:
-                if self.wildcard_regex.match(part):
+                if self.simple_wildcard_regex.match(part):
                     return True
 
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
@@ -199,14 +206,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 prefix = parts[i]
                 if prefix in self.exact_ignores:
                     return True
-                if self.wildcard_regex and self.wildcard_regex.match(prefix):
+                if self.compound_wildcard_regex and self.compound_wildcard_regex.match(prefix):
                     return True
 
                 for part in parts[i + 1:]:
                     prefix = f"{prefix}/{part}"
                     if prefix in self.exact_ignores:
                         return True
-                    if self.wildcard_regex and self.wildcard_regex.match(prefix):
+                    if self.compound_wildcard_regex and self.compound_wildcard_regex.match(prefix):
                         return True
 
         return False
