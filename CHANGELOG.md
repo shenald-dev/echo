@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.24] - 2026-05-02
+
+### Changed
+* **[Performance]:** Split wildcard ignore patterns into simple and compound regexes to prevent redundant evaluations during path checking, improving file event performance.
+
 
 ## [0.1.23] - 2026-04-30
 
