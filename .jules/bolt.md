@@ -15,7 +15,7 @@ We are given a merge conflict scenario. We have three versions: ancestor, base (
 
  The base (main) version added:
    - The SIGTERM handler action (which is the same in both base and head, so no conflict there)
-   - Then two new sections: 
+   - Then two new sections:
         ## 2026-04-29 — Ignore Filter Relpath & Compound Loop Overhead
         ## 2026-05-01 — Wildcard Regex Split Optimization
 
@@ -170,12 +170,12 @@ We are given a merge conflict scenario. We have three versions: ancestor, base (
 
         @@ -132,3 +132,28 @@
          Command-line file watchers and daemon tools usually listen for KeyboardInterrupt
-         
+
          Action:
          Always register a SIGTERM handler on POSIX systems (`if platform.system() != "Windows"`) that performs the same graceful shutdown and subprocess termination steps as the KeyboardInterrupt handler.
         +
         +## 2026-04-29 — Fix subpath ignore matching bug
-        + 
+        +
         +Learning:
         +Discovered that the file watcher ignore filter failed to match multi-part patterns (like `node_modules/express`) if the matched directory wasn't at the root of the path being evaluated (e.g. `src/node_modules/express`). We refactored to check all contiguous subpaths. Although this makes the string prefix loop O(N^2) relative to path depth, path depths are small (N<20), so the sub-millisecond overhead is trivial compared to the correctness gain.
         +
@@ -183,19 +183,19 @@ We are given a merge conflict scenario. We have three versions: ancestor, base (
         +Future runs should remember that path evaluation algorithms shouldn't incorrectly bind their starting boundaries unless explicitly required by a `^` style regex construct.
         +
         +## 2026-04-29 — Ignore Filter Relpath & Compound Loop Overhead
-        + 
+        +
         +Learning:
         +Inside the `_is_ignored_impl` hot path, `os.path.relpath` is computationally expensive because it inherently resolves absolute paths. While optimizations existed for exact prefix matching, simple relative paths (e.g., `src/file.py`) against a `.` base path would fall through and trigger a `relpath` call, slowing down high-volume events. Additionally, reconstructing cumulative directory prefixes (`foo`, `foo/bar`) to test against exact/wildcard ignores consumes significant CPU cycles and is entirely unnecessary if the user specified no compound ignore patterns (i.e., no slashes in any pattern).
-        + 
+        +
         +Action:
         +In `watchdog` event path normalization, bypass the computationally expensive `os.path.relpath` for the common case where `base_path` is `.` and the path is already relative by adding a fast-path condition: `elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."): pass`
         + To optimize ignore pattern matching in hot loops, pre-compute a flag during initialization (e.g., `self._has_compound_ignores = any('/' in p for p in self.ignore_patterns)`) and use it to short-circuit the evaluation of compound directory paths if no slash-based ignore patterns exist.
-        + 
+        +
         +## 2026-05-01 — Wildcard Regex Split Optimization
-        + 
+        +
         +Learning:
         +Inside the file watcher's `_is_ignored_impl` hot path, applying a combined wildcard regex that includes both simple patterns (e.g. `*.tmp`) and compound patterns (e.g. `src/*.tmp`) to individual path segments (`parts`) and cumulative directory prefixes (`prefix`) is redundant and computationally wasteful. A simple wildcard pattern incorrectly evaluated against a cumulative prefix path loop wastes time, and a compound wildcard will never match a simple directory segment.
-        + 
+        +
         +Action:
         +Split wildcard patterns into `simple_wildcards` (no slashes) and `compound_wildcards` (contains slashes), and compile them into separate regular expressions (`simple_wildcard_regex` and `compound_wildcard_regex`). Only apply the simple regex when iterating over individual parts, and apply the compound regex when accumulating the directory prefix. This optimization prevents unnecessary regex checks in the hot path.
         +
@@ -216,7 +216,7 @@ We are given a merge conflict scenario. We have three versions: ancestor, base (
    The three lines in the base at 132-134 are:
 
         132: Command-line file watchers and daemon tools usually listen for KeyboardInterrupt
-        133: 
+        133:
         134: Action:
         135: Always register a SIGTERM handler on POSIX systems (`if platform.system() != "Windows"`) that performs the same graceful shutdown and subprocess termination steps as the KeyboardInterrupt handler.
 
@@ -230,7 +230,7 @@ We are given a merge conflict scenario. We have three versions: ancestor, base (
    That's four lines? Actually, the three lines are:
 
         132: Command-line file watchers and daemon tools usually listen for KeyboardInterrupt
-        133: 
+        133:
         134: Action:
 
    And then the next line (135) is the long action line, which is not included in the three lines of context? Actually, the diff context shows three lines, but then the change is shown.
@@ -239,7 +239,7 @@ We are given a merge conflict scenario. We have three versions: ancestor, base (
 
         -132,3 +132,28 @@
          Command-line file watchers and daemon tools usually listen for KeyboardInterrupt
-         
+
          Action:
          Always register a SIGTERM handler on POSIX systems (`if platform.system() != "Windows"`) that performs the same graceful shutdown and subprocess termination steps as the KeyboardInterrupt handler.
 
@@ -251,7 +251,7 @@ We are given a merge conflict scenario. We have three versions: ancestor, base (
 
         The three lines from the base (lines 132-134) are:
           132: Command-line file watchers and daemon tools usually listen for KeyboardInterrupt
-          133: 
+          133:
           134: Action:
 
         Then the base file has, at line 135, the long action line.
@@ -259,29 +259,29 @@ We are given a merge conflict scenario. We have three versions: ancestor, base (
         The head file has, after the three lines (132-134), 25 more lines (so lines 135 to 159) which are:
 
           135: Always register a SIGTERM handler on POSIX systems (`if platform.system() != "Windows"`) that performs the same graceful shutdown and subprocess termination steps as the KeyboardInterrupt handler.
-          136: 
+          136:
           137: ## 2026-04-29 — Fix subpath ignore matching bug
-          138: 
+          138:
           139: Learning:
           140: Discovered that the file watcher ignore filter failed to match multi-part patterns (like `node_modules/express`) if the matched directory wasn't at the root of the path being evaluated (e.g. `src/node_modules/express`). We refactored to check all contiguous subpaths. Although this makes the string prefix loop O(N^2) relative to path depth, path depths are small (N<20), so the sub-millisecond overhead is trivial compared to the correctness gain.
-          141: 
+          141:
           142: Action:
           143: Future runs should remember that path evaluation algorithms shouldn't incorrectly bind their starting boundaries unless explicitly required by a `^` style regex construct.
-          144: 
+          144:
           145: ## 2026-04-29 — Ignore Filter Relpath & Compound Loop Overhead
-          146: 
+          146:
           147: Learning:
           148: Inside the `_is_ignored_impl` hot path, `os.path.relpath` is computationally expensive because it inherently resolves absolute paths. While optimizations existed for exact prefix matching, simple relative paths (e.g., `src/file.py`) against a `.` base path would fall through and trigger a `relpath` call, slowing down high-volume events. Additionally, reconstructing cumulative directory prefixes (`foo`, `foo/bar`) to test against exact/wildcard ignores consumes significant CPU cycles and is entirely unnecessary if the user specified no compound ignore patterns (i.e., no slashes in any pattern).
-          149: 
+          149:
           150: Action:
           151: In `watchdog` event path normalization, bypass the computationally expensive `os.path.relpath` for the common case where `base_path` is `.` and the path is already relative by adding a fast-path condition: `elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."): pass`
           152: To optimize ignore pattern matching in hot loops, pre-compute a flag during initialization (e.g., `self._has_compound_ignores = any('/' in p for p in self.ignore_patterns)`) and use it to short-circuit the evaluation of compound directory paths if no slash-based ignore patterns exist.
-          153: 
+          153:
           154: ## 2026-05-01 — Wildcard Regex Split Optimization
-          155: 
+          155:
           156: Learning:
           157: Inside the file watcher's `_is_ignored_impl` hot path, applying a combined wildcard regex that includes both simple patterns (e.g. `*.tmp`) and compound patterns (e.g. `src/*.tmp`) to individual path segments (`parts`) and cumulative directory prefixes (`prefix`) is redundant and computationally wasteful. A simple wildcard pattern incorrectly evaluated against a cumulative prefix path loop wastes time, and a compound wildcard will never match a simple directory segment.
-          158: 
+          158:
           159: Action:
           160: Split wildcard patterns into `simple_wildcards` (no slashes) and `compound_wildcards` (contains slashes), and compile them into separate regular expressions (`simple_wildcard_regex` and `compound_wildcard_regex`). Only apply the simple regex when iterating over individual parts, and apply the compound regex when accumulating the directory prefix. This optimization prevents unnecessary regex checks in the hot path.
 
