@@ -15,5 +15,5 @@
 +
 +### Changed
 +* **[Performance]:** Optimized ignore file filtering in hot paths by fast-tracking common relative paths and avoiding compound loop iterations when unnecessary, significantly reducing CPU cycles on burst saves.
- 
+
  ## [0.1.22] - 2026-04-29

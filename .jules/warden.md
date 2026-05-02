@@ -1,13 +1,13 @@
 @@ -12,159 +12,19 @@ Observation / Pruned:
  A regression was identified where complex wildcard ignore patterns (like `src/*.tmp` or `build/*`) failed to match correctly due to the regex operating on individual path parts instead of the full normalized path.
- 
+
  Alignment / Deferred:
 -Updated the `_is_ignored` fast-path filter to normalize paths and check both exact and wildcard patterns against the full relative path before falling back to component intersection. Added unit tests for complex wildcard patterns. Prepared patch release v0.1.5.
 +Updated the `_is_ignored` fast-path filter to normalize paths and check both exact and wildcard patterns against the ful
- 
+
 -## 2025-02-21 — Assessment & Lifecycle
 +// ... 10798.8 characters truncated (middle section) ...
- 
+
 -Observation / Pruned:
 -A subtle lifecycle risk was identified where poorly behaving subprocesses (such as those masking or ignoring `SIGTERM`) could cause indefinite hangs when a new file event triggered a process reload. If `self.current_process.wait()` blocked forever, the file watcher thread pool would starve and fail to process new events.
 -
