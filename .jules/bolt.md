@@ -149,3 +149,11 @@ Inside the file watcher's `_is_ignored_impl` hot path, applying a combined wildc
 
 Action:
 Split wildcard patterns into `simple_wildcards` (no slashes) and `compound_wildcards` (contains slashes), and compile them into separate regular expressions (`simple_wildcard_regex` and `compound_wildcard_regex`). Only apply the simple regex when iterating over individual parts, and apply the compound regex when accumulating the directory prefix. This optimization prevents unnecessary regex checks in the hot path.
+
+## 2026-05-03 — Exact Ignores Split Optimization
+
+Learning:
+Evaluating a combined `exact_ignores` set that includes both simple patterns (e.g. `node_modules`) and compound patterns (e.g. `src/build`) against individual path segments (`parts`) is computationally redundant. A simple pattern correctly evaluates against a single part, but a compound pattern will never match a single segment.
+
+Action:
+Split `exact_ignores` into `simple_exact_ignores` (no slashes) and `compound_exact_ignores` (contains slashes), and convert them to `frozenset`s. Only apply the simple ignores when checking `isdisjoint(parts)`, and apply the compound ignores when accumulating the directory prefix. This mirrors the wildcard split optimization and further reduces hashing latency in the hot path.

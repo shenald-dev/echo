@@ -30,15 +30,18 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.ignore_patterns = [p.replace('\\', '/').rstrip('/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
-        self.exact_ignores = {p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))}
+        exact_ignores = [p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))]
         wildcard_ignores = [p for p in self.ignore_patterns if any(c in p for c in ('*', '?', '['))]
+
+        self.simple_exact_ignores = frozenset(p for p in exact_ignores if '/' not in p)
+        self.compound_exact_ignores = frozenset(p for p in exact_ignores if '/' in p)
 
         simple_wildcards = [p for p in wildcard_ignores if '/' not in p]
         compound_wildcards = [p for p in wildcard_ignores if '/' in p]
 
         self.simple_wildcard_regex = None
         self.compound_wildcard_regex = None
-        self._has_compound_ignores = any('/' in p for p in self.ignore_patterns)
+        self._has_compound_ignores = bool(self.compound_exact_ignores or compound_wildcards)
 
         if simple_wildcards:
             self.simple_wildcard_regex = re.compile("|".join(f"(?:{fnmatch.translate(p)})" for p in simple_wildcards))
@@ -192,7 +195,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         normalized_path = path.replace('\\', '/')
 
         parts = normalized_path.split('/')
-        if not self.exact_ignores.isdisjoint(parts):
+        if not self.simple_exact_ignores.isdisjoint(parts):
             return True
 
         if self.simple_wildcard_regex:
@@ -208,7 +211,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             for part in parts[1:]:
                 prefix = f"{prefix}/{part}"
-                if prefix in self.exact_ignores:
+                if prefix in self.compound_exact_ignores:
                     return True
                 if self.compound_wildcard_regex and self.compound_wildcard_regex.match(prefix):
                     return True
