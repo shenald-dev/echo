@@ -30,6 +30,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.ignore_patterns = [p.replace('\\', '/').rstrip('/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
+        # Note: Splitting exact ignores into simple (no slashes) and compound (with slashes)
+        # avoids redundant evaluation of compound ignores against individual path segments.
         exact_ignores = [p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))]
         wildcard_ignores = [p for p in self.ignore_patterns if any(c in p for c in ('*', '?', '['))]
 
