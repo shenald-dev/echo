@@ -127,7 +127,7 @@ def test_character_class_wildcard_match():
 
     # Must correctly categorize as wildcard and compile regex
     assert handler.simple_wildcard_regex is not None
-    assert "[a-z].tmp" not in handler.exact_ignores
+    assert "[a-z].tmp" not in handler.simple_exact_ignores
 
     assert handler._is_ignored("a.tmp") is True
     assert handler._is_ignored("z.tmp") is True
