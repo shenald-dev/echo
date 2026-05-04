@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.25] - 2026-05-03
+
+### Changed
+* **[Performance]:** Split `exact_ignores` into simple and compound sets to prevent redundant evaluations against path segments, mirroring the wildcard optimization and further reducing hot path latency.
+
 ## [0.1.24] - 2026-05-02
 
 ### Changed
