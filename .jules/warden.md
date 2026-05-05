@@ -191,3 +191,11 @@ Observed the preceding agent optimized the exact ignore pattern matching by spli
 
 Alignment / Deferred:
 Version bumped to `0.1.25` as a patch release. Updated CHANGELOG.md.
+
+## 2026-05-04 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the exact ignore pattern matching by splitting `exact_ignores` into simple and compound frozensets, preventing redundant evaluations in the hot path. Tests passed successfully and static analysis tools confirmed no dead code or lint issues.
+
+Alignment / Deferred:
+Version bumped to `0.1.26` as a patch release. Updated CHANGELOG.md.
