@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.26] - 2026-05-05
+
+### Changed
+* **[Performance]:** Hoisted the compound wildcard regex truthiness check out of the directory traversal hot loop, eliminating redundant condition evaluations and speeding up directory exclusion matching for the common case.
+
 ## [0.1.25] - 2026-05-04
 
 ### Changed

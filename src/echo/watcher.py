@@ -209,12 +209,18 @@ class CommandRunnerHandler(FileSystemEventHandler):
             # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
             # and wildcard matching, so we start accumulating from the second part.
 
-            for part in parts[1:]:
-                prefix = f"{prefix}/{part}"
-                if prefix in self.compound_exact_ignores:
-                    return True
-                if self.compound_wildcard_regex and self.compound_wildcard_regex.match(prefix):
-                    return True
+            if self.compound_wildcard_regex:
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in self.compound_exact_ignores:
+                        return True
+                    if self.compound_wildcard_regex.match(prefix):
+                        return True
+            else:
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in self.compound_exact_ignores:
+                        return True
 
         return False
 
