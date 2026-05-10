@@ -1,4 +1,8 @@
 # Changelog
+## [0.1.26] - 2026-05-10
+### Performance
+- Optimized wildcard ignore checking by hoisting conditions and method lookups out of the path accumulation loop.
+
 ## [0.1.25] - 2026-05-04
 
 ### Changed
