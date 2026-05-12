@@ -1,2 +1,8 @@
-Action:
-Split `exact_ignores` into `simple_exact_ignores` (no slashes) and `compound_exact_ignores` (contains slashes), and convert them to `frozenset`s. Only apply the simple ignores when checking `isdisjoint(parts)`, and apply the compound ignores when accumulating the directory prefix. This mirrors the wildcard split optimization and further reduces hashing latency in the hot path.
+## 2026-04-16 — Watcher Process Termination Logic
+
+        Learning:
+        The POSIX signal checking (`process.returncode == -15`) masked legitimate user command cr
+
+        // ... 14626 characters truncated (middle section) ...
+
+        und ignores when accumulating the directory prefix. This mirrors the wildcard split optimization and further reduces hashing latency in the hot path.
