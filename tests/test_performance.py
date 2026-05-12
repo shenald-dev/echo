@@ -52,4 +52,3 @@ def test_performance_on_any_event_lock():
 
     # 10k lock-free iterations should easily complete within 0.1s
     assert time_events < 0.2, f"Event dispatching overhead is too high: {time_events}"
-```
