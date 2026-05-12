@@ -199,8 +199,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return True
 
         if self.simple_wildcard_regex:
+            match = self.simple_wildcard_regex.match
             for part in parts:
-                if self.simple_wildcard_regex.match(part):
+                if match(part):
                     return True
 
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
@@ -209,17 +210,24 @@ class CommandRunnerHandler(FileSystemEventHandler):
             # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
             # and wildcard matching, so we start accumulating from the second part.
 
-            for part in parts[1:]:
-                prefix = f"{prefix}/{part}"
-                if prefix in self.compound_exact_ignores:
-                    return True
-                if self.compound_wildcard_regex and self.compound_wildcard_regex.match(prefix):
-                    return True
+            if self.compound_wildcard_regex:
+                match = self.compound_wildcard_regex.match
+                ignores = self.compound_exact_ignores
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in ignores or match(prefix):
+                        return True
+            else:
+                ignores = self.compound_exact_ignores
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in ignores:
+                        return True
 
         return False
 
     def on_any_event(self, event):
-        if getattr(self, 'is_shutting_down', False):
+        if self.is_shutting_down:
             return
 
         if event.is_directory:
@@ -244,13 +252,18 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not event_path:
             return
 
-        with self.timer_lock:
-            self.last_event_time = time.monotonic()
-            self.last_event_path = event_path
+        # Fast-path time update without acquiring the lock immediately
+        # Monotonic time reading is thread-safe in Python
+        now = time.monotonic()
+        self.last_event_time = now
+        self.last_event_path = event_path
 
-            if self.debounce_thread is None:
-                self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
-                self.debounce_thread.start()
+        if self.debounce_thread is None:
+            with self.timer_lock:
+                # Double-check thread existence under lock to avoid race conditions
+                if self.debounce_thread is None:
+                    self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
+                    self.debounce_thread.start()
 
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
