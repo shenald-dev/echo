@@ -199,8 +199,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return True
 
         if self.simple_wildcard_regex:
+            match = self.simple_wildcard_regex.match
             for part in parts:
-                if self.simple_wildcard_regex.match(part):
+                if match(part):
                     return True
 
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
@@ -210,11 +211,12 @@ class CommandRunnerHandler(FileSystemEventHandler):
             # and wildcard matching, so we start accumulating from the second part.
 
             if self.compound_wildcard_regex:
+                match = self.compound_wildcard_regex.match
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
                     if prefix in self.compound_exact_ignores:
                         return True
-                    if self.compound_wildcard_regex.match(prefix):
+                    if match(prefix):
                         return True
             else:
                 for part in parts[1:]:
