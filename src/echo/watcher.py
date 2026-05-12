@@ -221,7 +221,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         return False
 
     def on_any_event(self, event):
-        if getattr(self, 'is_shutting_down', False):
+        if self.is_shutting_down:
             return
 
         if event.is_directory:
@@ -246,13 +246,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not event_path:
             return
 
-        with self.timer_lock:
-            self.last_event_time = time.monotonic()
-            self.last_event_path = event_path
+        self.last_event_time = time.monotonic()
+        self.last_event_path = event_path
 
-            if self.debounce_thread is None:
-                self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
-                self.debounce_thread.start()
+        if self.debounce_thread is None:
+            with self.timer_lock:
+                if self.debounce_thread is None:
+                    self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
+                    self.debounce_thread.start()
 
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
