@@ -6,7 +6,7 @@ We are given a merge conflict scenario for the file `.jules/warden.md`.
           Let's break down the changes:
 
           Ancestor (common base) had:
-         
+
 
 // ... 184 characters truncated (middle section) ...
 
