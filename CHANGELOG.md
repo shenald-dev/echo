@@ -1,13 +1,8 @@
 # Changelog
-## [0.1.26] - 2026-05-05
+## [0.1.25] - 2026-05-08
 
 ### Changed
-* **[Performance]:** Assured the optimization of the exact ignore pattern matching hot path. Split `exact_ignores` into simple and compound frozensets preventing redundant evaluations.
-
-## [0.1.25] - 2026-05-04
-
-### Changed
-* **[Performance]:** Split `exact_ignores` into simple and compound sets to prevent redundant evaluations against path segments, mirroring the wildcard optimization and further reducing hot path latency.
+* **[Performance]:** Split `exact_ignores` into simple and compound frozensets to prevent redundant exact match evaluations against path segments, mirroring the wildcard optimization and further reducing latency in the hot path.
 
 ## [0.1.24] - 2026-05-02
 
