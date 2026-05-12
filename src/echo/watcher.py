@@ -260,7 +260,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         if self.debounce_thread is None:
             with self.timer_lock:
-                # Double-check thread existence under lock to avoid race conditions
+                # Double-check thread existence under lock to avoid race conditions.
+                # This pattern is safe under Python's GIL for this specific use case.
                 if self.debounce_thread is None:
                     self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
                     self.debounce_thread.start()
