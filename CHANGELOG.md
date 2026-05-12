@@ -1,4 +1,11 @@
 # Changelog
+
+## [Unreleased]
+
+### Changed
+* **[Performance]:** Optimized path segment traversal hot loop by hoisting wildcard compound evaluations, accelerating evaluation to ~0.14 microseconds per loop check.
+
+
 ## [0.1.25] - 2026-05-08
 
 ### Changed
