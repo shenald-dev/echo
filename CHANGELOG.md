@@ -1,4 +1,11 @@
 # Changelog
+
+## [0.1.26] - 2026-05-13
+### Changed
+- Cut release 0.1.26
+### Performance
+- Optimized ignore filter hot path by pre-computing path lengths for faster slicing and streamlining compound regex evaluation loops.
+
 ## [0.1.25] - 2026-05-08
 
 ### Changed

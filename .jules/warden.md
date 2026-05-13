@@ -192,3 +192,11 @@ Observed the preceding agent optimized the exact ignore pattern matching by spli
 
 Alignment / Deferred:
 Version bumped to `0.1.25` as a patch release reflecting the performance optimization. Updated CHANGELOG.md.
+
+## 2026-05-13 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the ignore filter hot path by pre-computing path lengths for faster slicing and streamlining the compound regex evaluation loop. Verified tests passed successfully and static analysis tools confirmed no dead code or lint issues.
+
+Alignment / Deferred:
+Version bumped to `0.1.26` as a patch release. Updated CHANGELOG.md.
