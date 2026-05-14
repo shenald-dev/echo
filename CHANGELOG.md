@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.26] - 2026-05-14
+
+### Changed
+* **[Performance]:** Optimized event loop execution by avoiding thread lock contention on common attributes and conditionally spawning background debounce threads only when needed.
+
 ## [0.1.25] - 2026-05-08
 
 ### Changed
