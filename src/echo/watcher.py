@@ -21,7 +21,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.command = command
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
+        self._abs_base_path_len = len(self._abs_base_path)
+        self._abs_base_path_rstrip = self._abs_base_path.rstrip(os.sep)
         self._base_prefix = os.path.join(self.base_path, '')
+        self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
@@ -177,10 +180,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
-            path = path[len(self._abs_base_path):]
+            path = path[self._abs_base_path_len:]
         elif path.startswith(self._base_prefix):
-            path = path[len(self._base_prefix):]
-        elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
+            path = path[self._base_prefix_len:]
+        elif path == self.base_path or path == self._abs_base_path_rstrip:
             path = "."
         elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."):
             pass
@@ -228,11 +231,11 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
-        if getattr(event, 'event_type', '') in ('opened', 'closed_no_write'):
+        if event.event_type in ('opened', 'closed_no_write'):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
-        event_path = getattr(event, 'src_path', None)
+        event_path = event.src_path
 
         is_src_ignored = event_path and self._is_ignored(event_path)
         dest_path = getattr(event, 'dest_path', None)

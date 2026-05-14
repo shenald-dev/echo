@@ -1,3 +1,11 @@
+## 2026-05-14 — Assessment & Lifecycle
+
+Observation / Pruned:
+Optimized hot path ignore checking by avoiding dynamic `len()` calls for string slicing and removing `getattr` overhead on watchdog event objects.
+
+Alignment / Deferred:
+No further major structural changes made as existing implementation is quite optimal for the single-binary requirement.
+
 ## 2026-04-26 — Assessment & Lifecycle
 
 Observation / Pruned:

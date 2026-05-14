@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.26] - 2026-05-14
+
+### Changed
+* **[Performance]:** Optimized hot path string slicing in `_is_ignored_impl` by pre-computing string lengths and optimized property access in `on_any_event` by replacing `getattr` with direct property access.
+
 ## [0.1.25] - 2026-05-08
 
 ### Changed
