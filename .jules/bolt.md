@@ -165,3 +165,10 @@ Acquiring a thread lock (`self.timer_lock`) on every file system event just to u
 
 Action:
 Prefer direct attribute access for guaranteed attributes (`self.is_shutting_down`). Use double-checked locking when spawning background threads (`if thread is None: with lock: if thread is None: start_thread()`) to avoid acquiring locks on every event, and update thread-safe variables like `time.monotonic()` outside the lock.
+## 2026-05-14 — Avoid getattr and redundant evaluations in hot paths
+
+Learning:
+Inside the file watcher's `watchdog` event handler, `getattr(event, 'event_type', '')` and `getattr(event, 'src_path', None)` introduce unnecessary `getattr` function call overhead when `event_type` and `src_path` are guaranteed to be present on all watchdog events. Additionally, computing `len(self._abs_base_path)` on every match, checking `if match:` on every iteration before evaluating the regex, and using `self.current_process is process` guards around subprocess return codes introduce latency and bugs.
+
+Action:
+Prefer direct attribute access (`event.event_type`, `event.src_path`) over `getattr`. Pre-compute prefix lengths during class initialization. Hoist loop-invariant method lookups (`match = regex.match`) outside of iterations. Remove `self.current_process is process` guards when evaluating subprocess wait results, as the reference can be overwritten during a rapid reload.
