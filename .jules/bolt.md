@@ -165,3 +165,11 @@ Acquiring a thread lock (`self.timer_lock`) on every file system event just to u
 
 Action:
 Prefer direct attribute access for guaranteed attributes (`self.is_shutting_down`). Use double-checked locking when spawning background threads (`if thread is None: with lock: if thread is None: start_thread()`) to avoid acquiring locks on every event, and update thread-safe variables like `time.monotonic()` outside the lock.
+
+## 2026-05-15 — Hot Path Performance Optimizations
+
+Learning:
+Inside high-frequency Python event handlers like a file watcher, calling `len()` repeatedly for string slicing, evaluating loop-invariant regex truthiness, and using `getattr` when an attribute is guaranteed to exist all introduce measurable CPU overhead.
+
+Action:
+Pre-compute prefix lengths during initialization (e.g. `self._abs_base_path_len = len(self._abs_base_path)`). Hoist loop-invariant truthiness checks (e.g. `if self.compound_wildcard_regex:`) and method lookups outside of tight loops. Prefer direct attribute access (`event.src_path`) over `getattr` when attributes are natively guaranteed by the event class.

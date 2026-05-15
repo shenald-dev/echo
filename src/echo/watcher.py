@@ -22,6 +22,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
         self._base_prefix = os.path.join(self.base_path, '')
+        self._abs_base_path_len = len(self._abs_base_path)
+        self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
@@ -177,9 +179,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
-            path = path[len(self._abs_base_path):]
+            path = path[self._abs_base_path_len:]
         elif path.startswith(self._base_prefix):
-            path = path[len(self._base_prefix):]
+            path = path[self._base_prefix_len:]
         elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
         elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."):
@@ -210,13 +212,17 @@ class CommandRunnerHandler(FileSystemEventHandler):
             # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
             # and wildcard matching, so we start accumulating from the second part.
 
-            match = self.compound_wildcard_regex.match if self.compound_wildcard_regex else None
-            for part in parts[1:]:
-                prefix = f"{prefix}/{part}"
-                if prefix in self.compound_exact_ignores:
-                    return True
-                if match and match(prefix):
-                    return True
+            if self.compound_wildcard_regex:
+                match = self.compound_wildcard_regex.match
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in self.compound_exact_ignores or match(prefix):
+                        return True
+            else:
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in self.compound_exact_ignores:
+                        return True
 
         return False
 
@@ -228,11 +234,11 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
-        if getattr(event, 'event_type', '') in ('opened', 'closed_no_write'):
+        if event.event_type in ('opened', 'closed_no_write'):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
-        event_path = getattr(event, 'src_path', None)
+        event_path = event.src_path
 
         is_src_ignored = event_path and self._is_ignored(event_path)
         dest_path = getattr(event, 'dest_path', None)
