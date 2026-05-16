@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.26] - 2026-05-16
+
+### Changed
+* **[Performance]:** Optimized event loop lock contention by using double-checked locking for background thread spawning and direct attribute access for shutdown checks, reducing overhead during high-frequency filesystem events.
+
 ## [0.1.25] - 2026-05-08
 
 ### Changed
