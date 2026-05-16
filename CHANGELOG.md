@@ -1,4 +1,10 @@
 # Changelog
+## [0.1.26] - 2026-05-16
+
+### Changed
+* **[Performance]:** Pre-computed `_abs_base_path` and `_base_prefix` string lengths during initialization to optimize the hot loop in `_is_ignored_impl`.
+* **[Performance]:** Optimized `on_any_event` by replacing `getattr(event, ...)` with direct attribute access for `event_type` and `src_path`, saving evaluation latency.
+
 ## [0.1.25] - 2026-05-08
 
 ### Changed
