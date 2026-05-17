@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.26] - 2026-05-17
+
+### Changed
+* **[Performance]:** Replaced broad thread locks with double-checked locking for background debounce worker spawning and eliminated redundant state locking in `on_any_event`, significantly increasing file event processing throughput.
+
 ## [0.1.25] - 2026-05-08
 
 ### Changed
