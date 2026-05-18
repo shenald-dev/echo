@@ -192,3 +192,11 @@ Observed the preceding agent optimized the exact ignore pattern matching by spli
 
 Alignment / Deferred:
 Version bumped to `0.1.25` as a patch release reflecting the performance optimization. Updated CHANGELOG.md.
+
+## 2026-05-13 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized lock acquisition in the event loop by moving frequent path assignments outside the thread lock and only spawning a new debounce thread if one is safely confirmed to not be running via double-checked locking. Tests successfully verified behavior without regressions. Static analysis tools found no dead code.
+
+Alignment / Deferred:
+Version bumped to `0.1.26` as a patch release reflecting the performance optimization. Updated CHANGELOG.md.
