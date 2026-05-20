@@ -173,3 +173,10 @@ Inside high-frequency Python event handlers like a file watcher, calling `len()`
 
 Action:
 Pre-compute prefix lengths during initialization (e.g. `self._abs_base_path_len = len(self._abs_base_path)`). Hoist loop-invariant truthiness checks (e.g. `if self.compound_wildcard_regex:`) and method lookups outside of tight loops. Prefer direct attribute access (`event.src_path`) over `getattr` when attributes are natively guaranteed by the event class.
+## 2026-05-16 — Generator Expression Overhead in Hot Paths
+
+Learning:
+In high-frequency Python hot paths (like checking path parts against a regex), using `any()` with a generator expression (e.g., `any(match(p) for p in parts)`) introduces generator overhead that makes it slower than a simple, explicit `for` loop. Additionally, redundant property accesses (`getattr`) and redundant loop-invariant truthiness checks (`if self.compound_wildcard_regex:`) inside loops cause measurable performance regressions.
+
+Action:
+Prefer explicit `for` loops with early returns over `any()` generators in hot paths. Lift loop-invariant checks and expensive builtins (like `len()`) outside of tight loops. Use direct attribute access over `getattr` when the attribute's existence is guaranteed.
