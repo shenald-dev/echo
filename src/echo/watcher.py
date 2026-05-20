@@ -179,8 +179,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
+            # Performance: Use pre-computed length instead of len() in hot path
             path = path[self._abs_base_path_len:]
         elif path.startswith(self._base_prefix):
+            # Performance: Use pre-computed length instead of len() in hot path
             path = path[self._base_prefix_len:]
         elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
