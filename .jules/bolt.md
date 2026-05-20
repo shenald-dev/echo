@@ -165,3 +165,24 @@ Acquiring a thread lock (`self.timer_lock`) on every file system event just to u
 
 Action:
 Prefer direct attribute access for guaranteed attributes (`self.is_shutting_down`). Use double-checked locking when spawning background threads (`if thread is None: with lock: if thread is None: start_thread()`) to avoid acquiring locks on every event, and update thread-safe variables like `time.monotonic()` outside the lock.
+## 2026-05-14 — String Slicing Optimization in Hot Path
+
+Learning:
+Inside the `_is_ignored_impl` hot path, using `len()` to compute the length of a pre-defined prefix inside loop conditions introduces completely avoidable repeated function overhead. Pre-computing lengths during initialization allows direct array slicing access for better throughput.
+
+Action:
+Pre-computed strings for path slice operations should also pre-compute their lengths `self._abs_base_path_len` instead of computing `len()` dynamically.
+## 2026-05-14 — Compound Regex Optimization in Hot Path
+
+Learning:
+Inside the file watcher's compound exact/wildcard loop, conditionally defining `match` and then evaluating `if match and match(prefix)` within the for loop results in redundant truthiness checks and function overhead.
+
+Action:
+Split the condition outside the loop via `if self.compound_wildcard_regex:`, defining a tight loop with both `match(prefix)` and `prefix in self.compound_exact_ignores`, while having an `else` branch for checking just `prefix in self.compound_exact_ignores`. This avoids evaluating `if match` on every single directory depth when no compound wildcards exist.
+## 2026-05-14 — Avoid `getattr` for Guaranteed Event Attributes
+
+Learning:
+Inside the `on_any_event` handler of the file watcher, properties like `event_type` and `src_path` are guaranteed to exist on watchdog events. Looking them up via `getattr` is slower than direct attribute access.
+
+Action:
+Prefer direct attribute access (`event.event_type` and `event.src_path`) over `getattr` when the attribute is guaranteed to exist.

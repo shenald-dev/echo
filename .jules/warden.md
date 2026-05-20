@@ -192,3 +192,10 @@ Observed the preceding agent optimized the exact ignore pattern matching by spli
 
 Alignment / Deferred:
 Version bumped to `0.1.25` as a patch release reflecting the performance optimization. Updated CHANGELOG.md.
+## 2026-05-14 — Assessment & Lifecycle
+
+Observation / Pruned:
+Optimized string slicing and loop conditions in `_is_ignored_impl`, and replaced slow `getattr` lookups in `on_any_event` with direct attribute accesses, significantly improving throughput for large burst file change events in the hot loop.
+
+Alignment / Deferred:
+No unaddressed regressions or blockers identified.
