@@ -24,6 +24,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self._abs_base_path_len = len(self._abs_base_path)
         self._abs_base_path_rstrip = self._abs_base_path.rstrip(os.sep)
         self._base_prefix = os.path.join(self.base_path, '')
+
         self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
@@ -213,13 +214,19 @@ class CommandRunnerHandler(FileSystemEventHandler):
             # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
             # and wildcard matching, so we start accumulating from the second part.
 
-            match = self.compound_wildcard_regex.match if self.compound_wildcard_regex else None
-            for part in parts[1:]:
-                prefix = f"{prefix}/{part}"
-                if prefix in self.compound_exact_ignores:
-                    return True
-                if match and match(prefix):
-                    return True
+            if self.compound_wildcard_regex:
+                match = self.compound_wildcard_regex.match
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in self.compound_exact_ignores:
+                        return True
+                    if match(prefix):
+                        return True
+            else:
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in self.compound_exact_ignores:
+                        return True
 
         return False
 
