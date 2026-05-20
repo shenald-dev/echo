@@ -212,6 +212,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
             # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
             # and wildcard matching, so we start accumulating from the second part.
 
+            # Hot path optimization: hoist invariant truthiness and method lookup
+            # (`match = ...match`) outside the inner accumulation loop.
+
             if self.compound_wildcard_regex:
                 match = self.compound_wildcard_regex.match
                 for part in parts[1:]:
