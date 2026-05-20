@@ -2,7 +2,11 @@
 ## [0.1.26] - 2026-05-13
 
 ### Changed
+<<<<<<< HEAD
 * **[Performance]:** Optimized event loop lock contention by using direct attribute access and double-checked locking for thread instantiation, significantly minimizing unnecessary lock acquisitions on every file system event and reducing latency overhead in high-frequency hot paths.
+=======
+* **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
+>>>>>>> origin/main
 
 ## [0.1.25] - 2026-05-08
 
