@@ -172,3 +172,11 @@ Inside the file watcher's `watchdog` event handler, `getattr(event, 'event_type'
 
 Action:
 Prefer direct attribute access (`event.event_type`, `event.src_path`) over `getattr`. Pre-compute prefix lengths during class initialization. Hoist loop-invariant method lookups (`match = regex.match`) outside of iterations. Remove `self.current_process is process` guards when evaluating subprocess wait results, as the reference can be overwritten during a rapid reload.
+
+## 2026-05-16 — Generator Expression Overhead in Hot Paths
+
+Learning:
+In high-frequency Python hot paths (like checking path parts against a regex), using `any()` with a generator expression (e.g., `any(match(p) for p in parts)`) introduces generator overhead that makes it slower than a simple, explicit `for` loop. Additionally, redundant property accesses (`getattr`) and redundant loop-invariant truthiness checks (`if self.compound_wildcard_regex:`) inside loops cause measurable performance regressions.
+
+Action:
+Prefer explicit `for` loops with early returns over `any()` generators in hot paths. Lift loop-invariant checks and expensive builtins (like `len()`) outside of tight loops. Use direct attribute access over `getattr` when the attribute's existence is guaranteed.
