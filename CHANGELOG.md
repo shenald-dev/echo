@@ -2,6 +2,14 @@
 ## [0.1.25] - 2026-05-08
 
 ### Changed
+## [0.1.26] - 2026-05-13
+
+### Changed
+* **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
+
+## [0.1.25] - 2026-05-08
+
+### Changed
 * **[Performance]:** Split `exact_ignores` into simple and compound frozensets to prevent redundant exact match evaluations against path segments, mirroring the wildcard optimization and further reducing latency in the hot path.
 
 ## [0.1.24] - 2026-05-02
