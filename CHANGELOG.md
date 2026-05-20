@@ -1,10 +1,9 @@
 # Changelog
-
 ## [0.1.26] - 2026-05-13
+
 ### Changed
-- Cut release 0.1.26
-### Performance
-- Optimized ignore filter hot path by pre-computing path lengths for faster slicing and streamlining compound regex evaluation loops.
+* **[Performance]:** Optimized ignore filter hot path by pre-computing path lengths for faster slicing and streamlining compound regex evaluation loops.
+* **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
 
 ## [0.1.25] - 2026-05-08
 

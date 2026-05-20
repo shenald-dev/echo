@@ -196,7 +196,7 @@ Version bumped to `0.1.25` as a patch release reflecting the performance optimiz
 ## 2026-05-13 — Assessment & Lifecycle
 
 Observation / Pruned:
-Observed the preceding agent optimized the ignore filter hot path by pre-computing path lengths for faster slicing and streamlining the compound regex evaluation loop. Verified tests passed successfully and static analysis tools confirmed no dead code or lint issues.
+Observed the preceding agents optimized event loop thread lock contention via double-checked locking and non-critical state assignments, as well as optimizing the ignore filter hot path by pre-computing path lengths for faster slicing and streamlining compound regex evaluation loops. Verified tests passed successfully and static analysis tools confirmed no dead code or lint issues.
 
 Alignment / Deferred:
-Version bumped to `0.1.26` as a patch release. Updated CHANGELOG.md.
+Version bumped to `0.1.26` as a patch release reflecting the performance optimizations. Updated CHANGELOG.md.
