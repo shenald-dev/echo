@@ -236,6 +236,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
+        # Note: watchdog's FileSystemEvent guarantees 'event_type' and 'src_path' exist.
         if event.event_type in ('opened', 'closed_no_write'):
             return
 
