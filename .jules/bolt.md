@@ -157,3 +157,19 @@ Evaluating a combined `exact_ignores` set that includes both simple patterns (e.
 
 Action:
 Split `exact_ignores` into `simple_exact_ignores` (no slashes) and `compound_exact_ignores` (contains slashes), and convert them to `frozenset`s. Only apply the simple ignores when checking `isdisjoint(parts)`, and apply the compound ignores when accumulating the directory prefix. This mirrors the wildcard split optimization and further reduces hashing latency in the hot path.
+
+## 2026-05-12 — Event Handler Lock Contention
+
+Learning:
+Acquiring a thread lock (`self.timer_lock`) on every file system event just to update simple state variables (`last_event_time`, `last_event_path`) and spawn a thread creates unnecessary lock contention in high-frequency event loops. Checking `is_shutting_down` via `getattr` is also slightly slower than direct attribute access.
+
+Action:
+Prefer direct attribute access for guaranteed attributes (`self.is_shutting_down`). Use double-checked locking when spawning background threads (`if thread is None: with lock: if thread is None: start_thread()`) to avoid acquiring locks on every event, and update thread-safe variables like `time.monotonic()` outside the lock.
+
+## 2026-05-16 — Generator Expression Overhead in Hot Paths
+
+Learning:
+In high-frequency Python hot paths (like checking path parts against a regex), using `any()` with a generator expression (e.g., `any(match(p) for p in parts)`) introduces generator overhead that makes it slower than a simple, explicit `for` loop. Additionally, redundant property accesses (`getattr`) and redundant loop-invariant truthiness checks (`if self.compound_wildcard_regex:`) inside loops cause measurable performance regressions.
+
+Action:
+Prefer explicit `for` loops with early returns over `any()` generators in hot paths. Lift loop-invariant checks and expensive builtins (like `len()`) outside of tight loops. Use direct attribute access over `getattr` when the attribute's existence is guaranteed.

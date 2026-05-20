@@ -22,6 +22,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
         self._base_prefix = os.path.join(self.base_path, '')
+        self._abs_base_path_len = len(self._abs_base_path)
+        self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
@@ -177,9 +179,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
-            path = path[len(self._abs_base_path):]
+            path = path[self._abs_base_path_len:]
         elif path.startswith(self._base_prefix):
-            path = path[len(self._base_prefix):]
+            path = path[self._base_prefix_len:]
         elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
         elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."):
@@ -227,18 +229,18 @@ class CommandRunnerHandler(FileSystemEventHandler):
         return False
 
     def on_any_event(self, event):
-        if getattr(self, 'is_shutting_down', False):
+        if self.is_shutting_down:
             return
 
         if event.is_directory:
             return
             
         # Ignore read-only events to prevent redundant executions
-        if getattr(event, 'event_type', '') in ('opened', 'closed_no_write'):
+        if event.event_type in ('opened', 'closed_no_write'):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
-        event_path = getattr(event, 'src_path', None)
+        event_path = event.src_path
 
         is_src_ignored = event_path and self._is_ignored(event_path)
         dest_path = getattr(event, 'dest_path', None)
@@ -252,13 +254,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not event_path:
             return
 
-        with self.timer_lock:
-            self.last_event_time = time.monotonic()
-            self.last_event_path = event_path
+        self.last_event_time = time.monotonic()
+        self.last_event_path = event_path
 
-            if self.debounce_thread is None:
-                self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
-                self.debounce_thread.start()
+        if self.debounce_thread is None:
+            with self.timer_lock:
+                if self.debounce_thread is None:
+                    self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
+                    self.debounce_thread.start()
 
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
