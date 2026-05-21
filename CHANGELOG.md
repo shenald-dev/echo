@@ -2,6 +2,11 @@
 ## [0.1.25] - 2026-05-08
 
 ### Changed
+## [0.1.27] - 2026-05-21
+
+### Changed
+* **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
+
 ## [0.1.26] - 2026-05-13
 
 ### Changed
