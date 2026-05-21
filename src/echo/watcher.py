@@ -22,6 +22,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
         self._base_prefix = os.path.join(self.base_path, '')
+        self._abs_base_path_len = len(self._abs_base_path)
+        self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
         default_ignores = [".git", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", ".venv", "venv"]
@@ -30,8 +32,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.ignore_patterns = [p.replace('\\', '/').rstrip('/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
-        exact_ignores = [p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))]
-        wildcard_ignores = [p for p in self.ignore_patterns if any(c in p for c in ('*', '?', '['))]
+        exact_ignores = [p for p in self.ignore_patterns if '*' not in p and '?' not in p and '[' not in p]
+        wildcard_ignores = [p for p in self.ignore_patterns if '*' in p or '?' in p or '[' in p]
 
         self.simple_exact_ignores = frozenset(p for p in exact_ignores if '/' not in p)
         self.compound_exact_ignores = frozenset(p for p in exact_ignores if '/' in p)
@@ -177,9 +179,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
-            path = path[len(self._abs_base_path):]
+            path = path[self._abs_base_path_len:]
         elif path.startswith(self._base_prefix):
-            path = path[len(self._base_prefix):]
+            path = path[self._base_prefix_len:]
         elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
         elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."):
@@ -199,44 +201,57 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return True
 
         if self.simple_wildcard_regex:
+            match = self.simple_wildcard_regex.match
             for part in parts:
-                if self.simple_wildcard_regex.match(part):
+                if match(part):
                     return True
 
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
         if self._has_compound_ignores and len(parts) > 1:
             prefix = parts[0]
-            # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
-            # and wildcard matching, so we start accumulating from the second part.
+            compound_exact_ignores = self.compound_exact_ignores
 
             if self.compound_wildcard_regex:
+<<<<<<< HEAD
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
                     if prefix in self.compound_exact_ignores:
                         return True
                     if self.compound_wildcard_regex.match(prefix):
+=======
+                match = self.compound_wildcard_regex.match
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
+                    if prefix in compound_exact_ignores:
+                        return True
+                    if match(prefix):
+>>>>>>> origin/main
                         return True
             else:
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
+<<<<<<< HEAD
                     if prefix in self.compound_exact_ignores:
+=======
+                    if prefix in compound_exact_ignores:
+>>>>>>> origin/main
                         return True
 
         return False
 
     def on_any_event(self, event):
-        if getattr(self, 'is_shutting_down', False):
+        if self.is_shutting_down:
             return
 
         if event.is_directory:
             return
             
         # Ignore read-only events to prevent redundant executions
-        if getattr(event, 'event_type', '') in ('opened', 'closed_no_write'):
+        if event.event_type in ('opened', 'closed_no_write'):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
-        event_path = getattr(event, 'src_path', None)
+        event_path = event.src_path
 
         is_src_ignored = event_path and self._is_ignored(event_path)
         dest_path = getattr(event, 'dest_path', None)
@@ -250,13 +265,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not event_path:
             return
 
-        with self.timer_lock:
-            self.last_event_time = time.monotonic()
-            self.last_event_path = event_path
+        self.last_event_time = time.monotonic()
+        self.last_event_path = event_path
 
-            if self.debounce_thread is None:
-                self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
-                self.debounce_thread.start()
+        if self.debounce_thread is None:
+            with self.timer_lock:
+                if self.debounce_thread is None:
+                    self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
+                    self.debounce_thread.start()
 
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")

@@ -1,13 +1,27 @@
 # Changelog
+<<<<<<< HEAD
 ## [0.1.26] - 2026-05-05
 
 ### Changed
 * **[Performance]:** Hoisted the compound wildcard regex truthiness check out of the directory traversal hot loop, eliminating redundant condition evaluations and speeding up directory exclusion matching for the common case.
 
 ## [0.1.25] - 2026-05-04
+=======
+## [0.1.27] - 2026-05-21
+>>>>>>> origin/main
 
 ### Changed
-* **[Performance]:** Split `exact_ignores` into simple and compound sets to prevent redundant evaluations against path segments, mirroring the wildcard optimization and further reducing hot path latency.
+* **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
+
+## [0.1.26] - 2026-05-13
+
+### Changed
+* **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
+
+## [0.1.25] - 2026-05-08
+
+### Changed
+* **[Performance]:** Split `exact_ignores` into simple and compound frozensets to prevent redundant exact match evaluations against path segments, mirroring the wildcard optimization and further reducing latency in the hot path.
 
 ## [0.1.24] - 2026-05-02
 
