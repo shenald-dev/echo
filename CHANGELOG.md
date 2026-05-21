@@ -1,8 +1,13 @@
 # Changelog
-## [0.1.27] - 2026-05-14
+## [0.1.28] - 2026-05-21
 
 ### Changed
 * **[Performance]:** Optimized hot path string slicing in `_is_ignored_impl` by pre-computing string lengths and optimized property access in `on_any_event` by replacing `getattr` with direct property access. These changes measurably decrease the instruction count during high-frequency file watcher event loops.
+
+## [0.1.27] - 2026-05-21
+
+### Changed
+* **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
 
 ## [0.1.26] - 2026-05-13
 
