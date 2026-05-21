@@ -173,11 +173,3 @@ In high-frequency Python hot paths (like checking path parts against a regex), u
 
 Action:
 Prefer explicit `for` loops with early returns over `any()` generators in hot paths. Lift loop-invariant checks and expensive builtins (like `len()`) outside of tight loops. Use direct attribute access over `getattr` when the attribute's existence is guaranteed.
-
-## 2026-05-20 — Generator Expression Overhead in Object Initialization
-
-Learning:
-Using `any()` with a generator expression inside a list comprehension (e.g., `[p for p in patterns if not any(c in p for c in ('*', '?', '['))]`) creates significant generator evaluation overhead, which is magnified when iterating over items. While this was previously addressed in the hot path, it remained in the object initialization, causing minor startup latency.
-
-Action:
-Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.

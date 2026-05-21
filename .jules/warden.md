@@ -199,10 +199,7 @@ Observation / Pruned:
 Observed the preceding agent optimized the event loop by removing redundant thread locking during high-frequency events. Tested structural soundness successfully via the test suite. Vulture static analysis confirmed no dead code required pruning.
 
 Alignment / Deferred:
-<<<<<<< HEAD
 Version bumped to `0.1.26` as a patch release reflecting the performance optimization. Updated CHANGELOG.md. No heavy pruning or major dependency updates required.
-=======
-Version bumped to `0.1.26` as a patch release reflecting the performance optimization. Updated CHANGELOG.md.
 
 ## 2026-05-21 — Assessment & Lifecycle
 
@@ -211,4 +208,3 @@ Observed the preceding agent optimized event loop lock contention by streamlinin
 
 Alignment / Deferred:
 Version bumped to `0.1.27` as a patch release. No dependency adjustments or complex refactors were deferred.
->>>>>>> origin/main
