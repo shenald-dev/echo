@@ -32,8 +32,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.ignore_patterns = [p.replace('\\', '/').rstrip('/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
-        exact_ignores = [p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))]
-        wildcard_ignores = [p for p in self.ignore_patterns if any(c in p for c in ('*', '?', '['))]
+        exact_ignores = [p for p in self.ignore_patterns if '*' not in p and '?' not in p and '[' not in p]
+        wildcard_ignores = [p for p in self.ignore_patterns if '*' in p or '?' in p or '[' in p]
 
         self.simple_exact_ignores = frozenset(p for p in exact_ignores if '/' not in p)
         self.compound_exact_ignores = frozenset(p for p in exact_ignores if '/' in p)
@@ -214,19 +214,20 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             # Hot path optimization: hoist invariant truthiness and method lookup
             # (`match = ...match`) outside the inner accumulation loop.
+            compound_exact_ignores = self.compound_exact_ignores
 
             if self.compound_wildcard_regex:
                 match = self.compound_wildcard_regex.match
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
-                    if prefix in self.compound_exact_ignores:
+                    if prefix in compound_exact_ignores:
                         return True
                     if match(prefix):
                         return True
             else:
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
-                    if prefix in self.compound_exact_ignores:
+                    if prefix in compound_exact_ignores:
                         return True
 
         return False
