@@ -165,27 +165,13 @@ Acquiring a thread lock (`self.timer_lock`) on every file system event just to u
 
 Action:
 Prefer direct attribute access for guaranteed attributes (`self.is_shutting_down`). Use double-checked locking when spawning background threads (`if thread is None: with lock: if thread is None: start_thread()`) to avoid acquiring locks on every event, and update thread-safe variables like `time.monotonic()` outside the lock.
-## 2026-05-14 — String Slicing Optimization in Hot Path
+## 2026-05-20 — Generator Expression Overhead in Object Initialization
 
 Learning:
-Inside the `_is_ignored_impl` hot path, using `len()` to compute the length of a pre-defined prefix inside loop conditions introduces completely avoidable repeated function overhead. Pre-computing lengths during initialization allows direct array slicing access for better throughput.
+Using `any()` with a generator expression inside a list comprehension (e.g., `[p for p in patterns if not any(c in p for c in ('*', '?', '['))]`) creates significant generator evaluation overhead, which is magnified when iterating over items. While this was previously addressed in the hot path, it remained in the object initialization, causing minor startup latency.
 
 Action:
-Pre-computed strings for path slice operations should also pre-compute their lengths `self._abs_base_path_len` instead of computing `len()` dynamically.
-## 2026-05-14 — Compound Regex Optimization in Hot Path
-
-Learning:
-Inside the file watcher's compound exact/wildcard loop, conditionally defining `match` and then evaluating `if match and match(prefix)` within the for loop results in redundant truthiness checks and function overhead.
-
-Action:
-Split the condition outside the loop via `if self.compound_wildcard_regex:`, defining a tight loop with both `match(prefix)` and `prefix in self.compound_exact_ignores`, while having an `else` branch for checking just `prefix in self.compound_exact_ignores`. This avoids evaluating `if match` on every single directory depth when no compound wildcards exist.
-## 2026-05-14 — Avoid `getattr` for Guaranteed Event Attributes
-
-Learning:
-Inside the `on_any_event` handler of the file watcher, properties like `event_type` and `src_path` are guaranteed to exist on watchdog events. Looking them up via `getattr` is slower than direct attribute access.
-
-Action:
-Prefer direct attribute access (`event.event_type` and `event.src_path`) over `getattr` when the attribute is guaranteed to exist.
+Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
 
 ## 2026-05-16 — Generator Expression Overhead in Hot Paths
 
@@ -195,10 +181,26 @@ In high-frequency Python hot paths (like checking path parts against a regex), u
 Action:
 Prefer explicit `for` loops with early returns over `any()` generators in hot paths. Lift loop-invariant checks and expensive builtins (like `len()`) outside of tight loops. Use direct attribute access over `getattr` when the attribute's existence is guaranteed.
 
-## 2026-05-20 — Generator Expression Overhead in Object Initialization
+## 2026-05-14 — String Slicing Optimization in Hot Path
 
 Learning:
-Using `any()` with a generator expression inside a list comprehension (e.g., `[p for p in patterns if not any(c in p for c in ('*', '?', '['))]`) creates significant generator evaluation overhead, which is magnified when iterating over items. While this was previously addressed in the hot path, it remained in the object initialization, causing minor startup latency.
+Inside the `_is_ignored_impl` hot path, using `len()` to compute the length of a pre-defined prefix inside loop conditions introduces completely avoidable repeated function overhead. Pre-computing lengths during initialization allows direct array slicing access for better throughput.
 
 Action:
-Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
+Pre-computed strings for path slice operations should also pre-compute their lengths `self._abs_base_path_len` instead of computing `len()` dynamically.
+
+## 2026-05-14 — Compound Regex Optimization in Hot Path
+
+Learning:
+Inside the file watcher's compound exact/wildcard loop, conditionally defining `match` and then evaluating `if match and match(prefix)` within the for loop results in redundant truthiness checks and function overhead.
+
+Action:
+Split the condition outside the loop via `if self.compound_wildcard_regex:`, defining a tight loop with both `match(prefix)` and `prefix in self.compound_exact_ignores`, while having an `else` branch for checking just `prefix in self.compound_exact_ignores`. This avoids evaluating `if match` on every single directory depth when no compound wildcards exist.
+
+## 2026-05-14 — Avoid `getattr` for Guaranteed Event Attributes
+
+Learning:
+Inside the `on_any_event` handler of the file watcher, properties like `event_type` and `src_path` are guaranteed to exist on watchdog events. Looking them up via `getattr` is slower than direct attribute access.
+
+Action:
+Prefer direct attribute access (`event.event_type` and `event.src_path`) over `getattr` when the attribute is guaranteed to exist.

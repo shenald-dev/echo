@@ -1,9 +1,14 @@
 # Changelog
-## [0.1.28] - 2026-05-21
+## [0.1.29] - 2026-05-21
 
 ### Changed
 * **[Performance]:** Refactored exact and compound wildcard evaluations in the core ignore loop to avoid wasteful truthiness checks and method lookups. Pre-computed string slicing lengths for fast path matching, minimizing redundant functional overhead on bulk filesystem events.
 * **[Performance]:** Bypassed the use of `getattr` on guaranteed watchdog attributes, marginally speeding up high-frequency event dispatches.
+
+## [0.1.28] - 2026-05-22
+
+### Changed
+* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
 
 ## [0.1.27] - 2026-05-21
 
