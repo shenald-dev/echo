@@ -294,8 +294,11 @@ def main():
             observer.stop()
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
             event_handler.shutdown()
-        except Exception:
-            pass
+        except Exception as e:
+            # Prevent crash, but allow inspection if needed
+            # A full stack trace is usually noise on Ctrl+C, so we suppress it unless debugging
+            import logging
+            logging.debug(f"Exception during KeyboardInterrupt shutdown: {e}")
         sys.exit(0)
 
     if platform.system() != "Windows":
@@ -309,8 +312,11 @@ def main():
             observer.stop()
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
             event_handler.shutdown()
-        except Exception:
-            pass
+        except Exception as e:
+            # Prevent crash, but allow inspection if needed
+            # A full stack trace is usually noise on Ctrl+C, so we suppress it unless debugging
+            import logging
+            logging.debug(f"Exception during KeyboardInterrupt shutdown: {e}")
 
     observer.join()
 
