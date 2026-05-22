@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.28] - 2026-05-22
+
+### Changed
+* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
+
 ## [0.1.27] - 2026-05-21
 
 ### Changed
