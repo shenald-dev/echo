@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.28] - 2026-05-22
+
+### Changed
+* **[Reliability]:** Hardened the `KeyboardInterrupt` signal handler to wrap termination logic in a try-except block, matching the `SIGTERM` behavior and preventing unhandled exceptions during manual shutdown.
+
 ## [0.1.27] - 2026-05-21
 
 ### Changed
