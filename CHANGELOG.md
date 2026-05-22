@@ -3,6 +3,7 @@
 
 ### Changed
 * **[Reliability]:** Hardened the `KeyboardInterrupt` signal handler to wrap termination logic in a try-except block, matching the `SIGTERM` behavior and preventing unhandled exceptions during manual shutdown.
+* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
 
 ## [0.1.27] - 2026-05-21
 
