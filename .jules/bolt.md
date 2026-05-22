@@ -181,3 +181,11 @@ Using `any()` with a generator expression inside a list comprehension (e.g., `[p
 
 Action:
 Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
+
+## 2026-05-23 — Graceful Shutdown Exception Safety
+
+Learning:
+When implementing graceful shutdown sequences (e.g., `KeyboardInterrupt` exception blocks), executing cleanup logic like `observer.stop()` and `event_handler.shutdown()` directly can be fragile. If these methods raise unexpected exceptions, the process crashes ungracefully, skipping the remainder of the shutdown block.
+
+Action:
+Wrap critical cleanup logic in a `try...except Exception: pass` block to guarantee the application terminates reliably without unhandled exceptions crashing the shutdown sequence.

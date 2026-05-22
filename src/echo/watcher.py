@@ -305,11 +305,22 @@ def main():
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        observer.stop()
-        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        event_handler.shutdown()
+        try:
+            observer.stop()
+        except Exception:
+            pass
 
-    observer.join()
+        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+
+        try:
+            event_handler.shutdown()
+        except Exception:
+            pass
+
+    try:
+        observer.join()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()

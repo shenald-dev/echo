@@ -1,6 +1,6 @@
 [project]
 name = "echo-watcher"
-version = "0.1.28"
+version = "0.1.29"
 description = "📡 Lightweight file watcher. Trigger commands on changes. <5MB RAM, single binary."
 authors = [
     { name = "shenald-dev", email = "bot@shenald.dev" }
