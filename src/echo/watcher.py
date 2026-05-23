@@ -292,7 +292,10 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
-            console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception:
+            pass
+        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        try:
             event_handler.shutdown()
         except Exception:
             pass
@@ -305,9 +308,15 @@ def main():
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        observer.stop()
+        try:
+            observer.stop()
+        except Exception:
+            pass
         console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        event_handler.shutdown()
+        try:
+            event_handler.shutdown()
+        except Exception:
+            pass
 
     observer.join()
 
