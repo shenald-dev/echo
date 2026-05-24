@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.29] - 2026-05-24
+
+### Changed
+* **[Reliability]:** Isolated graceful shutdown cleanup steps in individual `try...except` blocks to prevent partial failures from skipping critical termination routines.
+
 ## [0.1.28] - 2026-05-22
 
 ### Changed
