@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.29] - 2026-05-25
+
+### Changed
+* **[Reliability]:** Hardened graceful shutdown sequences (`SIGTERM` and `KeyboardInterrupt`) by isolating individual cleanup operations into dedicated exception blocks. This prevents exceptions during early cleanup phases (e.g., observer termination) from silently skipping critical process and event handler shutdown steps.
+
 ## [0.1.28] - 2026-05-22
 
 ### Changed

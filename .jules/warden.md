@@ -209,6 +209,15 @@ Observed the preceding agent optimized event loop lock contention by streamlinin
 Alignment / Deferred:
 Version bumped to `0.1.27` as a patch release. No dependency adjustments or complex refactors were deferred.
 
+## 2026-05-25 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the exact ignore pattern matching by splitting `exact_ignores` into simple and compound frozensets, preventing redundant evaluations against individual path segments in the hot path. I verified this via the test suite and confirmed structural soundness. Static analysis tools reported no dead code or linting issues.
+During adversarial QA, I discovered a critical flaw in the graceful shutdown handling where multiple cleanup operations were grouped under single `try...except` blocks. An exception in an early step like `observer.stop()` caused the crucial `event_handler.shutdown()` to be silently skipped, leaving orphaned subprocesses running. I rectified this by isolating each cleanup step (`observer.stop()`, `console.print()`, `event_handler.shutdown()`) in its own dedicated `try...except Exception: pass` block for both SIGTERM and KeyboardInterrupt paths.
+
+Alignment / Deferred:
+Version bumped to `0.1.29` as a patch release reflecting the performance and reliability fixes. Updated CHANGELOG.md. No dependency adjustments were required.
+
 ## 2026-05-22 — Assessment & Lifecycle
 
 Observation / Pruned:
