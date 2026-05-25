@@ -167,13 +167,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.is_shutting_down:
                     return
 
-                if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
-                    console.print("[yellow]✔ Command terminated by reload.[/yellow]")
+            if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
+                console.print("[yellow]✔ Command terminated by reload.[/yellow]")
+            else:
+                if process.returncode == 0:
+                    console.print("[green]✔ Command executed successfully.[/green]")
                 else:
-                    if process.returncode == 0:
-                        console.print("[green]✔ Command executed successfully.[/green]")
-                    else:
-                        console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
+                    console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
         except Exception as e:
             console.print(f"[bold red]Error executing command: {escape(str(e))}[/bold red]")
 
@@ -292,7 +292,13 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
+        except Exception:
+            pass
+        try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception:
+            pass
+        try:
             event_handler.shutdown()
         except Exception:
             pass
@@ -305,11 +311,23 @@ def main():
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        observer.stop()
-        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        event_handler.shutdown()
+        try:
+            observer.stop()
+        except Exception:
+            pass
+        try:
+            console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception:
+            pass
+        try:
+            event_handler.shutdown()
+        except Exception:
+            pass
 
-    observer.join()
+    try:
+        observer.join()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()

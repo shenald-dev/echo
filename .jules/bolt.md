@@ -181,3 +181,11 @@ Using `any()` with a generator expression inside a list comprehension (e.g., `[p
 
 Action:
 Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
+
+## 2026-05-25 — Separating Graceful Shutdown Actions and Subprocess Termination Evaluation
+
+Learning:
+When implementing graceful shutdown sequences (e.g., `SIGTERM` handlers and `KeyboardInterrupt` exception blocks), wrapping multiple cleanup steps into a single `try...except` block can cause subsequent critical cleanup steps to be silently skipped if an earlier step raises an exception. Similarly, evaluating a subprocess's termination status (e.g., intent-based flags) while holding the process lock and guarding it with `self.is_shutting_down` can result in dead code and failures to report termination if the state changes during the wait block.
+
+Action:
+Ensure each individual cleanup operation in a graceful shutdown sequence is wrapped in its own dedicated `try...except Exception: pass` block. When evaluating subprocess termination intent after `process.wait()`, perform the check outside the process lock to prevent state masking and dead code execution paths.

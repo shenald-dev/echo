@@ -1,4 +1,10 @@
 # Changelog
+## [0.1.29] - 2026-05-25
+
+### Fixed
+- Addressed dead code execution path in subprocess evaluation by evaluating termination status outside the process lock.
+- Separated exception handling blocks during graceful shutdown on KeyboardInterrupt and SIGTERM to prevent incomplete cleanups.
+
 ## [0.1.28] - 2026-05-22
 
 ### Changed
