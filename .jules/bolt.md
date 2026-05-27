@@ -188,3 +188,11 @@ Using `any()` with a generator expression inside a list comprehension (e.g., `[p
 
 Action:
 Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
+
+## 2026-05-18 — Fast-Path Attributes, Method Hoisting and Path Length Caching
+
+Learning:
+Inside high-frequency Python hot paths, using `getattr` to fetch attributes that are guaranteed to exist on objects (like `src_path` and `event_type` on watchdog `FileSystemEvent`) introduces measurable function call overhead. Additionally, calling `len()` repeatedly on the same immutable strings (like `_abs_base_path` and `_base_prefix`) within loop conditions causes unnecessary recalculations, and method lookups (like `regex.match`) performed repeatedly within loops adds latency.
+
+Action:
+Prefer direct attribute access over `getattr` when the attribute is guaranteed. Pre-compute and store lengths of constant strings during object initialization and use them for string slicing. Hoist loop-invariant truthiness checks and method lookups outside of tight loops to eliminate redundant evaluations.
