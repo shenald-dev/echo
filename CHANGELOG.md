@@ -1,9 +1,14 @@
 # Changelog
-## [0.1.29] - 2026-05-21
+## [0.1.30] - 2026-05-21
 
 ### Changed
 * **[Performance]:** Refactored exact and compound wildcard evaluations in the core ignore loop to avoid wasteful truthiness checks and method lookups. Pre-computed string slicing lengths for fast path matching, minimizing redundant functional overhead on bulk filesystem events.
 * **[Performance]:** Bypassed the use of `getattr` on guaranteed watchdog attributes, marginally speeding up high-frequency event dispatches.
+
+## [0.1.29] - 2026-05-23
+
+### Changed
+* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
 
 ## [0.1.28] - 2026-05-22
 
