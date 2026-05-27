@@ -323,7 +323,10 @@ def main():
             event_handler.shutdown()
         except Exception:
             pass
-    observer.join()
+    try:
+        observer.join()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()
