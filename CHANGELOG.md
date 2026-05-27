@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.29] - 2026-05-23
+
+### Changed
+* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
+
 ## [0.1.28] - 2026-05-22
 
 ### Changed

@@ -292,13 +292,19 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
+        except Exception as e:
+            import logging
+            logging.debug(f"Exception during observer.stop() in SIGTERM: {e}")
+        try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception as e:
+            import logging
+            logging.debug(f"Exception during console.print in SIGTERM: {e}")
+        try:
             event_handler.shutdown()
         except Exception as e:
-            # Prevent crash, but allow inspection if needed
-            # A full stack trace is usually noise on Ctrl+C, so we suppress it unless debugging
             import logging
-            logging.debug(f"Exception during KeyboardInterrupt shutdown: {e}")
+            logging.debug(f"Exception during event_handler.shutdown() in SIGTERM: {e}")
         sys.exit(0)
 
     if platform.system() != "Windows":
@@ -310,15 +316,24 @@ def main():
     except KeyboardInterrupt:
         try:
             observer.stop()
+        except Exception as e:
+            import logging
+            logging.debug(f"Exception during observer.stop() in KeyboardInterrupt: {e}")
+        try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception as e:
+            import logging
+            logging.debug(f"Exception during console.print in KeyboardInterrupt: {e}")
+        try:
             event_handler.shutdown()
         except Exception as e:
-            # Prevent crash, but allow inspection if needed
-            # A full stack trace is usually noise on Ctrl+C, so we suppress it unless debugging
             import logging
-            logging.debug(f"Exception during KeyboardInterrupt shutdown: {e}")
+            logging.debug(f"Exception during event_handler.shutdown() in KeyboardInterrupt: {e}")
 
-    observer.join()
+    try:
+        observer.join()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()
