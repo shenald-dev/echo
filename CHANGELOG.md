@@ -1,4 +1,19 @@
 # Changelog
+## [0.1.29] - 2026-05-23
+
+### Changed
+* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
+
+## [0.1.28] - 2026-05-22
+
+### Changed
+* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
+
+## [0.1.27] - 2026-05-21
+
+### Changed
+* **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
+
 ## [0.1.26] - 2026-05-13
 
 ### Changed
