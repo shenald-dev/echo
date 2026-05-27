@@ -324,7 +324,13 @@ def main():
         except Exception:
             pass
 
-    observer.join()
+    try:
+        try:
+        observer.join()
+    except Exception:
+        pass
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()

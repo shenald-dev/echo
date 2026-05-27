@@ -1,8 +1,8 @@
 # Changelog
-## [0.1.29] - 2026-05-24
+## [0.1.29] - 2026-05-23
 
 ### Changed
-* **[Reliability]:** Isolated graceful shutdown cleanup steps in individual `try...except` blocks to prevent partial failures from skipping critical termination routines.
+* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
 
 ## [0.1.28] - 2026-05-22
 
