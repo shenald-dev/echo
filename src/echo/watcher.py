@@ -292,16 +292,16 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
-        except Exception:
-            pass
+        except Exception as e:
+            console.print(f"[red]Error stopping observer: {escape(str(e))}[/red]")
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
         except Exception:
             pass
         try:
             event_handler.shutdown()
-        except Exception:
-            pass
+        except Exception as e:
+            console.print(f"[red]Error shutting down handler: {escape(str(e))}[/red]")
         sys.exit(0)
 
     if platform.system() != "Windows":
@@ -313,21 +313,21 @@ def main():
     except KeyboardInterrupt:
         try:
             observer.stop()
-        except Exception:
-            pass
+        except Exception as e:
+            console.print(f"[red]Error stopping observer: {escape(str(e))}[/red]")
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
         except Exception:
             pass
         try:
             event_handler.shutdown()
-        except Exception:
-            pass
+        except Exception as e:
+            console.print(f"[red]Error shutting down handler: {escape(str(e))}[/red]")
 
     try:
         observer.join()
-    except Exception:
-        pass
+    except Exception as e:
+        console.print(f"[red]Error joining observer: {escape(str(e))}[/red]")
 
 if __name__ == "__main__":
     main()
