@@ -307,22 +307,22 @@ def main():
     except KeyboardInterrupt:
         try:
             observer.stop()
-        except Exception:
+        except Exception as e:
             # Safe to ignore; the observer might already be stopped or failing to stop shouldn't prevent cleanup
-            pass
+            console.print(f"[dim yellow]⚠ Could not stop observer cleanly: {escape(str(e))}[/dim yellow]")
 
         console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
 
         try:
             event_handler.shutdown()
-        except Exception:
+        except Exception as e:
             # Safe to ignore; the event handler might already be shut down or its processes already terminated
-            pass
+            console.print(f"[dim yellow]⚠ Could not stop event handler cleanly: {escape(str(e))}[/dim yellow]")
 
     try:
         observer.join()
-    except Exception:
-        pass
+    except Exception as e:
+        console.print(f"[dim yellow]⚠ Could not join observer cleanly: {escape(str(e))}[/dim yellow]")
 
 if __name__ == "__main__":
     main()
