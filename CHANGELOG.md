@@ -1,4 +1,10 @@
 # Changelog
+
+## [0.1.30] - 2026-05-27
+
+### Changed
+* **[Performance]:** Hoisted loop-invariant truthiness checks and regex property lookups into local scope within the ignore evaluation hot path to reduce evaluation overhead.
+
 ## [0.1.29] - 2026-05-23
 
 ### Changed
