@@ -308,6 +308,7 @@ def main():
         try:
             observer.stop()
         except Exception:
+            # Safe to ignore; the observer might already be stopped or failing to stop shouldn't prevent cleanup
             pass
 
         console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
@@ -315,6 +316,7 @@ def main():
         try:
             event_handler.shutdown()
         except Exception:
+            # Safe to ignore; the event handler might already be shut down or its processes already terminated
             pass
 
     try:

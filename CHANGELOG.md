@@ -1,9 +1,4 @@
 # Changelog
-## [0.1.29] - 2026-05-23
-
-### Changed
-* **[Reliability]:** Wrapped `KeyboardInterrupt` cleanup logic in a safe `try...except` block to guarantee graceful shutdown even if observers or event handlers encounter unhandled exceptions during termination.
-
 ## [0.1.28] - 2026-05-22
 
 ### Changed
