@@ -294,7 +294,10 @@ def main():
             observer.stop()
         except Exception:
             pass
-        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        try:
+            console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception:
+            pass
         try:
             event_handler.shutdown()
         except Exception:
@@ -312,13 +315,19 @@ def main():
             observer.stop()
         except Exception:
             pass
-        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        try:
+            console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception:
+            pass
         try:
             event_handler.shutdown()
         except Exception:
             pass
 
-    observer.join()
+    try:
+        observer.join()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()
