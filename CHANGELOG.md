@@ -1,12 +1,20 @@
 # Changelog
-<<<<<<< HEAD
-## [0.1.26] - 2026-05-05
+## [0.1.30] - 2026-05-05
 
 ### Changed
 * **[Performance]:** Hoisted the compound wildcard regex truthiness check out of the directory traversal hot loop, eliminating redundant condition evaluations and speeding up directory exclusion matching for the common case.
 
-## [0.1.25] - 2026-05-04
-=======
+## [0.1.29] - 2026-05-23
+
+### Changed
+* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
+
+## [0.1.28] - 2026-05-22
+
+### Changed
+* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
+
+>>>>>>> origin/main
 ## [0.1.27] - 2026-05-21
 >>>>>>> origin/main
 
