@@ -9,6 +9,7 @@ import re
 import argparse
 import threading
 import functools
+import logging
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from rich.console import Console
@@ -292,16 +293,16 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         try:
             event_handler.shutdown()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         sys.exit(0)
 
     if platform.system() != "Windows":
@@ -313,20 +314,20 @@ def main():
     except KeyboardInterrupt:
         try:
             observer.stop()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         try:
             event_handler.shutdown()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
     try:
         observer.join()
-    except Exception:
-        pass
+    except Exception as e:
+        logging.debug('Shutdown cleanup failed', exc_info=e)
 
 if __name__ == "__main__":
     main()
