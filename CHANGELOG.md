@@ -1,9 +1,20 @@
 # Changelog
-## [0.1.30] - 2026-05-21
+## [0.1.32] - 2026-05-21
 
 ### Changed
 * **[Performance]:** Refactored exact and compound wildcard evaluations in the core ignore loop to avoid wasteful truthiness checks and method lookups. Pre-computed string slicing lengths for fast path matching, minimizing redundant functional overhead on bulk filesystem events.
 * **[Performance]:** Bypassed the use of `getattr` on guaranteed watchdog attributes, marginally speeding up high-frequency event dispatches.
+
+## [0.1.31] - 2026-05-28
+
+### Changed
+* **[Quality]:** Assured the optimization to hoist regex variables in the ignore loop. Resolved static analysis warnings related to mocking in the shutdown test suite.
+* **[Lifecycle]:** Synced documentation and pruned dead code.
+
+## [0.1.30] - 2026-05-27
+
+### Changed
+* **[Performance]:** Hoisted loop-invariant truthiness checks and regex property lookups into local scope within the ignore evaluation hot path to reduce evaluation overhead.
 
 ## [0.1.29] - 2026-05-23
 

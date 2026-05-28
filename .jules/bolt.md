@@ -181,13 +181,28 @@ In high-frequency Python hot paths (like checking path parts against a regex), u
 Action:
 Prefer explicit `for` loops with early returns over `any()` generators in hot paths. Lift loop-invariant checks and expensive builtins (like `len()`) outside of tight loops. Use direct attribute access over `getattr` when the attribute's existence is guaranteed.
 
+## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
+
+Learning:
+Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance properties like `self.simple_wildcard_regex` repeatedly inside loop conditions (even if implicit truthiness checks) incurs measurable overhead in high-frequency event streams.
+
+Action:
+Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
+
+## 2026-05-27 — Graceful Shutdown Sequence Reliability
+
+Learning:
+When implementing graceful shutdown sequences (e.g., `SIGTERM` signal handlers and `KeyboardInterrupt` exception blocks), grouping multiple cleanup steps (like stopping observers, printing output, and shutting down event handlers) into a single try block, or no try block, is unreliable. If an exception occurs in the first step, subsequent critical cleanup steps (like terminating subprocesses) will be silently skipped, leading to orphaned processes and resource leaks.
+
+Action:
+Wrap each individual cleanup operation in its own dedicated `try...except Exception: pass` block to guarantee that the failure of one cleanup step does not prevent the execution of the others.
+
 ## 2026-05-14 — String Slicing Optimization in Hot Path
 
 Learning:
 Inside the `_is_ignored_impl` hot path, using `len()` to compute the length of a pre-defined prefix inside loop conditions introduces completely avoidable repeated function overhead. Pre-computing lengths during initialization allows direct array slicing access for better throughput.
 
 Action:
-<<<<<<< HEAD
 Pre-computed strings for path slice operations should also pre-compute their lengths `self._abs_base_path_len` instead of computing `len()` dynamically.
 
 ## 2026-05-14 — Compound Regex Optimization in Hot Path
@@ -205,14 +220,3 @@ Inside the `on_any_event` handler of the file watcher, properties like `event_ty
 
 Action:
 Prefer direct attribute access (`event.event_type` and `event.src_path`) over `getattr` when the attribute is guaranteed to exist.
-=======
-Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
-
-## 2026-05-27 — Graceful Shutdown Sequence Reliability
-
-Learning:
-When implementing graceful shutdown sequences (e.g., `SIGTERM` signal handlers and `KeyboardInterrupt` exception blocks), grouping multiple cleanup steps (like stopping observers, printing output, and shutting down event handlers) into a single try block, or no try block, is unreliable. If an exception occurs in the first step, subsequent critical cleanup steps (like terminating subprocesses) will be silently skipped, leading to orphaned processes and resource leaks.
-
-Action:
-Wrap each individual cleanup operation in its own dedicated `try...except Exception: pass` block to guarantee that the failure of one cleanup step does not prevent the execution of the others.
->>>>>>> origin/main
