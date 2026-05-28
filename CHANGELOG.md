@@ -1,5 +1,16 @@
 # Changelog
-## [0.1.30] - 2026-05-23
+## [0.1.31] - 2026-05-28
+
+### Changed
+* **[Quality]:** Assured the optimization to hoist regex variables in the ignore loop. Resolved static analysis warnings related to mocking in the shutdown test suite.
+* **[Lifecycle]:** Synced documentation and pruned dead code.
+
+## [0.1.30] - 2026-05-27
+
+### Changed
+* **[Performance]:** Hoisted loop-invariant truthiness checks and regex property lookups into local scope within the ignore evaluation hot path to reduce evaluation overhead.
+
+## [0.1.29] - 2026-05-23
 
 ### Changed
 * **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
