@@ -35,11 +35,11 @@ def test_shutdown_exception_isolation():
          patch("sys.argv", ["echo-watch", "--cmd", "echo 1"]):
 
         mock_observer = MagicMock()
-        mock_observer.stop.side_effect = Exception("Observer crash")
-        mock_observer_cls.return_value = mock_observer
+        mock_observer.stop.configure_mock(side_effect=Exception("Observer crash"))
+        mock_observer_cls.configure_mock(return_value=mock_observer)
 
         mock_handler = MagicMock()
-        mock_handler_cls.return_value = mock_handler
+        mock_handler_cls.configure_mock(return_value=mock_handler)
 
         # Test handle_sigterm
         # We can simulate calling the sigterm handler
