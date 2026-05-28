@@ -1,8 +1,21 @@
 # Changelog
-## [0.1.30] - 2026-05-05
+## [0.1.32] - 2026-05-05
 
 ### Changed
 * **[Performance]:** Hoisted the compound wildcard regex truthiness check out of the directory traversal hot loop, eliminating redundant condition evaluations and speeding up directory exclusion matching for the common case.
+
+
+## [0.1.31] - 2026-05-28
+
+### Changed
+* **[Quality]:** Assured the optimization to hoist regex variables in the ignore loop. Resolved static analysis warnings related to mocking in the shutdown test suite.
+* **[Lifecycle]:** Synced documentation and pruned dead code.
+
+
+## [0.1.30] - 2026-05-27
+
+### Changed
+* **[Performance]:** Hoisted loop-invariant truthiness checks and regex property lookups into local scope within the ignore evaluation hot path to reduce evaluation overhead.
 
 ## [0.1.29] - 2026-05-23
 
@@ -14,9 +27,7 @@
 ### Changed
 * **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
 
->>>>>>> origin/main
 ## [0.1.27] - 2026-05-21
->>>>>>> origin/main
 
 ### Changed
 * **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.

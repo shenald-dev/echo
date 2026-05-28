@@ -196,3 +196,11 @@ When implementing graceful shutdown sequences (e.g., `SIGTERM` signal handlers a
 
 Action:
 Wrap each individual cleanup operation in its own dedicated `try...except Exception: pass` block to guarantee that the failure of one cleanup step does not prevent the execution of the others.
+
+## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
+
+Learning:
+Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance properties like `self.simple_wildcard_regex` repeatedly inside loop conditions (even if implicit truthiness checks) incurs measurable overhead in high-frequency event streams.
+
+Action:
+Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.

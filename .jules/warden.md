@@ -208,16 +208,6 @@ Observed the preceding agent optimized event loop lock contention by streamlinin
 
 Alignment / Deferred:
 Version bumped to `0.1.27` as a patch release. No dependency adjustments or complex refactors were deferred.
-<<<<<<< HEAD
-
-## 2026-05-05 — Assessment & Lifecycle
-
-Observation / Pruned:
-Observed the preceding agent optimized the ignore path traversal loop by hoisting the compound wildcard regex truthiness check. This bifurcates the iteration, avoiding redundant evaluations in the hot loop when no compound wildcards exist. Tested structural soundness via pytest and confirmed zero static analysis warnings.
-
-Alignment / Deferred:
-Version bumped to `0.1.29` as a patch release. Updated CHANGELOG.md.
-=======
 
 ## 2026-05-22 — Assessment & Lifecycle
 
@@ -234,4 +224,19 @@ Observed the preceding agent optimized the application shutdown logic by wrappin
 
 Alignment / Deferred:
 Version bumped to `0.1.29` as a patch release. Updated CHANGELOG.md. No dependency updates were deferred or applied.
->>>>>>> origin/main
+
+## 2026-05-28 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the ignore file watcher hot loop by hoisting loop-invariant instance properties (like `self.simple_wildcard_regex`) into local scope variables outside of loops. This eliminates redundant property evaluation overhead in high-frequency event streams. Fixed minor static analysis (Vulture) warnings in the shutdown test suite by configuring mocks correctly instead of setting unused attributes. Tested structural soundness successfully. Zero dead code identified.
+
+Alignment / Deferred:
+Version bumped to `0.1.31` as a patch release reflecting the performance optimization and test quality improvement. Updated CHANGELOG.md. No heavy pruning or major dependency updates required.
+
+## 2026-05-05 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized the ignore path traversal loop by hoisting the compound wildcard regex truthiness check. This bifurcates the iteration, avoiding redundant evaluations in the hot loop when no compound wildcards exist. Tested structural soundness via pytest and confirmed zero static analysis warnings.
+
+Alignment / Deferred:
+Version bumped to `0.1.32` as a patch release. Updated CHANGELOG.md.
