@@ -189,3 +189,11 @@ When implementing graceful shutdown sequences (e.g., `SIGTERM` handlers and `Key
 
 Action:
 Ensure each individual cleanup operation in a graceful shutdown sequence is wrapped in its own dedicated `try...except Exception: pass` block. When evaluating subprocess termination intent after `process.wait()`, perform the check outside the process lock to prevent state masking and dead code execution paths.
+
+## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
+
+Learning:
+Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance properties like `self.simple_wildcard_regex` repeatedly inside loop conditions (even if implicit truthiness checks) incurs measurable overhead in high-frequency event streams.
+
+Action:
+Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
