@@ -200,8 +200,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not self.simple_exact_ignores.isdisjoint(parts):
             return True
 
-        if self.simple_wildcard_regex:
-            match = self.simple_wildcard_regex.match
+        simple_regex = self.simple_wildcard_regex
+        if simple_regex:
+            match = simple_regex.match
             for part in parts:
                 if match(part):
                     return True
@@ -210,9 +211,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if self._has_compound_ignores and len(parts) > 1:
             prefix = parts[0]
             compound_exact_ignores = self.compound_exact_ignores
+            compound_regex = self.compound_wildcard_regex
 
-            if self.compound_wildcard_regex:
-                match = self.compound_wildcard_regex.match
+            if compound_regex:
+                match = compound_regex.match
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
                     if prefix in compound_exact_ignores:
@@ -292,10 +294,22 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
+        except Exception as e:
+            try:
+                console.print(f"[dim yellow]⚠ Could not stop observer cleanly: {escape(str(e))}[/dim yellow]")
+            except Exception:
+                pass
+        try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-            event_handler.shutdown()
         except Exception:
             pass
+        try:
+            event_handler.shutdown()
+        except Exception as e:
+            try:
+                console.print(f"[dim yellow]⚠ Could not stop event handler cleanly: {escape(str(e))}[/dim yellow]")
+            except Exception:
+                pass
         sys.exit(0)
 
     if platform.system() != "Windows":
@@ -309,20 +323,32 @@ def main():
             observer.stop()
         except Exception as e:
             # Safe to ignore; the observer might already be stopped or failing to stop shouldn't prevent cleanup
-            console.print(f"[dim yellow]⚠ Could not stop observer cleanly: {escape(str(e))}[/dim yellow]")
+            try:
+                console.print(f"[dim yellow]⚠ Could not stop observer cleanly: {escape(str(e))}[/dim yellow]")
+            except Exception:
+                pass
 
-        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        try:
+            console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception:
+            pass
 
         try:
             event_handler.shutdown()
         except Exception as e:
             # Safe to ignore; the event handler might already be shut down or its processes already terminated
-            console.print(f"[dim yellow]⚠ Could not stop event handler cleanly: {escape(str(e))}[/dim yellow]")
+            try:
+                console.print(f"[dim yellow]⚠ Could not stop event handler cleanly: {escape(str(e))}[/dim yellow]")
+            except Exception:
+                pass
 
     try:
         observer.join()
     except Exception as e:
-        console.print(f"[dim yellow]⚠ Could not join observer cleanly: {escape(str(e))}[/dim yellow]")
+        try:
+            console.print(f"[dim yellow]⚠ Could not join observer cleanly: {escape(str(e))}[/dim yellow]")
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     main()
