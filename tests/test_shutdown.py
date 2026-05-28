@@ -51,4 +51,3 @@ def test_shutdown_exception_isolation():
             # despite the exception in observer.stop
             assert mock_observer.stop.call_count == 1
             assert mock_handler.shutdown.call_count == 1
-```
