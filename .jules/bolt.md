@@ -165,14 +165,6 @@ Acquiring a thread lock (`self.timer_lock`) on every file system event just to u
 
 Action:
 Prefer direct attribute access for guaranteed attributes (`self.is_shutting_down`). Use double-checked locking when spawning background threads (`if thread is None: with lock: if thread is None: start_thread()`) to avoid acquiring locks on every event, and update thread-safe variables like `time.monotonic()` outside the lock.
-
-## 2026-05-18 — Fast-Path Attributes, Method Hoisting and Path Length Caching
-
-Learning:
-Inside high-frequency Python hot paths, using `getattr` to fetch attributes that are guaranteed to exist on objects (like `src_path` and `event_type` on watchdog `FileSystemEvent`) introduces measurable function call overhead. Additionally, calling `len()` repeatedly on the same immutable strings (like `_abs_base_path` and `_base_prefix`) within loop conditions causes unnecessary recalculations, and method lookups (like `regex.match`) performed repeatedly within loops adds latency.
-
-Action:
-Prefer direct attribute access over `getattr` when the attribute is guaranteed. Pre-compute and store lengths of constant strings during object initialization and use them for string slicing. Hoist loop-invariant truthiness checks and method lookups outside of tight loops to eliminate redundant evaluations.
 ## 2026-05-16 — Generator Expression Overhead in Hot Paths
 
 Learning:
