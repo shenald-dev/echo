@@ -69,16 +69,16 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         ... and so on.
 
  Observation:
-   The head version has added a new section at the top for version 0.1.32 (with a "Fixed" subsection) and then the rest of the content from 0.1.31 onward is the same as the base version? 
+   The head version has added a new section at the top for version 0.1.32 (with a "Fixed" subsection) and then the rest of the content from 0.1.31 onward is the same as the base version?
 
    But note: the base version already has 0.1.31 as the top version.
 
    However, looking at the base version: it has 0.1.31, then 0.1.30, etc.
    The head version: it has 0.1.32, then 0.1.31, then 0.1.30, etc.
 
-   So the head version has added a new version (0.1.32) at the top, and then the rest is the same as the base version? 
+   So the head version has added a new version (0.1.32) at the top, and then the rest is the same as the base version?
 
-   But wait: the base version's 0.1.31 section is exactly the same as the head version's 0.1.31 section? 
+   But wait: the base version's 0.1.31 section is exactly the same as the head version's 0.1.31 section?
 
    Let's compare:
 
@@ -131,17 +131,17 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
         +
          ## [0.1.28] - 2026-05-22
-         
+
          ### Changed
 
    This diff shows that the head version has inserted a block of text starting at the beginning (after the first line) that includes:
         ## [0.1.32] - 2026-05-28
         ### Fixed
-        - ... 
+        - ...
         - ...
         ## [0.1.31] - 2026-05-28
         ### Changed
-        * ... 
+        * ...
         * ...
         ## [0.1.30] - 2026-05-27
         ### Changed
@@ -157,18 +157,18 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         ## [0.1.31] - 2026-05-28
         ... (the Changed section for 0.1.31)
         ## [0.1.30] - 2026-05-27
-        ... 
+        ...
 
    In the head version, we have inserted a new version 0.1.32 at the top, and then the base version's content (starting from 0.1.31) follows.
 
    Therefore, the entire base version content is present in the head version, but shifted down by the added 0.1.32 section.
 
-   However, note: the base version does not have the 0.1.32 section, and the head version has the base version's content (from 0.1.31 onward) exactly as in base? 
+   However, note: the base version does not have the 0.1.32 section, and the head version has the base version's content (from 0.1.31 onward) exactly as in base?
 
    Let's check the base version's 0.1.31 section: it is exactly the same as the head version's 0.1.31 section (which appears after the 0.1.32 section).
 
-   Similarly, the base version's 0.1.30 section: 
-        Base: 
+   Similarly, the base version's 0.1.30 section:
+        Base:
             ## [0.1.30] - 2026-05-27
             ### Changed
             * **[Performance]:** Hoisted loop-invariant truthiness checks and regex property lookups into local scope within the ignore evaluation hot path to reduce evaluation overhead.
@@ -199,7 +199,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
    How did the base version get from the ancestor to having 0.1.31 at the top?
 
-   The ancestor had 0.1.28 as the top version. The base version (main) has added versions 0.1.29, 0.1.30, 0.1.31 on top of 0.1.28? Actually, no: the base version does not show 0.1.28 at all in the top? 
+   The ancestor had 0.1.28 as the top version. The base version (main) has added versions 0.1.29, 0.1.30, 0.1.31 on top of 0.1.28? Actually, no: the base version does not show 0.1.28 at all in the top?
 
    Looking at the base version content provided:
 
@@ -215,7 +215,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         ## [0.1.30] - 2026-05-27
 
         ### Changed
-        * **[Performance]:** Hoisted 
+        * **[Performance]:** Hoisted
 
    ... and then it goes down to 0.1.11.
 
@@ -246,9 +246,9 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
    Therefore, the head version already includes all the versions that the base version has (0.1.29 to 0.1.31) and then adds 0.1.32 on top.
 
-   So the resolved version should be the head version? 
+   So the resolved version should be the head version?
 
-   But wait: what if the base version had some changes that the head version did not incorporate? 
+   But wait: what if the base version had some changes that the head version did not incorporate?
 
    However, note that the head version was created from the base version? Actually, no: the head version is a PR branch that was created from an earlier point. But the problem states:
 
@@ -261,43 +261,43 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
    The base version (main) then added versions 0.1.29, 0.1.30, 0.1.31.
 
-   The head version (PR) then added versions 0.1.29, 0.1.30, 0.1.31, 0.1.32? 
+   The head version (PR) then added versions 0.1.29, 0.1.30, 0.1.31, 0.1.32?
 
-   But wait: how did the head version get 0.1.29 to 0.1.31? It must have been based on an older version of main? 
+   But wait: how did the head version get 0.1.29 to 0.1.31? It must have been based on an older version of main?
 
-   Actually, the head version's content shows that it has 0.1.31 and then 0.1.30, etc., so it must have incorporated the changes from base for versions 0.1.29 to 0.1.31? 
+   Actually, the head version's content shows that it has 0.1.31 and then 0.1.30, etc., so it must have incorporated the changes from base for versions 0.1.29 to 0.1.31?
 
-   However, the problem says it's a conflict, meaning that the head version did not have the base version's changes when it was created? 
+   However, the problem says it's a conflict, meaning that the head version did not have the base version's changes when it was created?
 
-   But note: the head version's content (as provided) includes the base version's changes for 0.1.29 to 0.1.31. 
+   But note: the head version's content (as provided) includes the base version's changes for 0.1.29 to 0.1.31.
 
-   How is that possible? 
+   How is that possible?
 
-   Explanation: The head version (PR branch) was created from an ancestor that did not have the base version's changes. Then, while the PR was open, the base version (main) was updated with new changes (versions 0.1.29 to 0.1.31). The PR author then updated their branch to include the latest main (by merging or rebasing) and then added their own changes (version 0.1.32). 
+   Explanation: The head version (PR branch) was created from an ancestor that did not have the base version's changes. Then, while the PR was open, the base version (main) was updated with new changes (versions 0.1.29 to 0.1.31). The PR author then updated their branch to include the latest main (by merging or rebasing) and then added their own changes (version 0.1.32).
 
-   However, the problem states: "This is a TRUE CONFLICT — both branches modified the same file from the same ancestor". 
+   However, the problem states: "This is a TRUE CONFLICT — both branches modified the same file from the same ancestor".
 
-   This implies that the head version (PR branch) was not updated with the base version's changes. So the head version was based on the ancestor and then added its own changes (which include versions 0.1.29 to 0.1.32) without having seen the base version's changes (which added versions 0.1.29 to 0.1.31). 
+   This implies that the head version (PR branch) was not updated with the base version's changes. So the head version was based on the ancestor and then added its own changes (which include versions 0.1.29 to 0.1.32) without having seen the base version's changes (which added versions 0.1.29 to 0.1.31).
 
-   But wait: that would mean the head version independently added versions 0.1.29 to 0.1.31? 
+   But wait: that would mean the head version independently added versions 0.1.29 to 0.1.31?
 
    However, looking at the head version's content: the descriptions for versions 0.1.29 to 0.1.31 are exactly the same as in the base version.
 
-   Therefore, it is impossible for the head version to have independently added the same descriptions. 
+   Therefore, it is impossible for the head version to have independently added the same descriptions.
 
    This suggests that the head version was actually based on a version that already had the base version's changes? But then there would be no conflict.
 
-   Alternatively, the head version might have been created from the ancestor and then the author added versions 0.1.29 to 0.1.32, but by coincidence the descriptions for 0.1.29 to 0.1.31 matched the base version? 
+   Alternatively, the head version might have been created from the ancestor and then the author added versions 0.1.29 to 0.1.32, but by coincidence the descriptions for 0.1.29 to 0.1.31 matched the base version?
 
    Given the context of a changelog, it is very unlikely that two different people would write the exact same changelog entries for the same versions.
 
-   Therefore, the only logical conclusion is that the head version was created from the base version (or a version that included the base version's changes) and then the author added the 0.1.32 version on top. 
+   Therefore, the only logical conclusion is that the head version was created from the base version (or a version that included the base version's changes) and then the author added the 0.1.32 version on top.
 
-   But then why is there a conflict? 
+   But then why is there a conflict?
 
-   The problem states: "both branches modified the same file from the same ancestor". 
+   The problem states: "both branches modified the same file from the same ancestor".
 
-   If the head version was created from the base version, then the ancestor for the head version would be the base version, not the original ancestor. 
+   If the head version was created from the base version, then the ancestor for the head version would be the base version, not the original ancestor.
 
    However, in a 3-way merge, the ancestor is the common ancestor of the two branches (which is the version before either branch made changes).
 
@@ -307,15 +307,15 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         Base (main): added versions 0.1.29, 0.1.30, 0.1.31.
         Head (PR): was created from the ancestor, and then added versions 0.1.29, 0.1.30, 0.1.31, 0.1.32.
 
-   But then the head version's versions 0.1.29 to 0.1.31 are independent and happen to match the base version? 
+   But then the head version's versions 0.1.29 to 0.1.31 are independent and happen to match the base version?
 
-   Given the exact match in the descriptions, this is highly improbable. 
+   Given the exact match in the descriptions, this is highly improbable.
 
-   Alternatively, the head version was created from the ancestor, and then the author added version 0.1.32 and also, by mistake, duplicated the work of adding versions 0.1.29 to 0.1.31 (and wrote the same descriptions). 
+   Alternatively, the head version was created from the ancestor, and then the author added version 0.1.32 and also, by mistake, duplicated the work of adding versions 0.1.29 to 0.1.31 (and wrote the same descriptions).
 
    But that seems odd.
 
-   Another possibility: the head version was created from the ancestor, and then the author only added version 0.1.32, but when they did so, they also included the entire changelog from the ancestor up to 0.1.28 and then added 0.1.32? 
+   Another possibility: the head version was created from the ancestor, and then the author only added version 0.1.32, but when they did so, they also included the entire changelog from the ancestor up to 0.1.28 and then added 0.1.32?
 
    But that doesn't explain why the head version has 0.1.31, 0.1.30, etc.
 
@@ -343,7 +343,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
    This shows that the head version has the versions 0.1.31 and 0.1.30, etc., with the exact same descriptions as the base version.
 
-   Therefore, the only way this makes sense is if the head version was created from a point that already had the base version's changes (i.e., the head version was based on main) and then the author added the 0.1.32 version on top. 
+   Therefore, the only way this makes sense is if the head version was created from a point that already had the base version's changes (i.e., the head version was based on main) and then the author added the 0.1.32 version on top.
 
    But then, when we merge, there should be no conflict because the head version already includes the base version's changes.
 
@@ -355,23 +355,23 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
    Therefore, to resolve the conflict and keep all changes from both branches, we simply take the head version because it includes everything the base version has (the base version's content is present in the head version starting from the 0.1.31 section) and then adds the 0.1.32 section.
 
-   But note: what if the base version had some changes that are not in the head version? 
+   But note: what if the base version had some changes that are not in the head version?
 
-   The head version's content, as provided, includes the base version's content for versions 0.1.31 downward. And the base version does not have any version above 0.1.31 (it starts at 0.1.31). 
+   The head version's content, as provided, includes the base version's content for versions 0.1.31 downward. And the base version does not have any version above 0.1.31 (it starts at 0.1.31).
 
    Therefore, the head version is a superset of the base version.
 
-   However, we must check the very bottom: the ancestor, base, and head all end with the same old versions (the truncation shows they end with 0.1.11). 
+   However, we must check the very bottom: the ancestor, base, and head all end with the same old versions (the truncation shows they end with 0.1.11).
 
    So the head version has:
         [0.1.32] (new)
         [0.1.31] (same as base)
         [0.1.30] (same as base)
-        ... 
+        ...
         [0.1.11] (same as base and ancestor)
 
    The base version has:
-        [0.1.31] 
+        [0.1.31]
         [0.1.30]
         ...
         [0.1.11]
@@ -380,17 +380,17 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
    So the resolved file should be the head version.
 
-   But wait: what if the base version had some changes in the older versions (below 0.1.11) that the head version does not have? 
+   But wait: what if the base version had some changes in the older versions (below 0.1.11) that the head version does not have?
 
-   The truncation in the display for all three versions shows they end with the same content (the 0.1.11 section and the hardening of termination logic). 
+   The truncation in the display for all three versions shows they end with the same content (the 0.1.11 section and the hardening of termination logic).
 
-   And the line change counts: base changed lines 2-169, head changed lines 2-173. The head version is longer by 4 lines (which matches the added 0.1.32 section: 
+   And the line change counts: base changed lines 2-169, head changed lines 2-173. The head version is longer by 4 lines (which matches the added 0.1.32 section:
         ## [0.1.32] - 2026-05-28   (1 line)
         (empty)                     (1 line)
         ### Fixed                   (1 line)
         - ...                       (1 line)
         - ...                       (1 line)
-        (empty)                     (1 line)  -> but wait, the diff shows 26 lines added? 
+        (empty)                     (1 line)  -> but wait, the diff shows 26 lines added?
 
    Actually, the diff shows:
 
@@ -419,47 +419,47 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
         +
          ## [0.1.28] - 2026-05-22
-         
+
          ### Changed
 
-   This diff is showing that the head version has inserted 22 lines (from +1,4 to +1,26 -> 22 lines added) but wait: the original had 4 lines (from line 1 to 4) and now it has 26 lines? 
+   This diff is showing that the head version has inserted 22 lines (from +1,4 to +1,26 -> 22 lines added) but wait: the original had 4 lines (from line 1 to 4) and now it has 26 lines?
 
-   Actually, the diff header: 
+   Actually, the diff header:
         -1,4   means in the base file, we are looking at lines 1 to 4.
         +1,26  means in the head file, we are looking at lines 1 to 26.
 
-   So the base file had 4 lines in that chunk (lines 1-4: 
+   So the base file had 4 lines in that chunk (lines 1-4:
         line1: # Changelog
-        line2: 
+        line2:
         line3: ## [0.1.28] - 2026-05-22
-        line4: 
-        line5: ### Changed   -> but wait, the diff shows -1,4 meaning 4 lines? 
+        line4:
+        line5: ### Changed   -> but wait, the diff shows -1,4 meaning 4 lines?
 
-   Actually, the diff format: 
-        -<start>,<number of lines> 
+   Actually, the diff format:
+        -<start>,<number of lines>
         +<start>,<number of lines>
 
-   So the base version had 4 lines starting at line 1: 
+   So the base version had 4 lines starting at line 1:
         line1: # Changelog
-        line2: (empty? or the next line) 
+        line2: (empty? or the next line)
         Actually, the base version provided in the file versions starts with:
             # Changelog
             ## [0.1.31] - 2026-05-28
 
         So the base version's first 4 lines are:
             1: # Changelog
-            2: 
+            2:
             3: ## [0.1.31] - 2026-05-28
-            4: 
+            4:
 
    But the diff is comparing the head version to the base version, and it shows:
 
         Base version (the - part) has:
             line1: # Changelog
-            line2: 
+            line2:
             line3: ## [0.1.28] - 2026-05-22   -> wait, this doesn't match the base version we were given.
 
-   This indicates that the diff provided (Head changes vs base) is not comparing the head version to the base version as we have them in the file versions, but rather it is showing what the head version changed relative to the base version, and the base version in this diff context is the version that the head branch was based on? 
+   This indicates that the diff provided (Head changes vs base) is not comparing the head version to the base version as we have them in the file versions, but rather it is showing what the head version changed relative to the base version, and the base version in this diff context is the version that the head branch was based on?
 
    But the problem says: "Git Diff (Head changes vs base)"
 
@@ -483,10 +483,10 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         Base (main): 135 lines changed (lines 2-169)
             # Changelog
           - ## [0.1.28] - 2026-05-22
-          + 
-          - 
+          +
+          -
           + ## [0.1.31] - 2026-05-28
-          ... 
+          ...
 
    This suggests that the base version (main) has changed the ancestor by removing the ## [0.1.28] line and adding a ## [0.1.31] line, etc.
 
@@ -559,18 +559,18 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
    This would duplicate the 0.1.31, 0.1.30, 0.1.29 sections.
 
-   But the diff does not show duplication. The diff shows that after the inserted block, it goes straight to the base version's content starting at ## [0.1.28]? 
+   But the diff does not show duplication. The diff shows that after the inserted block, it goes straight to the base version's content starting at ## [0.1.28]?
 
    Actually, the diff shows:
 
         +## [0.1.32] - 2026-05-28
         +### Fixed
-        +- ... 
+        +- ...
         +- ...
         +
         +## [0.1.31] - 2026-05-28
         +### Changed
-        +* ... 
+        +* ...
         +* ...
         +
         +## [0.1.30] - 2026-05-27
