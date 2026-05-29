@@ -232,7 +232,6 @@ Observed the preceding agent optimized the ignore file watcher hot loop by hoist
 
 Alignment / Deferred:
 Version bumped to `0.1.31` as a patch release reflecting the performance optimization and test quality improvement. Updated CHANGELOG.md. No heavy pruning or major dependency updates required.
-
 ## 2026-05-29 — Assessment & Lifecycle
 
 Observation / Pruned:
