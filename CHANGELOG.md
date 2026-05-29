@@ -1,4 +1,9 @@
 # Changelog
+## [0.1.32] - 2026-05-29
+
+### Changed
+* **[Performance]:** Hoisted loop-invariant truthiness checks and method lookups out of hot path iterations to reduce evaluation overhead during burst events.
+
 
 ## [0.1.31] - 2026-05-28
 
