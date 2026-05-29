@@ -1,11 +1,11 @@
 ## 2026-04-16 — Watcher Process Termination Logic
 
-        Learning:
-        The POSIX signal checking (`process.returncode == -15`) masked legitimate user command cr
+Learning:
+The POSIX signal checking (`process.returncode == -15`) masked legitimate user command crashes. We can safely remove it in favor of checking the `_echo_terminated` flag because the `_terminate_process` method explicitly sets this attribute on the process object *before* it returns or escalates, regardless of platform (`self.is_posix` conditional blocks). However, sleep-based debouncing tests were brittle.
 
-        // ... 14626 characters truncated (middle section) ...
+Action:
+Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
 
-        und ignores when accumulating the directory prefix. This mirrors the wildcard split optimization and further reduces hashing latency in the hot path.
 2024-04-16 — Trailing Slashes in Ignore Patterns
 Learning: Directory ignore patterns supplied with trailing slashes (e.g., `build/`) fail to match because internal paths are normalized without them.
 Action: Ensure `ignore_patterns` list comprehensions strip trailing slashes (`.rstrip('/')`) alongside other normalizations to guarantee robust matching.
@@ -197,3 +197,11 @@ Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance prope
 
 Action:
 Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
+
+## 2026-05-12 — Event Handler Lock Contention and Loop Lookup Optimizations
+
+Learning:
+Inside high-frequency Python event handlers like a file system observer, acquiring a thread lock (`self.timer_lock`) just to update a timestamp or check if a thread needs to be spawned creates unnecessary lock contention and latency. Reading `time.monotonic()` and updating simple state variables is thread-safe and atomic in Python. Additionally, repeatedly looking up methods on objects (e.g., `regex.match` or `self.is_shutting_down`) inside tight loops incurs a measurable attribute lookup penalty.
+
+Action:
+To optimize lock acquisition in high-frequency Python event handlers, avoid acquiring thread locks merely to read `time.monotonic()` (which is thread-safe) or to update simple state variables. Use double-checked locking (e.g., `if thread is None: with lock: if thread is None: start_thread()`) to conditionally spawn background threads without causing lock contention on every filesystem event. To optimize hot paths, prefer direct attribute access (e.g., `self.is_shutting_down`) over `getattr(self, 'is_shutting_down', False)` when the attribute is guaranteed to be initialized in the class constructor, avoiding unnecessary function call overhead.

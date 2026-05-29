@@ -22,9 +22,14 @@
 ### Changed
 * **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
 
-## [0.1.25] - 2026-05-08
+## [0.1.26] - 2026-05-13
 
 ### Changed
+* **[Performance]:** Optimized event handler lock contention and loop lookup latency.
+
+### Changed
+* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
+
 ## [0.1.27] - 2026-05-21
 
 ### Changed
