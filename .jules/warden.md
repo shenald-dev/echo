@@ -208,7 +208,6 @@ Observed the preceding agent optimized event loop lock contention by streamlinin
 
 Alignment / Deferred:
 Version bumped to `0.1.27` as a patch release. No dependency adjustments or complex refactors were deferred.
-<<<<<<< HEAD
 =======
 
 ## 2026-05-22 — Assessment & Lifecycle
@@ -226,4 +225,5 @@ Observed the preceding agent optimized the application shutdown logic by wrappin
 
 Alignment / Deferred:
 Version bumped to `0.1.29` as a patch release. Updated CHANGELOG.md. No dependency updates were deferred or applied.
+<<<<<<< HEAD
 >>>>>>> origin/main
