@@ -173,6 +173,8 @@ Inside the file watcher's `watchdog` event handler, `getattr(event, 'event_type'
 Action:
 Prefer direct attribute access (`event.event_type`, `event.src_path`) over `getattr`. Pre-compute prefix lengths during class initialization. Hoist loop-invariant method lookups (`match = regex.match`) outside of iterations. Remove `self.current_process is process` guards when evaluating subprocess wait results, as the reference can be overwritten during a rapid reload.
 
+
+
 ## 2026-05-16 — Generator Expression Overhead in Hot Paths
 
 Learning:
