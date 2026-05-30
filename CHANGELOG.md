@@ -89,7 +89,7 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
         But wait: the base (main) version we are given in the context does not have the 0.1.27 version at the top? It has 0.1.31 at the top.
 
-        This indicates that the diff provided (Head changes vs base) is actually comparing the head branch to the base branch, but the base branch in this diff is not the same as the base (main) we are given? 
+        This indicates that the diff provided (Head changes vs base) is actually comparing the head branch to the base branch, but the base branch in this diff is not the same as the base (main) we are given?
 
         Actually, note the context:
 
@@ -99,13 +99,13 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
         However, the base (main) branch we are given in the context already has the 0.1.31 version at the top. So why does the diff show that the base (main) branch in the diff has the 0.1.27 version at the top?
 
-        This suggests that the base (main) branch we are given in the context is not the same as the base used in the diff? 
+        This suggests that the base (main) branch we are given in the context is not the same as the base used in the diff?
 
         Let me re-read the context:
 
           Base (main): 141 lines changed (lines 2-169)
 
-        and then it shows a diff-like snippet for the base (main) branch. But note: that snippet is not the full base (main) branch, it is showing the changes that the base (main) branch made relative to the ancestor? 
+        and then it shows a diff-like snippet for the base (main) branch. But note: that snippet is not the full base (main) branch, it is showing the changes that the base (main) branch made relative to the ancestor?
 
         Actually, the context says:
 
@@ -115,8 +115,8 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
             # Changelog
           - ## [0.1.27] - 2026-05-21
-          + 
-          - 
+          +
+          -
           + ## [0.1.31] - 2026-05-28
           ... etc.
 
@@ -155,7 +155,7 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
         Base (B) changes (relative to A):
             - Removed the line: "## [0.1.27] - 2026-05-21"
-            - Added: 
+            - Added:
                   (blank line)
                   ## [0.1.31] - 2026-05-28
                   ### Changed
@@ -163,23 +163,23 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
                   * **[Lifecycle]:** Synced documentation and pruned dead code.
                   (blank line)
                   ## [0.1.30] - 2026-05-27
-                  ... and so on until it gets to the old 0.1.27 version? Actually, no: the base branch changes show that it added several new versions (0.1.31, 0.1.30, 0.1.29, 0.1.28) and then the original 0.1.27 version remains? 
+                  ... and so on until it gets to the old 0.1.27 version? Actually, no: the base branch changes show that it added several new versions (0.1.31, 0.1.30, 0.1.29, 0.1.28) and then the original 0.1.27 version remains?
 
             Actually, the base branch changes snippet shows:
 
                   # Changelog
                 - ## [0.1.27] - 2026-05-21
-                + 
-                - 
+                +
+                -
                 + ## [0.1.31] - 2026-05-28
                 ... (then a bunch of added versions) ...
                 + ## [0.1.28] - 2026-05-22
-                    
-                - 
+
+                -
                 + ### Changed
                 - ## [0.1.23] - 2026-04-30
                 + * **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
-                    
+
                 - ### Changed
                 + ## [0.1.27] - 2026-05-21
                 ... and then it continues with the old content?
@@ -234,21 +234,21 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
                 - ### Changed
                 + ## [0.1.27] - 2026-05-21
 
-        This suggests that the head branch is also modifying the existing 0.1.23 and 0.1.27 entries? 
+        This suggests that the head branch is also modifying the existing 0.1.23 and 0.1.27 entries?
 
-        However, note that the base branch changes snippet also shows modifications to 0.1.23 and 0.1.27? 
+        However, note that the base branch changes snippet also shows modifications to 0.1.23 and 0.1.27?
 
-        Actually, both branches are adding new versions at the top and also modifying some existing version entries? 
+        Actually, both branches are adding new versions at the top and also modifying some existing version entries?
 
-        But the problem states that the changes are in lines 2-169 (for base) and 2-170 (for head). So the changes are only at the top and do not go deep into the existing version history? 
+        But the problem states that the changes are in lines 2-169 (for base) and 2-170 (for head). So the changes are only at the top and do not go deep into the existing version history?
 
-        Given the complexity and the truncation, and the fact that the diff (Head changes vs base) only shows insertions at the top (and no deletions in the existing version history), I suspect that the changes in the base and head branches are limited to adding new version entries at the top and possibly modifying the existing top version (0.1.27) in the ancestor? 
+        Given the complexity and the truncation, and the fact that the diff (Head changes vs base) only shows insertions at the top (and no deletions in the existing version history), I suspect that the changes in the base and head branches are limited to adding new version entries at the top and possibly modifying the existing top version (0.1.27) in the ancestor?
 
         However, the diff (Head changes vs base) shows that the base branch (in the diff) had the 0.1.27 version at the top (after the header) and the head branch has inserted several new versions above it.
 
         But wait: the base (main) branch we are given in the context does not have the 0.1.27 version at the top? It has 0.1.31 at the top. So the base (main) branch must have already inserted the new versions (0.1.31, 0.1.30, etc.) above the 0.1.27 version.
 
-        Therefore, the base (main) branch and the head branch both have inserted the same set of new versions? 
+        Therefore, the base (main) branch and the head branch both have inserted the same set of new versions?
 
         Let's compare the inserted versions in the base branch changes snippet and the head branch changes snippet:
 
@@ -266,17 +266,17 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
         So both branches have added the exact same four new version entries at the top.
 
-        Then why is there a conflict? 
+        Then why is there a conflict?
 
-        The diff (Head changes vs base) shows that the head branch has, relative to the base branch, inserted these four versions? But if the base branch already has them, then the head branch shouldn't be inserting them again? 
+        The diff (Head changes vs base) shows that the head branch has, relative to the base branch, inserted these four versions? But if the base branch already has them, then the head branch shouldn't be inserting them again?
 
-        Unless... the base branch in the diff is not the same as the base (main) branch we are given? 
+        Unless... the base branch in the diff is not the same as the base (main) branch we are given?
 
-        Actually, note: the diff (Head changes vs base) is showing the difference between the head branch and the base branch. If both branches have the same four versions inserted, then the diff should show no difference for those four versions? 
+        Actually, note: the diff (Head changes vs base) is showing the difference between the head branch and the base branch. If both branches have the same four versions inserted, then the diff should show no difference for those four versions?
 
-        But the diff shows that the base branch (in the diff) had only the 0.1.27 version at the top (after the header) and the head branch has the four new versions plus the 0.1.27 version. 
+        But the diff shows that the base branch (in the diff) had only the 0.1.27 version at the top (after the header) and the head branch has the four new versions plus the 0.1.27 version.
 
-        This implies that the base branch (main) in the context of the diff is actually the ancestor? 
+        This implies that the base branch (main) in the context of the diff is actually the ancestor?
 
         But the context says: "Base (main): 141 lines changed (lines 2-169)" and then shows a diff-like snippet. That snippet is the changes that the base (main) branch made relative to the ancestor.
 
@@ -287,7 +287,7 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
         And the diff (Head changes vs base) is showing H - B.
 
-        Now, if changes_base and changes_head both include the same four version insertions, then H - B would not show those insertions because they are in both? 
+        Now, if changes_base and changes_head both include the same four version insertions, then H - B would not show those insertions because they are in both?
 
         But wait: the diff (Head changes vs base) shows:
 
@@ -315,9 +315,9 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
             ## [0.1.27] - 2026-05-21
             (and then the rest)
 
-        So the base branch (B) did not insert the four new versions? It only has the ancestor's content? 
+        So the base branch (B) did not insert the four new versions? It only has the ancestor's content?
 
-        But wait: the base (main) branch section in the context says it has 141 lines changed (lines 2-169) and shows a diff that includes adding the four new versions. 
+        But wait: the base (main) branch section in the context says it has 141 lines changed (lines 2-169) and shows a diff that includes adding the four new versions.
 
         This is a contradiction.
 
@@ -326,8 +326,8 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
         Base (main): 141 lines changed (lines 2-169)
             # Changelog
           - ## [0.1.27] - 2026-05-21
-          + 
-          - 
+          +
+          -
           + ## [0.1.31] - 2026-05-28
           ... etc.
 
@@ -339,14 +339,14 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
           - adding the version 0.1.30 block
           ... and so on.
 
-        But note: it does not show removing the 0.1.27 version and then adding it back? 
+        But note: it does not show removing the 0.1.27 version and then adding it back?
 
         Actually, at the end of the base (main) section snippet, we see:
 
                 - ### Changed
                 + ## [0.1.27] - 2026-05-21
 
-        This means that the base (main) branch is also changing the existing 0.1.27 version? 
+        This means that the base (main) branch is also changing the existing 0.1.27 version?
 
         Specifically, it is removing the line "### Changed" (which was under the 0.1.27 version in the ancestor) and then adding back the line "## [0.1.27] - 2026-05-21" (which was already there?).
 
@@ -363,18 +363,18 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
         - The head branch has also inserted the same four new versions at the top, and left the rest unchanged.
 
-        But then why is there a conflict? 
+        But then why is there a conflict?
 
-        The diff (Head changes vs base) shows that the head branch has, relative to the base branch, inserted the four new versions? That would only be true if the base branch did not have them. 
+        The diff (Head changes vs base) shows that the head branch has, relative to the base branch, inserted the four new versions? That would only be true if the base branch did not have them.
 
         However, the base (main) branch section says it has changes that include adding those four versions.
 
-     Another possibility: the base (main) branch and the head branch have inserted the four new versions, but in a different order? Or with different content? 
+     Another possibility: the base (main) branch and the head branch have inserted the four new versions, but in a different order? Or with different content?
 
      Let's compare the content of the inserted versions in the base branch changes snippet and the head branch changes snippet:
 
         For 0.1.31:
-          Base: 
+          Base:
               ## [0.1.31] - 2026-05-28
               ### Changed
               * **[Quality]:** Assured the optimization to hoist regex variables in the ignore loop. Resolved static analysis warnings related to mocking in the shutdown test suite.
@@ -431,21 +431,21 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
      So the four inserted versions are identical in both branches.
 
-     Then why does the diff (Head changes vs base) show that the head branch has inserted them relative to the base branch? 
+     Then why does the diff (Head changes vs base) show that the head branch has inserted them relative to the base branch?
 
-     It must be that the base branch (main) does NOT have these four versions? 
+     It must be that the base branch (main) does NOT have these four versions?
 
      But the base (main) branch section says it has changed the ancestor by adding them.
 
-     Unless... the base (main) branch section is showing the changes relative to the ancestor, but the base (main) branch we are given in the context is not the result of applying those changes? 
+     Unless... the base (main) branch section is showing the changes relative to the ancestor, but the base (main) branch we are given in the context is not the result of applying those changes?
 
      Given the confusion, and since the problem states that we are to keep ALL meaningful changes from both branches, and the changes are identical, we only need to include them once.
 
-     Additionally, the diff (Head changes vs base) shows that the head branch has, relative to the base branch, inserted the four versions. This implies that the base branch does not have them. 
+     Additionally, the diff (Head changes vs base) shows that the head branch has, relative to the base branch, inserted the four versions. This implies that the base branch does not have them.
 
      But wait: the base (main) branch section says it has 141 lines changed (lines 2-169) and shows a diff that includes adding the four versions. This suggests that the base (main) branch does have them.
 
-     The only explanation is that the diff (Head changes vs base) is mislabeled. It should be "Base changes vs ancestor" or something else? 
+     The only explanation is that the diff (Head changes vs base) is mislabeled. It should be "Base changes vs ancestor" or something else?
 
      However, the problem says: "Git Diff (Head changes vs base)"
 
@@ -482,9 +482,9 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
      Therefore, the base branch (in the diff) does NOT have the four new versions; it only has the ancestor's content.
 
-     But the base (main) branch section in the context says it has changed the ancestor by adding the four new versions. 
+     But the base (main) branch section in the context says it has changed the ancestor by adding the four new versions.
 
-     This means that the base (main) branch we are given in the context is not the same as the base branch used in the diff? 
+     This means that the base (main) branch we are given in the context is not the same as the base branch used in the diff?
 
      Actually, the context says:
 
@@ -506,20 +506,20 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
 
      If we apply the head changes to the ancestor, we also get a branch that has the four new versions inserted at the top.
 
-     Then the base branch and the head branch should be identical in the top part? 
+     Then the base branch and the head branch should be identical in the top part?
 
-     But the diff (Head changes vs base) shows they are not: it shows that the head branch has, relative to the base branch, inserted the four new versions. 
+     But the diff (Head changes vs base) shows they are not: it shows that the head branch has, relative to the base branch, inserted the four new versions.
 
      This would only be true if the base branch did not have the four new versions.
 
-     Unless the base (main) changes snippet is not showing the full story? 
+     Unless the base (main) changes snippet is not showing the full story?
 
      Let's look at the base (main) changes snippet again:
 
         # Changelog
       - ## [0.1.27] - 2026-05-21
-      + 
-      - 
+      +
+      -
       + ## [0.1.31] - 2026-05-28
       + ### Changed
       + * **[Quality]:** Assured the optimization to hoist regex variables in the ignore loop. Resolved static analysis warnings related to mocking in the shutdown test suite.
@@ -538,12 +538,12 @@ We are given a merge conflict in CHANGELOG.md. We have three versions: ancestor,
       + ### Changed
       + * **[Reliability]:** Hardened the `KeyboardInterrupt` signal handler to wrap termination logic in a try-except block, matching the `SIGTERM` behavior and preventing unhandled exceptions during manual shutdown.
       +* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
-          
-      - 
+
+      -
       + ### Changed
       - ## [0.1.23] - 2026-04-30
       + * **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
-          
+
       - ### Changed
       + ## [0.1.27] - 2026-05-21
       + * **[
