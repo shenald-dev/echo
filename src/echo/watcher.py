@@ -239,10 +239,12 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
+        # Performance: Direct attribute access is faster than getattr in hot path
         if event.event_type in ('opened', 'closed_no_write'):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
+        # Performance: Direct attribute access is faster than getattr in hot path
         event_path = event.src_path
 
         is_src_ignored = event_path and self._is_ignored(event_path)
