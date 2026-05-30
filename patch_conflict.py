@@ -1,8 +1,8 @@
 import re
-with open("tests/test_shutdown.py", "r") as f:
+with open(".jules/bolt.md", "r") as f:
     content = f.read()
 
-content = re.sub(r'<<<<<<< HEAD.*?=======\n.*?\n.*?\n.*?\n.*?\n.*?\n.*?\n>>>>>>> origin/main\n', '', content, flags=re.DOTALL)
+content = re.sub(r'<<<<<<< HEAD(.*?)=======(.*?)>>>>>>> origin/main\n?', r'\1\n\2', content, flags=re.DOTALL)
 
-with open("tests/test_shutdown.py", "w") as f:
+with open(".jules/bolt.md", "w") as f:
     f.write(content)
