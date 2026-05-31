@@ -295,21 +295,18 @@ def main():
         try:
             observer.stop()
         except Exception as e:
-            try:
-                console.print(f"[dim yellow]⚠ Could not stop observer cleanly: {escape(str(e))}[/dim yellow]")
-            except Exception:
-                pass
+            import logging
+            logging.debug(f"Exception during observer.stop() in SIGTERM: {e}")
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        except Exception:
-            pass
+        except Exception as e:
+            import logging
+            logging.debug(f"Exception during console.print in SIGTERM: {e}")
         try:
             event_handler.shutdown()
         except Exception as e:
-            try:
-                console.print(f"[dim yellow]⚠ Could not stop event handler cleanly: {escape(str(e))}[/dim yellow]")
-            except Exception:
-                pass
+            import logging
+            logging.debug(f"Exception during event_handler.shutdown() in SIGTERM: {e}")
         sys.exit(0)
 
     if platform.system() != "Windows":
@@ -322,33 +319,23 @@ def main():
         try:
             observer.stop()
         except Exception as e:
-            # Safe to ignore; the observer might already be stopped or failing to stop shouldn't prevent cleanup
-            try:
-                console.print(f"[dim yellow]⚠ Could not stop observer cleanly: {escape(str(e))}[/dim yellow]")
-            except Exception:
-                pass
-
+            import logging
+            logging.debug(f"Exception during observer.stop() in KeyboardInterrupt: {e}")
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        except Exception:
-            pass
-
+        except Exception as e:
+            import logging
+            logging.debug(f"Exception during console.print in KeyboardInterrupt: {e}")
         try:
             event_handler.shutdown()
         except Exception as e:
-            # Safe to ignore; the event handler might already be shut down or its processes already terminated
-            try:
-                console.print(f"[dim yellow]⚠ Could not stop event handler cleanly: {escape(str(e))}[/dim yellow]")
-            except Exception:
-                pass
+            import logging
+            logging.debug(f"Exception during event_handler.shutdown() in KeyboardInterrupt: {e}")
 
     try:
         observer.join()
-    except Exception as e:
-        try:
-            console.print(f"[dim yellow]⚠ Could not join observer cleanly: {escape(str(e))}[/dim yellow]")
-        except Exception:
-            pass
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()
