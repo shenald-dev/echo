@@ -21,8 +21,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.command = command
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
-        self._base_prefix = os.path.join(self.base_path, '')
         self._abs_base_path_len = len(self._abs_base_path)
+        self._base_prefix = os.path.join(self.base_path, '')
         self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
@@ -179,8 +179,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
+            # Performance: Use pre-computed length instead of len() in hot path
             path = path[self._abs_base_path_len:]
         elif path.startswith(self._base_prefix):
+            # Performance: Use pre-computed length instead of len() in hot path
             path = path[self._base_prefix_len:]
         elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
@@ -237,10 +239,12 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
+        # Performance: Direct attribute access is faster than getattr in hot path
         if event.event_type in ('opened', 'closed_no_write'):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
+        # Performance: Direct attribute access is faster than getattr in hot path
         event_path = event.src_path
 
         is_src_ignored = event_path and self._is_ignored(event_path)
