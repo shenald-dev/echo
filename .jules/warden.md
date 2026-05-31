@@ -210,6 +210,13 @@ Observed the preceding agent optimized the exact ignore pattern matching by spli
 
 Alignment / Deferred:
 Version bumped to `0.1.25` as a patch release reflecting the performance optimization. Updated CHANGELOG.md.
+## 2026-05-13 — Assessment & Lifecycle
+
+Observation / Pruned:
+Optimized performance of the watcher hot path by pre-computing string lengths and preventing repeated getattr calls, saving CPU cycles on burst saves.
+
+Alignment / Deferred:
+None
 
 ## 2026-05-13 — Assessment & Lifecycle
 

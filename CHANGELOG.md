@@ -1750,6 +1750,10 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +
          ## [0.1.2
 # Changelog
+## [0.1.26] - 2026-05-13
+
+### Changed
+* **[Performance]:** Optimized performance of the watcher hot path by pre-computing string lengths and preventing repeated getattr calls, saving CPU cycles on burst saves.
 ## [0.1.32] - 2026-05-21
 
 ### Changed
