@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.33] - 2026-05-31
+
+### Performance
+- Optimized `_is_ignored` hot path by replacing expensive `range(1, len(parts))` and `path.replace` operations with explicit slices (`parts[1:]`) and condition checks (`if '\\' in path:`).
+
+### Changed
+* **[Lifecycle]:** Assured the hot-path ignore optimizations (eliminating redundant path splitting for root files and deferring `dest_path` extraction). Verified structural soundness and zero dead code.
+
 ## [0.1.32] - 2026-05-29
 
 ### Performance
