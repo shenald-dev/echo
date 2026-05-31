@@ -21,10 +21,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.command = command
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
-        self._abs_base_path_len = len(self._abs_base_path)
-        self._abs_base_path_rstrip = self._abs_base_path.rstrip(os.sep)
         self._base_prefix = os.path.join(self.base_path, '')
-
+        self._abs_base_path_len = len(self._abs_base_path)
         self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
@@ -184,7 +182,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
             path = path[self._abs_base_path_len:]
         elif path.startswith(self._base_prefix):
             path = path[self._base_prefix_len:]
-        elif path == self.base_path or path == self._abs_base_path_rstrip:
+        elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
         elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."):
             pass
