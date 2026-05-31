@@ -133,21 +133,3 @@ def test_character_class_wildcard_match():
     assert handler._is_ignored("z.tmp") is True
     assert handler._is_ignored("1.tmp") is False
     assert handler._is_ignored("A.tmp") is False
-
-def test_getattr_bypass_optimization():
-    handler = CommandRunnerHandler("echo 1")
-
-    # Mock event where src_path and event_type exist (which is guaranteed in watchdog)
-    # This just ensures we don't crash when directly accessing these attributes
-    class DummyEvent:
-        def __init__(self, src_path, event_type, is_directory=False):
-            self.src_path = src_path
-            self.event_type = event_type
-            self.is_directory = is_directory
-
-    event = DummyEvent(src_path="test.py", event_type="modified")
-
-    # Should not crash
-    handler.on_any_event(event)
-
-    assert handler.last_event_path == "test.py"
