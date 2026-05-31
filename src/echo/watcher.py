@@ -9,6 +9,7 @@ import re
 import argparse
 import threading
 import functools
+import logging
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from rich.console import Console
@@ -194,16 +195,11 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not path:
             return False
 
-        normalized_path = path.replace('\\', '/') if '\\' in path else path
+        normalized_path = path.replace('\\', '/')
 
-        if '/' not in normalized_path:
-            if normalized_path in self.simple_exact_ignores:
-                return True
-            parts = [normalized_path]
-        else:
-            parts = normalized_path.split('/')
-            if not self.simple_exact_ignores.isdisjoint(parts):
-                return True
+        parts = normalized_path.split('/')
+        if not self.simple_exact_ignores.isdisjoint(parts):
+            return True
 
         simple_regex = self.simple_wildcard_regex
         if simple_regex:
@@ -220,15 +216,15 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             if compound_regex:
                 match = compound_regex.match
-                for i in range(1, len(parts)):
-                    prefix = f"{prefix}/{parts[i]}"
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
                     if prefix in compound_exact_ignores:
                         return True
                     if match(prefix):
                         return True
             else:
-                for i in range(1, len(parts)):
-                    prefix = f"{prefix}/{parts[i]}"
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
                     if prefix in compound_exact_ignores:
                         return True
 
@@ -242,20 +238,23 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
-        event_type = event.event_type
-        if event_type == 'opened' or event_type == 'closed_no_write':
+        if event.event_type in ('opened', 'closed_no_write'):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
         event_path = event.src_path
-        if not event_path:
-            return
 
-        if self._is_ignored(event_path):
-            dest_path = event.dest_path if event_type == 'moved' else None
-            if not dest_path or self._is_ignored(dest_path):
+        is_src_ignored = event_path and self._is_ignored(event_path)
+        dest_path = getattr(event, 'dest_path', None)
+
+        if is_src_ignored:
+            is_dest_ignored = dest_path and self._is_ignored(dest_path)
+            if not dest_path or is_dest_ignored:
                 return
             event_path = dest_path
+
+        if not event_path:
+            return
 
         self.last_event_time = time.monotonic()
         self.last_event_path = event_path
@@ -296,16 +295,16 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         try:
             event_handler.shutdown()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         sys.exit(0)
 
     if platform.system() != "Windows":
@@ -317,21 +316,20 @@ def main():
     except KeyboardInterrupt:
         try:
             observer.stop()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        except Exception:
-            pass
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
         try:
             event_handler.shutdown()
-        except Exception:
-            pass
-
+        except Exception as e:
+            logging.debug('Shutdown cleanup failed', exc_info=e)
     try:
         observer.join()
-    except Exception:
-        pass
+    except Exception as e:
+        logging.debug('Shutdown cleanup failed', exc_info=e)
 
 if __name__ == "__main__":
     main()
