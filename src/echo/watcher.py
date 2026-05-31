@@ -194,7 +194,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not path:
             return False
 
-        normalized_path = path.replace('\\', '/')
+        normalized_path = path.replace('\\', '/') if '\\' in path else path
 
         if '/' not in normalized_path:
             if normalized_path in self.simple_exact_ignores:
@@ -220,15 +220,15 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             if compound_regex:
                 match = compound_regex.match
-                for i in range(1, len(parts)):
-                    prefix = f"{prefix}/{parts[i]}"
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
                     if prefix in compound_exact_ignores:
                         return True
                     if match(prefix):
                         return True
             else:
-                for i in range(1, len(parts)):
-                    prefix = f"{prefix}/{parts[i]}"
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
                     if prefix in compound_exact_ignores:
                         return True
 

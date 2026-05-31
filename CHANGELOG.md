@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.33] - 2026-05-31
+
+### Performance
+- Optimized `_is_ignored` hot path by replacing expensive `range(1, len(parts))` and `path.replace` operations with explicit slices (`parts[1:]`) and condition checks (`if '\\' in path:`).
+
+
 ## [0.1.32] - 2026-05-29
 
 ### Performance
