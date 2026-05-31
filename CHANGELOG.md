@@ -1750,6 +1750,12 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +
          ## [0.1.2
 # Changelog
+## [0.1.32] - 2026-05-05
+
+### Changed
+* **[Performance]:** Hoisted the compound wildcard regex truthiness check out of the directory traversal hot loop, eliminating redundant condition evaluations and speeding up directory exclusion matching for the common case.
+
+
 
 ## [0.1.33] - 2026-05-31
 

@@ -765,6 +765,13 @@ Evaluating a combined `exact_ignores` set that includes both simple patterns (e.
 Action:
 Split `exact_ignores` into `simple_exact_ignores` (no slashes) and `compound_exact_ignores` (contains slashes), and convert them to `frozenset`s. Only apply the simple ignores when checking `isdisjoint(parts)`, and apply the compound ignores when accumulating the directory prefix. This mirrors the wildcard split optimization and further reduces hashing latency in the hot path.
 
+## 2026-05-05 — Hoisting Hot Loop Path Checks
+
+Learning:
+Inside high-throughput file watcher ignore filtering mechanisms (like `_is_ignored_impl`), executing conditional truthiness checks against instance variables inside an accumulation loop adds structural overhead. Loop unswitching (hoisting the condition outside the loop) drastically speeds up the traversal in the common fallback case without sacrificing structural soundness.
+
+Action:
+Actively identify invariant loop conditionals in hot paths across systems and bifurcate them using loop unswitching to minimize cumulative instruction count, especially in event-driven systems where these functions run millions of times per process.
 ## 2026-05-12 — Event Handler Lock Contention
 
 Learning:

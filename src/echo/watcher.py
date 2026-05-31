@@ -196,14 +196,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         normalized_path = path.replace('\\', '/')
 
-        if '/' not in normalized_path:
-            if normalized_path in self.simple_exact_ignores:
-                return True
-            parts = [normalized_path]
-        else:
-            parts = normalized_path.split('/')
-            if not self.simple_exact_ignores.isdisjoint(parts):
-                return True
+        parts = normalized_path.split('/')
+        if not self.simple_exact_ignores.isdisjoint(parts):
+            return True
 
         simple_regex = self.simple_wildcard_regex
         if simple_regex:
@@ -215,25 +210,20 @@ class CommandRunnerHandler(FileSystemEventHandler):
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
         if self._has_compound_ignores and len(parts) > 1:
             prefix = parts[0]
-            # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
-            # and wildcard matching, so we start accumulating from the second part.
-
-            # Hot path optimization: hoist invariant truthiness and method lookup
-            # (`match = ...match`) outside the inner accumulation loop.
             compound_exact_ignores = self.compound_exact_ignores
             compound_regex = self.compound_wildcard_regex
 
             if compound_regex:
                 match = compound_regex.match
-                for i in range(1, len(parts)):
-                    prefix = f"{prefix}/{parts[i]}"
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
                     if prefix in compound_exact_ignores:
                         return True
                     if match(prefix):
                         return True
             else:
-                for i in range(1, len(parts)):
-                    prefix = f"{prefix}/{parts[i]}"
+                for part in parts[1:]:
+                    prefix = f"{prefix}/{part}"
                     if prefix in compound_exact_ignores:
                         return True
 
@@ -247,20 +237,23 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
-        event_type = event.event_type
-        if event_type == 'opened' or event_type == 'closed_no_write':
+        if event.event_type in ('opened', 'closed_no_write'):
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
         event_path = event.src_path
-        if not event_path:
-            return
 
-        if self._is_ignored(event_path):
-            dest_path = event.dest_path if event_type == 'moved' else None
-            if not dest_path or self._is_ignored(dest_path):
+        is_src_ignored = event_path and self._is_ignored(event_path)
+        dest_path = getattr(event, 'dest_path', None)
+
+        if is_src_ignored:
+            is_dest_ignored = dest_path and self._is_ignored(dest_path)
+            if not dest_path or is_dest_ignored:
                 return
             event_path = dest_path
+
+        if not event_path:
+            return
 
         self.last_event_time = time.monotonic()
         self.last_event_path = event_path
