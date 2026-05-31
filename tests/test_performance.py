@@ -1,5 +1,4 @@
 import timeit
-import pytest
 from echo.watcher import CommandRunnerHandler
 
 def test_performance_is_ignored_hotpath():
