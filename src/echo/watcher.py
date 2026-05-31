@@ -167,13 +167,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.is_shutting_down:
                     return
 
-            if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
-                console.print("[yellow]✔ Command terminated by reload.[/yellow]")
-            else:
-                if process.returncode == 0:
-                    console.print("[green]✔ Command executed successfully.[/green]")
+                if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
+                    console.print("[yellow]✔ Command terminated by reload.[/yellow]")
                 else:
-                    console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
+                    if process.returncode == 0:
+                        console.print("[green]✔ Command executed successfully.[/green]")
+                    else:
+                        console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
         except Exception as e:
             console.print(f"[bold red]Error executing command: {escape(str(e))}[/bold red]")
 
@@ -200,9 +200,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not self.simple_exact_ignores.isdisjoint(parts):
             return True
 
-        simple_regex = self.simple_wildcard_regex
-        if simple_regex:
-            match = simple_regex.match
+        if self.simple_wildcard_regex:
+            match = self.simple_wildcard_regex.match
             for part in parts:
                 if match(part):
                     return True
@@ -211,10 +210,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if self._has_compound_ignores and len(parts) > 1:
             prefix = parts[0]
             compound_exact_ignores = self.compound_exact_ignores
-            compound_regex = self.compound_wildcard_regex
 
-            if compound_regex:
-                match = compound_regex.match
+            if self.compound_wildcard_regex:
+                match = self.compound_wildcard_regex.match
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
                     if prefix in compound_exact_ignores:
@@ -327,7 +325,10 @@ def main():
             pass
 
     try:
+        try:
         observer.join()
+    except Exception:
+        pass
     except Exception:
         pass
 
