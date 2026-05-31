@@ -1812,6 +1812,12 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 ## [0.1.26] - 2026-05-13
 
 ### Changed
+* **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
+
+## [0.1.26] - 2026-05-13
+
+### Changed
+* **[Reliability]:** Restored thread-safe locking around event time and path assignments in `on_any_event` to resolve a race condition that could cause incorrect file executions or missed debounces during high-frequency events.
 * **[Performance]:** Optimized ignore filter hot path by pre-computing path lengths for faster slicing and streamlining compound regex evaluation loops (measured at <1µs evaluation time per call under heavy load).
 ## [0.1.26] - 2026-05-14
 

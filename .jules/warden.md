@@ -214,6 +214,9 @@ Version bumped to `0.1.25` as a patch release reflecting the performance optimiz
 ## 2026-05-13 — Assessment & Lifecycle
 
 Observation / Pruned:
+Observed the preceding agent optimized event loop thread lock contention by preferring direct attribute access, using double-checked locking for thread spawning, and moving thread-safe variable updates outside the lock. I verified this via the test suite and confirmed structural soundness. Static analysis tools reported no dead code or linting issues.
+
+Alignment / Deferred:
 Observed the preceding agents optimized event loop thread lock contention via double-checked locking and non-critical state assignments, as well as optimizing the ignore filter hot path by pre-computing path lengths for faster slicing and streamlining compound regex evaluation loops. Verified tests passed successfully and static analysis tools confirmed no dead code or lint issues.
 
 Alignment / Deferred:
@@ -312,6 +315,17 @@ Observed the preceding agent optimized the ignore file watcher hot loop by hoist
 
 Alignment / Deferred:
 Version bumped to `0.1.31` as a patch release reflecting the performance optimization and test quality improvement. Updated CHANGELOG.md. No heavy pruning or major dependency updates required.
+
+## 2026-05-13 — Assessment & Lifecycle (Amended)
+
+Observation / Pruned:
+## 2026-05-13 — Assessment & Lifecycle (Amended)
+
+Observation / Pruned:
+Observed the preceding agent optimized the event loop lock contention but introduced a race condition by removing the `timer_lock` around concurrent variable assignments (`last_event_time` and `last_event_path`) in `on_any_event`. This could lead to incorrect debounce timeouts or paths executing due to unsafe reads across threads.
+
+Alignment / Deferred:
+Reverted the lock removal around the variable assignments to assure atomic visibility and thread safety across watchdog's multi-threaded event handlers. Passed all QA tests.
 ## 2026-05-29 — Assessment & Lifecycle
 
 Observation / Pruned:
