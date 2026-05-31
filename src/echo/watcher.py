@@ -294,19 +294,16 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
-        except Exception as e:
-            import logging
-            logging.debug(f"Exception during observer.stop() in SIGTERM: {e}")
+        except Exception:
+            pass
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        except Exception as e:
-            import logging
-            logging.debug(f"Exception during console.print in SIGTERM: {e}")
+        except Exception:
+            pass
         try:
             event_handler.shutdown()
-        except Exception as e:
-            import logging
-            logging.debug(f"Exception during event_handler.shutdown() in SIGTERM: {e}")
+        except Exception:
+            pass
         sys.exit(0)
 
     if platform.system() != "Windows":
@@ -318,19 +315,16 @@ def main():
     except KeyboardInterrupt:
         try:
             observer.stop()
-        except Exception as e:
-            import logging
-            logging.debug(f"Exception during observer.stop() in KeyboardInterrupt: {e}")
+        except Exception:
+            pass
         try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        except Exception as e:
-            import logging
-            logging.debug(f"Exception during console.print in KeyboardInterrupt: {e}")
+        except Exception:
+            pass
         try:
             event_handler.shutdown()
-        except Exception as e:
-            import logging
-            logging.debug(f"Exception during event_handler.shutdown() in KeyboardInterrupt: {e}")
+        except Exception:
+            pass
 
     try:
         observer.join()
