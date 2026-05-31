@@ -4,6 +4,16 @@ We are given a merge conflict scenario for the file `.jules/bolt.md`.
  The conflict is in the section that starts around line 185.
 
  From the context:
+Learning:
+The POSIX signal checking (`process.returncode == -15`) masked legitimate user command crashes. We can safely remove it in favor of checking the `_echo_terminated` flag because the `_terminate_process` method explicitly sets this attribute on the process object *before* it returns or escal
+
+// ... 16422.8 characters truncated (middle section) ...
+
+previously addressed in the hot path, it remained in the object initialization, causing minor startup latency.
+
+Action:
+Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
+Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
 
  Base (main) has:
    - The change from the ancestor (which had an action about preferring explicit logical string conditions) 
@@ -602,3 +612,47 @@ We are given a merge conflict scenario for the file `.jules/bolt.md`.
         ## 2026-05-27 — Graceful Shutdown Sequence Reliability
         ... 
         ## 2026-05-27 — Loop-Inv
+Action:
+Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
+
+## 2026-05-27 — Graceful Shutdown Sequence Reliability
+
+Learning:
+When implementing graceful shutdown sequences (e.g., `SIGTERM` signal handlers and `KeyboardInterrupt` exception blocks), grouping multiple cleanup steps (like stopping observers, printing output, and shutting down event handlers) into a single try block, or no try block, is unreliable. If an exception occurs in the first step, subsequent critical cleanup steps (like terminating subprocesses) will be silently skipped, leading to orphaned processes and resource leaks.
+
+Action:
+Wrap each individual cleanup operation in its own dedicated `try...except Exception: pass` block to guarantee that the failure of one cleanup step does not prevent the execution of the others.
+
+## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
+
+Learning:
+Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance properties like `self.simple_wildcard_regex` repeatedly inside loop conditions (even if implicit truthiness checks) incurs measurable overhead in high-frequency event streams.
+
+Action:
+Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
+
+
+## 2026-05-28 — Unittest Mock Attribute Assignment Warnings
+
+Learning:
+When using `unittest.mock`, static analyzers like `vulture` may falsely flag direct attribute assignments on mock objects (e.g., `mock.side_effect = ...` or `mock_cls.return_value = ...`) as unused code.
+
+Action:
+To cleanly resolve this without adding suppression comments, initialize mock settings by passing `return_value` directly into the `patch()` decorators or by using the `.configure_mock()` method.
+
+
+## 2026-05-29 — Path Splitting and Attribute Extraction Optimizations
+
+Learning:
+In high-frequency file watcher loops, `path.split('/')` introduces unnecessary list allocation overhead for files in the root directory. Checking `if '/' not in path:` first avoids this. Additionally, unconditionally extracting `getattr(event, 'dest_path', None)` on every event when it is only needed for `moved` events incurs needless overhead.
+
+Action:
+Always apply fast-path logic (`if '/' not in string:`) before unconditionally splitting strings in hot paths. Defer attribute extraction from external objects (like watchdog events) until the property is strictly required by the event type logic.
+
+## 2026-05-31 — Slice Iteration over Range in Loops
+
+Learning:
+Inside loops that iterate over elements after the first one, using `for part in parts[1:]` (slice iteration) is faster and more Pythonic than using `for i in range(1, len(parts))` and accessing elements by index `parts[i]`. Additionally, string methods like `.replace` are expensive when called repeatedly, so gating them behind an `in` check (e.g., `if '\\' in path: path.replace(...)`) significantly reduces overhead in hot paths if the string rarely contains the target character.
+
+Action:
+Prefer explicit slicing over `range(len())` for iterating subsets of lists. Add conditional fast-paths for expensive string operations in high-frequency event loops.
