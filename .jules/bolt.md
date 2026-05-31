@@ -172,6 +172,14 @@ Inside the file watcher's `watchdog` event handler, `getattr(event, 'event_type'
 
 Action:
 Prefer direct attribute access (`event.event_type`, `event.src_path`) over `getattr`. Pre-compute prefix lengths during class initialization. Hoist loop-invariant method lookups (`match = regex.match`) outside of iterations. Remove `self.current_process is process` guards when evaluating subprocess wait results, as the reference can be overwritten during a rapid reload.
+## 2026-05-14 — Avoid getattr and redundant evaluations in hot paths
+
+Learning:
+Inside the file watcher's `watchdog` event handler, `getattr(event, 'event_type', '')` and `getattr(event, 'src_path', None)` introduce unnecessary `getattr` function call overhead when `event_type` and `src_path` are guaranteed to be present on all watchdog events. Additionally, computing `len(self._abs_base_path)` on every match, checking `if match:` on every iteration before evaluating the regex, and using `self.current_process is process` guards around subprocess return codes introduce latency and bugs.
+
+Action:
+Prefer direct attribute access (`event.event_type`, `event.src_path`) over `getattr`. Pre-compute prefix lengths during class initialization. Hoist loop-invariant method lookups (`match = regex.match`) outside of iterations. Remove `self.current_process is process` guards when evaluating subprocess wait results, as the reference can be overwritten during a rapid reload.
+
 
 
 
@@ -206,3 +214,18 @@ Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance prope
 
 Action:
 Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
+## 2026-05-29 — Path Splitting and Attribute Extraction Optimizations
+
+Learning:
+In high-frequency file watcher loops, `path.split('/')` introduces unnecessary list allocation overhead for files in the root directory. Checking `if '/' not in path:` first avoids this. Additionally, unconditionally extracting `getattr(event, 'dest_path', None)` on every event when it is only needed for `moved` events incurs needless overhead.
+
+Action:
+Always apply fast-path logic (`if '/' not in string:`) before unconditionally splitting strings in hot paths. Defer attribute extraction from external objects (like watchdog events) until the property is strictly required by the event type logic.
+
+## 2026-05-31 — Slice Iteration over Range in Loops
+
+Learning:
+Inside loops that iterate over elements after the first one, using `for part in parts[1:]` (slice iteration) is faster and more Pythonic than using `for i in range(1, len(parts))` and accessing elements by index `parts[i]`. Additionally, string methods like `.replace` are expensive when called repeatedly, so gating them behind an `in` check (e.g., `if '\\' in path: path.replace(...)`) significantly reduces overhead in hot paths if the string rarely contains the target character.
+
+Action:
+Prefer explicit slicing over `range(len())` for iterating subsets of lists. Add conditional fast-paths for expensive string operations in high-frequency event loops.
