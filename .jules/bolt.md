@@ -215,11 +215,3 @@ In high-frequency file watcher loops, `path.split('/')` introduces unnecessary l
 
 Action:
 Always apply fast-path logic (`if '/' not in string:`) before unconditionally splitting strings in hot paths. Defer attribute extraction from external objects (like watchdog events) until the property is strictly required by the event type logic.
-
-## 2026-05-31 — Slice Iteration over Range in Loops
-
-Learning:
-Inside loops that iterate over elements after the first one, using `for part in parts[1:]` (slice iteration) is faster and more Pythonic than using `for i in range(1, len(parts))` and accessing elements by index `parts[i]`. Additionally, string methods like `.replace` are expensive when called repeatedly, so gating them behind an `in` check (e.g., `if '\\' in path: path.replace(...)`) significantly reduces overhead in hot paths if the string rarely contains the target character.
-
-Action:
-Prefer explicit slicing over `range(len())` for iterating subsets of lists. Add conditional fast-paths for expensive string operations in high-frequency event loops.
