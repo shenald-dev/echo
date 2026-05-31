@@ -181,6 +181,7 @@ Using `any()` with a generator expression inside a list comprehension (e.g., `[p
 
 Action:
 Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
+=======
 
 ## 2026-05-27 — Graceful Shutdown Sequence Reliability
 
@@ -189,3 +190,5 @@ When implementing graceful shutdown sequences (e.g., `SIGTERM` signal handlers a
 
 Action:
 Wrap each individual cleanup operation in its own dedicated `try...except Exception: pass` block to guarantee that the failure of one cleanup step does not prevent the execution of the others.
+<<<<<<< HEAD
+>>>>>>> origin/main
