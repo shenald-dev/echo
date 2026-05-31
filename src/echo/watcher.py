@@ -220,15 +220,15 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             if compound_regex:
                 match = compound_regex.match
-                for part in parts[1:]:
-                    prefix = f"{prefix}/{part}"
+                for i in range(1, len(parts)):
+                    prefix = f"{prefix}/{parts[i]}"
                     if prefix in compound_exact_ignores:
                         return True
                     if match(prefix):
                         return True
             else:
-                for part in parts[1:]:
-                    prefix = f"{prefix}/{part}"
+                for i in range(1, len(parts)):
+                    prefix = f"{prefix}/{parts[i]}"
                     if prefix in compound_exact_ignores:
                         return True
 
