@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.33] - 2026-05-31
+
+### Changed
+* **[Lifecycle]:** Assured the hot-path ignore optimizations (eliminating redundant path splitting for root files and deferring `dest_path` extraction). Verified structural soundness and zero dead code.
+
 ## [0.1.32] - 2026-05-29
 
 ### Performance
