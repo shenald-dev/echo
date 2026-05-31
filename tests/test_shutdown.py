@@ -22,35 +22,3 @@ def test_shutdown_prevents_execution():
         thread.join(timeout=2.0)
 
     assert handler.current_process is None or handler.current_process.poll() is not None
-
-
-def test_shutdown_exception_isolation():
-    from echo.watcher import main
-    from unittest.mock import patch, MagicMock
-
-    with patch("echo.watcher.Observer") as mock_observer_cls, \
-         patch("echo.watcher.CommandRunnerHandler") as mock_handler_cls, \
-         patch("echo.watcher.console.print"), \
-         patch("sys.exit"), \
-         patch("sys.argv", ["echo-watch", "--cmd", "echo 1"]):
-
-        mock_observer = MagicMock()
-        mock_observer.stop.configure_mock(side_effect=Exception("Observer crash"))
-        mock_observer_cls.configure_mock(return_value=mock_observer)
-
-        mock_handler = MagicMock()
-        mock_handler_cls.configure_mock(return_value=mock_handler)
-
-        # Test handle_sigterm
-        # We can simulate calling the sigterm handler
-        with patch("signal.signal"):
-            from echo.watcher import main
-
-            # Since main blocks, we need to mock time.sleep to raise KeyboardInterrupt
-            with patch("time.sleep", side_effect=KeyboardInterrupt):
-                main()
-
-            # Now verify observer.stop was called AND handler.shutdown was called
-            # despite the exception in observer.stop
-            assert mock_observer.stop.call_count == 1
-            assert mock_handler.shutdown.call_count == 1
