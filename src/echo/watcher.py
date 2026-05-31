@@ -196,9 +196,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         normalized_path = path.replace('\\', '/')
 
-        parts = normalized_path.split('/')
-        if not self.simple_exact_ignores.isdisjoint(parts):
-            return True
+        if '/' not in normalized_path:
+            if normalized_path in self.simple_exact_ignores:
+                return True
+            parts = [normalized_path]
+        else:
+            parts = normalized_path.split('/')
+            if not self.simple_exact_ignores.isdisjoint(parts):
+                return True
 
         simple_regex = self.simple_wildcard_regex
         if simple_regex:
@@ -210,21 +215,25 @@ class CommandRunnerHandler(FileSystemEventHandler):
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
         if self._has_compound_ignores and len(parts) > 1:
             prefix = parts[0]
+            # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
+            # and wildcard matching, so we start accumulating from the second part.
+
+            # Hot path optimization: hoist invariant truthiness and method lookup
+            # (`match = ...match`) outside the inner accumulation loop.
             compound_exact_ignores = self.compound_exact_ignores
             compound_regex = self.compound_wildcard_regex
 
             if compound_regex:
                 match = compound_regex.match
-                for part in parts[1:]:
-                    prefix = f"{prefix}/{part}"
+                for i in range(1, len(parts)):
+                    prefix = f"{prefix}/{parts[i]}"
                     if prefix in compound_exact_ignores:
                         return True
                     if match(prefix):
                         return True
             else:
-                ignores = self.compound_exact_ignores
-                for part in parts[1:]:
-                    prefix = f"{prefix}/{part}"
+                for i in range(1, len(parts)):
+                    prefix = f"{prefix}/{parts[i]}"
                     if prefix in compound_exact_ignores:
                         return True
 
@@ -238,34 +247,27 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
-        if event.event_type in ('opened', 'closed_no_write'):
+        event_type = event.event_type
+        if event_type == 'opened' or event_type == 'closed_no_write':
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
         event_path = event.src_path
-
-        is_src_ignored = event_path and self._is_ignored(event_path)
-        dest_path = getattr(event, 'dest_path', None)
-
-        if is_src_ignored:
-            is_dest_ignored = dest_path and self._is_ignored(dest_path)
-            if not dest_path or is_dest_ignored:
-                return
-            event_path = dest_path
-
         if not event_path:
             return
 
-        # Fast-path time update without acquiring the lock immediately
-        # Monotonic time reading is thread-safe in Python
-        now = time.monotonic()
-        self.last_event_time = now
+        if self._is_ignored(event_path):
+            dest_path = event.dest_path if event_type == 'moved' else None
+            if not dest_path or self._is_ignored(dest_path):
+                return
+            event_path = dest_path
+
+        self.last_event_time = time.monotonic()
         self.last_event_path = event_path
 
         if self.debounce_thread is None:
             with self.timer_lock:
-                # Double-check thread existence under lock to avoid race conditions.
-                # This pattern is safe under Python's GIL for this specific use case.                if self.debounce_thread is None:
+                if self.debounce_thread is None:
                     self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
                     self.debounce_thread.start()
 
