@@ -8,14 +8,15 @@ Version bumped to `0.1.26` as a patch release reflecting the performance optimiz
 
 ## 2026-04-26 — Assessment & Lifecycle
 
-Observation / Pruned:
-Observed the preceding agent optimized test suite flakiness by replacing static `time.sleep()` calls with dynamic polling of intermediate process states. Verified structural soundness by ensuring tests run deterministically and linter/vulture checks pass. No dead code was found; tests pass.
+   Observation / Pruned:
+   Observed the preceding agent optimized test suite flakiness by replacing static `time.sleep()` calls with dynamic polling of intermediate process states. Verified structural soundness by ensuring tests run deterministically and linter/vulture checks pass. No dead code was found; tests pa
 
-Alignment / Deferred:
-Version bumped to `0.1.19` as a patch release. Updated CHANGELOG.md.
+   // ... 13665 characters truncated (middle section) ...
 
-## 2026-04-02 — Assessment & Lifecycle
+   ensions. This eliminates generator creation overhead, mitigating minor startup latency. Verified structural soundness via test suite and confirmed zero dead code using Vulture.
 
+   Alignment / Deferred:
+   Version bumped to `0.1.28` as a patch release reflecting the performance optimization. Updated CHANGELOG.md. No dependency adjustments were required.
 Observation / Pruned:
 A regression was identified where complex wildcard ignore patterns (like `src/*.tmp` or `build/*`) failed to match correctly due to the regex operating on individual path parts instead of the full normalized path.
 
