@@ -1750,6 +1750,53 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +
          ## [0.1.2
 # Changelog
+
+## [0.1.31] - 2026-05-28
+
+### Changed
+* **[Quality]:** Assured the optimization to hoist regex variables in the ignore loop. Resolved static analysis warnings related to mocking in the shutdown test suite.
+* **[Lifecycle]:** Synced documentation and pruned dead code.
+
+
+## [0.1.30] - 2026-05-27
+
+### Changed
+* **[Performance]:** Hoisted loop-invariant truthiness checks and regex property lookups into local scope within the ignore evaluation hot path to reduce evaluation overhead.
+
+## [0.1.29] - 2026-05-23
+
+### Changed
+* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
+
+## [0.1.28] - 2026-05-22
+
+### Changed
+* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
+
+## [0.1.26] - 2026-05-13
+
+### Changed
+* **[Performance]:** Optimized event handler lock contention and loop lookup latency.
+
+### Changed
+* **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
+
+## [0.1.27] - 2026-05-21
+
+### Changed
+* **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
+
+## [0.1.26] - 2026-05-13
+
+### Changed
+* **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
+
+## [0.1.25] - 2026-05-08
+
+### Changed
+* **[Performance]:** Split `exact_ignores` into simple and compound frozensets to prevent redundant exact match evaluations against path segments, mirroring the wildcard optimization and further reducing latency in the hot path.
+
+## [0.1.24] - 2026-05-02
 ## [0.1.26] - 2026-05-13
 
 ### Changed

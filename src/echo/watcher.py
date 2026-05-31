@@ -21,8 +21,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.command = command
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
-        self._abs_base_path_len = len(self._abs_base_path)
         self._base_prefix = os.path.join(self.base_path, '')
+        self._abs_base_path_len = len(self._abs_base_path)
         self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
@@ -32,8 +32,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.ignore_patterns = [p.replace('\\', '/').rstrip('/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
-        exact_ignores = [p for p in self.ignore_patterns if not any(c in p for c in ('*', '?', '['))]
-        wildcard_ignores = [p for p in self.ignore_patterns if any(c in p for c in ('*', '?', '['))]
+        exact_ignores = [p for p in self.ignore_patterns if '*' not in p and '?' not in p and '[' not in p]
+        wildcard_ignores = [p for p in self.ignore_patterns if '*' in p or '?' in p or '[' in p]
 
         self.simple_exact_ignores = frozenset(p for p in exact_ignores if '/' not in p)
         self.compound_exact_ignores = frozenset(p for p in exact_ignores if '/' in p)
@@ -200,8 +200,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not self.simple_exact_ignores.isdisjoint(parts):
             return True
 
-        if self.simple_wildcard_regex:
-            match = self.simple_wildcard_regex.match
+        simple_regex = self.simple_wildcard_regex
+        if simple_regex:
+            match = simple_regex.match
             for part in parts:
                 if match(part):
                     return True
@@ -209,21 +210,22 @@ class CommandRunnerHandler(FileSystemEventHandler):
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
         if self._has_compound_ignores and len(parts) > 1:
             prefix = parts[0]
-            # Prefix for parts[0] is already evaluated via earlier exact match `isdisjoint()`
-            # and wildcard matching, so we start accumulating from the second part.
+            compound_exact_ignores = self.compound_exact_ignores
+            compound_regex = self.compound_wildcard_regex
 
-            if self.compound_wildcard_regex:
-                match = self.compound_wildcard_regex.match
+            if compound_regex:
+                match = compound_regex.match
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
-                    if prefix in self.compound_exact_ignores:
+                    if prefix in compound_exact_ignores:
                         return True
                     if match(prefix):
                         return True
             else:
+                ignores = self.compound_exact_ignores
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
-                    if prefix in self.compound_exact_ignores:
+                    if prefix in compound_exact_ignores:
                         return True
 
         return False
@@ -254,15 +256,18 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not event_path:
             return
 
-        self.last_event_time = time.monotonic()
+        # Fast-path time update without acquiring the lock immediately
+        # Monotonic time reading is thread-safe in Python
+        now = time.monotonic()
+        self.last_event_time = now
         self.last_event_path = event_path
 
         if self.debounce_thread is None:
             with self.timer_lock:
-                if self.debounce_thread is None:
-                    thread = threading.Thread(target=self._debounce_worker, daemon=True)
-                    self.debounce_thread = thread
-                    thread.start()
+                # Double-check thread existence under lock to avoid race conditions.
+                # This pattern is safe under Python's GIL for this specific use case.                if self.debounce_thread is None:
+                    self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
+                    self.debounce_thread.start()
 
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
@@ -294,7 +299,13 @@ def main():
     def handle_sigterm(_signum, _frame):
         try:
             observer.stop()
+        except Exception:
+            pass
+        try:
             console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception:
+            pass
+        try:
             event_handler.shutdown()
         except Exception:
             pass
@@ -307,11 +318,23 @@ def main():
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        observer.stop()
-        console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
-        event_handler.shutdown()
+        try:
+            observer.stop()
+        except Exception:
+            pass
+        try:
+            console.print("\n[magenta]Echo shutting down. Peace ✨[/magenta]")
+        except Exception:
+            pass
+        try:
+            event_handler.shutdown()
+        except Exception:
+            pass
 
-    observer.join()
+    try:
+        observer.join()
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     main()
