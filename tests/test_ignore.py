@@ -133,3 +133,11 @@ def test_character_class_wildcard_match():
     assert handler._is_ignored("z.tmp") is True
     assert handler._is_ignored("1.tmp") is False
     assert handler._is_ignored("A.tmp") is False
+
+def test_is_ignored_root_file():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["main.py"])
+    assert handler._is_ignored("main.py") is True
+    assert handler._is_ignored("other.py") is False
+
+    handler2 = CommandRunnerHandler("echo 1", ignore_patterns=["src/main.py"])
+    assert handler2._is_ignored("main.py") is False
