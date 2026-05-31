@@ -21,8 +21,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.command = command
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
-        self._abs_base_path_len = len(self._abs_base_path)
         self._base_prefix = os.path.join(self.base_path, '')
+        self._abs_base_path_len = len(self._abs_base_path)
         self._base_prefix_len = len(self._base_prefix)
 
         # Default ignore patterns
@@ -237,7 +237,6 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
-        # event_type and src_path are guaranteed by watchdog's FileSystemEvent
         if event.event_type in ('opened', 'closed_no_write'):
             return
 

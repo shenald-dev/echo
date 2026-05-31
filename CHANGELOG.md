@@ -1783,6 +1783,10 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 ### Changed
 * **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
 
+## [0.1.26] - 2026-05-17
+
+### Changed
+* **[Performance]:** Replaced broad thread locks with double-checked locking for background debounce worker spawning and eliminated redundant state locking in `on_any_event`, significantly increasing file event processing throughput.
 ## [0.1.26] - 2026-05-13
 
 ### Changed

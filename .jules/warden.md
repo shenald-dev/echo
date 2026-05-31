@@ -201,6 +201,14 @@ Observed the preceding agent optimized the exact ignore pattern matching by spli
 
 Alignment / Deferred:
 Version bumped to `0.1.25` as a patch release reflecting the performance optimization. Updated CHANGELOG.md.
+
+## 2026-05-17 — Assessment & Lifecycle
+
+Observation / Pruned:
+Observed the preceding agent optimized event handling throughput by replacing broad thread locks with double-checked locking for background worker spawning and direct attribute accesses. Static analysis confirmed no dead code or regression issues. All tests pass successfully.
+
+Alignment / Deferred:
+Version bumped to `0.1.26` as a patch release reflecting the lock contention fix. Updated CHANGELOG.md. Documented the threading throughput improvement in README.md. No heavy pruning or major dependency updates were required.
 ## 2026-05-23 — Assessment & Lifecycle
 
 Observation / Pruned:
