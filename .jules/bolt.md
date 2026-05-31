@@ -197,3 +197,10 @@ Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance prope
 
 Action:
 Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
+## 2026-05-29 — Path Splitting and Attribute Extraction Optimizations
+
+Learning:
+In high-frequency file watcher loops, `path.split('/')` introduces unnecessary list allocation overhead for files in the root directory. Checking `if '/' not in path:` first avoids this. Additionally, unconditionally extracting `getattr(event, 'dest_path', None)` on every event when it is only needed for `moved` events incurs needless overhead.
+
+Action:
+Always apply fast-path logic (`if '/' not in string:`) before unconditionally splitting strings in hot paths. Defer attribute extraction from external objects (like watchdog events) until the property is strictly required by the event type logic.

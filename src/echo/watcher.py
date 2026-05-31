@@ -196,9 +196,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         normalized_path = path.replace('\\', '/')
 
-        parts = normalized_path.split('/')
-        if not self.simple_exact_ignores.isdisjoint(parts):
-            return True
+        if '/' not in normalized_path:
+            if normalized_path in self.simple_exact_ignores:
+                return True
+            parts = [normalized_path]
+        else:
+            parts = normalized_path.split('/')
+            if not self.simple_exact_ignores.isdisjoint(parts):
+                return True
 
         simple_regex = self.simple_wildcard_regex
         if simple_regex:
@@ -220,15 +225,15 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
             if compound_regex:
                 match = compound_regex.match
-                for part in parts[1:]:
-                    prefix = f"{prefix}/{part}"
+                for i in range(1, len(parts)):
+                    prefix = f"{prefix}/{parts[i]}"
                     if prefix in compound_exact_ignores:
                         return True
                     if match(prefix):
                         return True
             else:
-                for part in parts[1:]:
-                    prefix = f"{prefix}/{part}"
+                for i in range(1, len(parts)):
+                    prefix = f"{prefix}/{parts[i]}"
                     if prefix in compound_exact_ignores:
                         return True
 
@@ -242,23 +247,20 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
-        if event.event_type in ('opened', 'closed_no_write'):
+        event_type = event.event_type
+        if event_type == 'opened' or event_type == 'closed_no_write':
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
         event_path = event.src_path
-
-        is_src_ignored = event_path and self._is_ignored(event_path)
-        dest_path = getattr(event, 'dest_path', None)
-
-        if is_src_ignored:
-            is_dest_ignored = dest_path and self._is_ignored(dest_path)
-            if not dest_path or is_dest_ignored:
-                return
-            event_path = dest_path
-
         if not event_path:
             return
+
+        if self._is_ignored(event_path):
+            dest_path = event.dest_path if event_type == 'moved' else None
+            if not dest_path or self._is_ignored(dest_path):
+                return
+            event_path = dest_path
 
         self.last_event_time = time.monotonic()
         self.last_event_path = event_path
