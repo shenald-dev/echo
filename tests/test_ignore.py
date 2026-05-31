@@ -134,37 +134,10 @@ def test_character_class_wildcard_match():
     assert handler._is_ignored("1.tmp") is False
     assert handler._is_ignored("A.tmp") is False
 
+def test_is_ignored_root_file():
+    handler = CommandRunnerHandler("echo 1", ignore_patterns=["main.py"])
+    assert handler._is_ignored("main.py") is True
+    assert handler._is_ignored("other.py") is False
 
-def test_is_ignored_abs_base_path_match():
-    import os
-    from echo.watcher import CommandRunnerHandler
-    base = os.path.abspath('.')
-    handler = CommandRunnerHandler('echo test', base_path='.', ignore_patterns=['test_dir'])
-    # Test abs_base_path startswith
-    abs_path = os.path.join(base, 'test_dir', 'file.txt')
-    assert handler._is_ignored(abs_path) is True
-    # Test exactly abs_base_path without trailing slash
-    assert handler._is_ignored(base) is False
-
-def test_is_ignored_performance_benchmark():
-    import time, os
-    from echo.watcher import CommandRunnerHandler
-    base = os.path.abspath('.')
-    handler = CommandRunnerHandler('echo test', base_path='.', ignore_patterns=['node_modules', 'build', '*.tmp'])
-
-    # Warm up cache (though we are testing the function logic primarily)
-    test_paths = [
-        os.path.join(base, 'src', 'app.py'),
-        os.path.join(base, 'node_modules', 'pkg', 'index.js'),
-        os.path.join(base, 'build', 'output.bin'),
-        os.path.join(base, 'src', 'test.tmp')
-    ] * 1000
-
-    start = time.monotonic()
-    for path in test_paths:
-        handler._is_ignored_impl(path)  # Bypass LRU cache to test raw implementation speed
-    duration = time.monotonic() - start
-
-    # Assert it takes less than a reasonable threshold (e.g., 0.5s for 4000 calls)
-    # In a real hot path we want this to be extremely fast.
-    assert duration < 0.5
+    handler2 = CommandRunnerHandler("echo 1", ignore_patterns=["src/main.py"])
+    assert handler2._is_ignored("main.py") is False

@@ -166,14 +166,16 @@ class CommandRunnerHandler(FileSystemEventHandler):
             with self.process_lock:
                 if self.is_shutting_down:
                     return
+                # Do not guard with `self.current_process is process`
+                # because self.current_process is reassigned on reload
 
-                if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
-                    console.print("[yellow]✔ Command terminated by reload.[/yellow]")
+            if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
+                console.print("[yellow]✔ Command terminated by reload.[/yellow]")
+            else:
+                if process.returncode == 0:
+                    console.print("[green]✔ Command executed successfully.[/green]")
                 else:
-                    if process.returncode == 0:
-                        console.print("[green]✔ Command executed successfully.[/green]")
-                    else:
-                        console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
+                    console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
         except Exception as e:
             console.print(f"[bold red]Error executing command: {escape(str(e))}[/bold red]")
 
@@ -194,11 +196,16 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not path:
             return False
 
-        normalized_path = path.replace('\\', '/')
+        normalized_path = path.replace('\\', '/') if '\\' in path else path
 
-        parts = normalized_path.split('/')
-        if not self.simple_exact_ignores.isdisjoint(parts):
-            return True
+        if '/' not in normalized_path:
+            if normalized_path in self.simple_exact_ignores:
+                return True
+            parts = [normalized_path]
+        else:
+            parts = normalized_path.split('/')
+            if not self.simple_exact_ignores.isdisjoint(parts):
+                return True
 
         simple_regex = self.simple_wildcard_regex
         if simple_regex:
@@ -237,24 +244,20 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
-        # Note: watchdog's FileSystemEvent guarantees 'event_type' and 'src_path' exist.
-        if event.event_type in ('opened', 'closed_no_write'):
+        event_type = event.event_type
+        if event_type == 'opened' or event_type == 'closed_no_write':
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
         event_path = event.src_path
-
-        is_src_ignored = event_path and self._is_ignored(event_path)
-        dest_path = getattr(event, 'dest_path', None)
-
-        if is_src_ignored:
-            is_dest_ignored = dest_path and self._is_ignored(dest_path)
-            if not dest_path or is_dest_ignored:
-                return
-            event_path = dest_path
-
         if not event_path:
             return
+
+        if self._is_ignored(event_path):
+            dest_path = event.dest_path if event_type == 'moved' else None
+            if not dest_path or self._is_ignored(dest_path):
+                return
+            event_path = dest_path
 
         self.last_event_time = time.monotonic()
         self.last_event_path = event_path
