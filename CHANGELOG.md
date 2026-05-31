@@ -585,7 +585,7 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
    +* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
    +
     ## [0.1.28] - 2026-05-22
-    
+
     ### Changed
 
  This diff shows that the head (PR branch) added a new section for [0.1.29] at the top, and then the base (main) has [0.1.28] and so on.
@@ -625,7 +625,7 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
 
  Actually, looking at the base (main) provided in the context:
 
-   Base (main): 
+   Base (main):
         ## [0.1.31] - 2026-05-28
         ### Changed
         * **[Quality]:** Assured the optimization to hoist regex variables in the ignore loop. Resolved static analysis warnings related to mocking in the shutdown test suite.
@@ -673,15 +673,15 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
         ### Changed
         * **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
 
-   So they are the same? Actually, the head (PR branch) version of [0.1.28] is the same as the base (main) version? 
+   So they are the same? Actually, the head (PR branch) version of [0.1.28] is the same as the base (main) version?
 
-   But wait, the base (main) also has a [0.1.28] section that is exactly the same as the head's [0.1.28]? 
+   But wait, the base (main) also has a [0.1.28] section that is exactly the same as the head's [0.1.28]?
 
    However, note that the base (main) has more recent versions (0.1.31 and 0.1.30) and then 0.1.28, while the head (PR branch) has 0.1.29 and then 0.1.28.
 
-   The conflict is only at the very top: the head added a new version [0.1.29] and the base added two new versions [0.1.31] and [0.1.30] and then the rest of the file (from [0.1.28] downward) is the same in both? 
+   The conflict is only at the very top: the head added a new version [0.1.29] and the base added two new versions [0.1.31] and [0.1.30] and then the rest of the file (from [0.1.28] downward) is the same in both?
 
-   But note: the base (main) has after [0.1.30] the next version is [0.1.28] (skipping 0.1.29). The head (PR branch) has [0.1.29] and then [0.1.28]. 
+   But note: the base (main) has after [0.1.30] the next version is [0.1.28] (skipping 0.1.29). The head (PR branch) has [0.1.29] and then [0.1.28].
 
    Therefore, to resolve we must:
 
@@ -693,10 +693,10 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
 
    Looking at the provided file versions:
 
-     Ancestor: 
+     Ancestor:
         ... (truncated) ... but we know the ancestor had [0.1.28] at the top? Actually, the ancestor is the common base.
 
-     Base (main): 
+     Base (main):
         ... [0.1.31], [0.1.30], then [0.1.28] and so on.
 
      Head (PR branch):
@@ -775,7 +775,7 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
 
    But note: the base (main) provided in the context already includes the common part from [0.1.28] downward? Yes, because the base (main) has:
 
-        ## [0.1.31] - ... 
+        ## [0.1.31] - ...
         ## [0.1.30] - ...
         ## [0.1.28] - ...   [and then the rest]
 
@@ -794,7 +794,7 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
 
         We know the base (main) has:
 
-            ... 
+            ...
             ## [0.1.30] - 2026-05-27
             ... (changes for 0.1.30) ...
             ## [0.1.28] - 2026-05-22
@@ -884,7 +884,7 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
         ## [0.1.31] - 2026-05-28
 
         ### Changed
-        * ... 
+        * ...
         * ...
 
         ## [0.1.30] - 2026-05-27
@@ -907,7 +907,7 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
 
         ## [0.1.30] - 2026-05-27
 
-   There are two blank lines between the end of the [0.1.31] changes and the [0.1.30] header? 
+   There are two blank lines between the end of the [0.1.31] changes and the [0.1.30] header?
 
         ... dead code.
         [blank line]
@@ -1068,9 +1068,9 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
 
         However, note that the base (main) already has two newlines after the [0.1.30] bullet and then the [0.1.28] header. We are going to replace the two newlines and the [0.1.28] header with:
 
-            [two newlines] 
-            [the head's [0.1.29] section without the trailing [0.1.28] header] 
-            [two newlines] 
+            [two newlines]
+            [the head's [0.1.29] section without the trailing [0.1.28] header]
+            [two newlines]
             [the base's [0.1.28] header and beyond]
 
         But wait, the head's [0.1.29] section ends with two newlines and then the [0.1.28] header? Actually, in the head (PR branch) we see:
@@ -1148,8 +1148,8 @@ We are given a merge conflict in CHANGELOG.md between base (main) and head (PR b
 
         Therefore, the resolved file is:
 
-            [base (main) from start to the end of the [0.1.30] section's content (i.e., up to and including the two newlines after the bullet)] 
-            + 
+            [base (main) from start to the end of the [0.1.30] section's content (i.e., up to and including the two newlines after the bullet)]
+            +
             [the head's [0.1.29] section without the trailing [0.1.28] header (i.e., the string: "## [0.1.29] - 2026-05-23\n\n### Changed\n\n* **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.\n\n")]
             +
             [base (main) from the [0.1.28] header to the end]
@@ -1954,11 +1954,11 @@ We are given three versions: ancestor, base (main), and head (PR branch).
             # Changelog
             ## [0.1.28] - 2026-05-22
             ### Changed
-            * [Performance]: ... 
+            * [Performance]: ...
 
             ## [0.1.27] - 2026-05-21
             ### Changed
-            * [Performance]: ... 
+            * [Performance]: ...
 
             ... and then we see later in the base version (after truncation) we have:
                 ## [0.1.26] - 2026-05-13
@@ -1980,10 +1980,10 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +* **[Performance]:** Optimized event loop lock contention by performing hot path assignments outside the thread lock and only initializing the debounce thread safely if one isn't already running.
         +
          ## [0.1.25] - 2026-05-08
-         
+
          ### Changed
 
-    This diff shows that the head branch (PR) has added the [0.1.26] section at the top, while the base branch (main) does not have this section at the top? But wait, the base branch does have [0.1.26] later? 
+    This diff shows that the head branch (PR) has added the [0.1.26] section at the top, while the base branch (main) does not have this section at the top? But wait, the base branch does have [0.1.26] later?
 
  9. Actually, from the context of what changed:
 
@@ -2000,10 +2000,10 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         ... etc.
 
  10. But note: the base branch (main) has a version 0.1.28 and 0.1.27 that are newer than 0.1.26. So in the base branch, the versions are in descending order (newest first) and we have:
-        0.1.28, 0.1.27, 0.1.26, ... 
+        0.1.28, 0.1.27, 0.1.26, ...
 
      The head branch (PR) has:
-        0.1.26, 0.1.25, ... 
+        0.1.26, 0.1.25, ...
 
      This suggests that the head branch is based on an older commit (where the latest was 0.1.25) and then added 0.1.26 on top.
 
@@ -2015,31 +2015,31 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
         We don't have the full base version for 0.1.26, but from the context of what changed in base:
 
-          Base (main): 
-            ... 
+          Base (main):
+            ...
             ## [0.1.26] - 2026-05-13
             - ## [0.1.23] - 2026-04-30
-            + 
-            - 
+            +
+            -
             + ### Changed
             - ### Changed
             + * **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
             - * **[Performance]:** Optimized ignore file filtering in hot paths by fast-tracking common relative paths and avoiding compound loop iterations when unnecessary, significantly reducing CPU cycles on burst saves.
-            + 
-            - 
+            +
+            -
             + ## [0.1.25] - 2026-05-08
             - ## [0.1.22] - 2026-04-29
-            + 
-            - 
+            +
+            -
             + ### Changed
             - ### Changed
             + * **[Performance]:** Split `exact_ignores` into simple and compound frozensets to prevent redundant exact match evaluations against path segments, mirroring the wildcard optimization and further reducing latency in the hot path.
             - * **[Reliability]:** Added a SIGTERM signal handler to ensure proper cleanup of subprocesses during graceful shutdowns initiated by containers and process managers.
-            + 
+            +
 
         This is messy. Instead, let's look at the provided base version in the "File Versions" section for base (main) and head (PR) for the 0.1.26 section.
 
-     Unfortunately, the provided versions are truncated. But we have the git diff for the head vs base, which shows that the head has added the 0.1.26 section at the top, and the base does not have that section at the top? 
+     Unfortunately, the provided versions are truncated. But we have the git diff for the head vs base, which shows that the head has added the 0.1.26 section at the top, and the base does not have that section at the top?
 
      However, note that the base version (main) does have a 0.1.26 section, but it is not at the top because the base has newer versions (0.1.28 and 0.1.27) above it.
 
@@ -2058,7 +2058,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
      The head branch (PR) has:
          [0.1.26]   (as the newest, because it was based on a commit that only had up to 0.1.25)
          [0.1.25]
-         ... 
+         ...
 
  14. Therefore, when we merge, we want to have the newest versions at the top. So we should have:
 
@@ -2073,14 +2073,14 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         Base (main) for [0.1.26] - 2026-05-13 (from the context of what changed in base, we see a description but not the exact content?):
 
           In the base change description, we see for the base:
-            ... 
+            ...
             ## [0.1.26] - 2026-05-13
             + ### Changed
             + * **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
             - * **[Performance]:** Optimized ignore file filtering in hot paths by fast-tracking common relative paths and avoiding compound loop iterations when unnecessary, significantly reducing CPU cycles on burst saves.
             ...
 
-          This seems to indicate that the base branch changed the [0.1.26] section? But wait, the base branch is the target branch and we are told it has newer changes from others. So the base branch might have modified the [0.1.26] section that was already present in the ancestor? 
+          This seems to indicate that the base branch changed the [0.1.26] section? But wait, the base branch is the target branch and we are told it has newer changes from others. So the base branch might have modified the [0.1.26] section that was already present in the ancestor?
 
         However, the ancestor only had up to [0.1.25]. So the [0.1.26] section was not in the ancestor. Therefore, both branches added the [0.1.26] section independently.
 
@@ -2102,7 +2102,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
             * **[Performance]:** Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
             * **[Performance]:** Optimized ignore file filtering in hot paths by fast-tracking common relative paths and avoiding compound loop iterations when unnecessary, significantly reducing CPU cycles on burst saves.
 
-     But wait, the base version of [0.1.26] actually has two bullet points? 
+     But wait, the base version of [0.1.26] actually has two bullet points?
 
      However, note: the base branch (main) also has other versions above it (0.1.28 and 0.1.27) and then the 0.1.26 section. And the head branch (PR) has the 0.1.26 section at the top and then 0.1.25, etc.
 
@@ -2116,7 +2116,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
      However, note that these are two different changes (two different bullet points) in the same section. They are not modifying the same line of logic, but rather adding different bullet points.
 
-     Therefore, we should keep both bullet points? 
+     Therefore, we should keep both bullet points?
 
      But note: the section is for the same version. We can have multiple bullet points under the same version.
 
@@ -2128,7 +2128,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         * [from base] Optimized event loop lock contention by implementing double-checked locking for debounce thread spawning and moving non-critical state assignments outside the thread lock, reducing overhead in high-frequency event loops.
         * [from base] Optimized ignore file filtering in hot paths by fast-tracking common relative paths and avoiding compound loop iterations when unnecessary, significantly reducing CPU cycles on burst saves.
 
-     However, wait: the base version of the [0.1.26] section already had two bullet points? And the head version had one? 
+     However, wait: the base version of the [0.1.26] section already had two bullet points? And the head version had one?
 
      But note: the head version of the [0.1.26] section only had one bullet point? Actually, from the git diff we see:
 
@@ -2137,15 +2137,15 @@ We are given three versions: ancestor, base (main), and head (PR branch).
           +### Changed
           +* **[Performance]:** Optimized event loop lock contention by performing hot path assignments outside the thread lock and only initializing the debounce thread safely if one isn't already running.
 
-     And the base version (from the change description) for the [0.1.26] section had two bullet points? 
+     And the base version (from the change description) for the [0.1.26] section had two bullet points?
 
      However, we must be cautious: the base version of the [0.1.26] section might have been overwritten by the base branch? But the base branch is the target and we are told it has newer changes from others. So the base branch's [0.1.26] section is the one that ended up in the base branch.
 
- 17. But note: the head branch (PR) was based on an older commit (where the latest was 0.1.25) and then added the [0.1.26] section. The base branch (main) also added the [0.1.26] section (but independently) and then added two more versions on top (0.1.27 and 0.1.28). 
+ 17. But note: the head branch (PR) was based on an older commit (where the latest was 0.1.25) and then added the [0.1.26] section. The base branch (main) also added the [0.1.26] section (but independently) and then added two more versions on top (0.1.27 and 0.1.28).
 
      Therefore, we have two different implementations for the same version. We must combine the changes from both branches for that version.
 
- 18. However, there is a catch: the base branch (main) also changed other sections (like 0.1.25, 0.1.24, etc.) and the head branch (PR) also changed those sections? 
+ 18. However, there is a catch: the base branch (main) also changed other sections (like 0.1.25, 0.1.24, etc.) and the head branch (PR) also changed those sections?
 
      We must look at the entire changelog.
 
@@ -2176,7 +2176,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
                   and so on.
 
-          This indicates that the base branch did not just add new versions on top, but also renumbered the existing versions? 
+          This indicates that the base branch did not just add new versions on top, but also renumbered the existing versions?
 
      This is very confusing.
 
@@ -2185,7 +2185,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         - Taking the base branch (main) as the starting point (because it has the newer changes from others and is the target branch).
         - Then, we want to add the changes from the head branch (PR) that are not already in the base.
 
-     However, note that the head branch (PR) is based on an older commit, so it does not have the base branch's changes (like 0.1.27 and 0.1.28). Therefore, we can simply take the base branch and then insert the head branch's changes that are missing? 
+     However, note that the head branch (PR) is based on an older commit, so it does not have the base branch's changes (like 0.1.27 and 0.1.28). Therefore, we can simply take the base branch and then insert the head branch's changes that are missing?
 
      But wait: the head branch (PR) has a version 0.1.26 that the base branch also has (but with different content). And the head branch does not have the base branch's 0.1.27 and 0.1.28.
 
@@ -2207,19 +2207,19 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
         So the head branch's [0.1.26] section is not in the base? Actually, the base has a [0.1.26] section but with different content.
 
-        Therefore, we must update the base branch's [0.1.26] section to include the changes from the head branch's [0.1.26] section? 
+        Therefore, we must update the base branch's [0.1.26] section to include the changes from the head branch's [0.1.26] section?
 
         But note: the base branch's [0.1.26] section already has two bullet points (from the base branch's own changes). And the head branch's [0.1.26] section has one bullet point.
 
-        We want to combine them? 
+        We want to combine them?
 
         However, the rules say: when both modify the same code (same section), if they add different things, keep both.
 
         So we should combine the bullet points of the [0.1.26] section from both branches.
 
- 22. But wait: what about the other sections? 
+ 22. But wait: what about the other sections?
 
-        The head branch (PR) also changed sections below 0.1.26 (like 0.1.25, 0.1.24, etc.)? 
+        The head branch (PR) also changed sections below 0.1.26 (like 0.1.25, 0.1.24, etc.)?
 
         We see in the head branch (PR) change description:
 
@@ -2232,7 +2232,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
             ### Changed
             * [Performance]: Split `exact_ignores` into simple and compound frozensets ...   [this is the same as in the base branch's 0.1.25 section?]
 
-        But note: the base branch (main) also changed the 0.1.25 section? 
+        But note: the base branch (main) also changed the 0.1.25 section?
 
         From the base change description:
 
@@ -2240,7 +2240,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
                 - ## [0.1.25] - 2026-05-08
                 + ## [0.1.28] - 2026-05-22   [so the 0.1.25 section was moved down?]
 
-        Actually, the base branch (main) did not change the content of the 0.1.25 section? It just changed the version header to 0.1.28 and then later inserted a 0.1.25 section? 
+        Actually, the base branch (main) did not change the content of the 0.1.25 section? It just changed the version header to 0.1.28 and then later inserted a 0.1.25 section?
 
         This is very messy.
 
@@ -2254,16 +2254,16 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +* **[Performance]:** Optimized event loop lock contention by performing hot path assignments outside the thread lock and only initializing the debounce thread safely if one isn't already running.
         +
          ## [0.1.25] - 2026-05-08
-         
+
          ### Changed
 
-     This diff indicates that the only difference between the head branch and the base branch is that the head branch has added the [0.1.26] section at the top, and the base branch does not have that section at the top? 
+     This diff indicates that the only difference between the head branch and the base branch is that the head branch has added the [0.1.26] section at the top, and the base branch does not have that section at the top?
 
      But wait, the base branch does have a [0.1.26] section, but it is not at the top because it has [0.1.28] and [0.1.27] above it.
 
      Therefore, the base branch (main) already has the [0.1.26] section (but placed after 0.1.28 and 0.1.27), and the head branch (PR) has the [0.1.26] section at the top (because it doesn't have 0.1.28 and 0.1.27).
 
-     So when we merge, we want to keep the base branch's ordering (with 0.1.28, 0.1.27 at the top) and then we want to incorporate the head branch's changes to the [0.1.26] section? 
+     So when we merge, we want to keep the base branch's ordering (with 0.1.28, 0.1.27 at the top) and then we want to incorporate the head branch's changes to the [0.1.26] section?
 
      But note: the head branch's [0.1.26] section is different from the base branch's [0.1.26] section.
 
@@ -2272,10 +2272,10 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         - Keep the base branch's file as the base (because it is the target and has the latest versions).
         - Then, for the [0.1.26] section, we want to merge the changes from the head branch (PR) into the base branch's [0.1.26] section.
 
-        Specifically, the base branch's [0.1.26] section currently has (from the base version we have in the "File Versions" for base, but we don't have the full content) two bullet points? 
+        Specifically, the base branch's [0.1.26] section currently has (from the base version we have in the "File Versions" for base, but we don't have the full content) two bullet points?
         And the head branch's [0.1.26] section has one bullet point.
 
-        We will combine the bullet points: take the base branch's [0.1.26] section and add the head branch's [0.1.26] section's bullet point (if it's not already there) or vice versa? 
+        We will combine the bullet points: take the base branch's [0.1.26] section and add the head branch's [0.1.26] section's bullet point (if it's not already there) or vice versa?
 
         But note: the head branch's bullet point is about "Optimized event loop lock contention by performing hot path assignments outside the thread lock and only initializing the debounce thread safely if one isn't already running."
 
@@ -2287,7 +2287,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
         We cannot assume they are the same. We must keep both.
 
-        Therefore, we will have three bullet points in the [0.1.26] section? 
+        Therefore, we will have three bullet points in the [0.1.26] section?
 
         However, note: the head branch's change might be a refinement or an alternative? But the rules say to keep both if they are different.
 
@@ -2297,11 +2297,11 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
      So we will add the head branch's bullet point to the base branch's [0.1.26] section.
 
- 26. However, we must also consider: what if the head branch changed other sections? 
+ 26. However, we must also consider: what if the head branch changed other sections?
 
      The git diff only shows a change at the top. But the head branch changed 93 lines (lines 2-141). This suggests that the head branch changed more than just the top.
 
-     But note: the git diff provided is "Head changes vs base", and it only shows a diff at the top. This implies that the rest of the file is the same? 
+     But note: the git diff provided is "Head changes vs base", and it only shows a diff at the top. This implies that the rest of the file is the same?
 
      However, the head branch changed 93 lines and the base changed 134 lines, so there must be more differences.
 
@@ -2309,7 +2309,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
      We are given:
 
-        Ancestor: 
+        Ancestor:
             # Changelog
             ## [0.1.25] - 2026-05-08
             ... (truncated)
@@ -2349,7 +2349,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         Therefore, if we take the base branch and then replace its [0.1.26] section with a merged version (that includes both the base branch's two bullet points and the head branch's one bullet point), we would have:
 
             ## [0.1.28] - 2026-05-22
-            ... 
+            ...
             ## [0.1.27] - 2026-05-21
             ...
             ## [0.1.26] - 2026-05-13
@@ -2360,31 +2360,31 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 
         And then the rest of the file (from [0.1.25] downward) is the same as in the base branch.
 
- 30. But wait: the head branch (PR) also changed the [0.1.25] section and below? 
+ 30. But wait: the head branch (PR) also changed the [0.1.25] section and below?
 
      We see in the head branch (PR) change description that it changed multiple sections. For example:
 
         Head (PR) changed:
-            ## [0.1.25] - 2026-05-08: 
-                changed the bullet point from the ancestor's to: 
+            ## [0.1.25] - 2026-05-08:
+                changed the bullet point from the ancestor's to:
                     * **[Performance]:** Split `exact_ignores` into simple and compound frozensets to prevent redundant exact match evaluations against path segments, mirroring the wildcard optimization and further reducing latency in the hot path.
 
             ## [0.1.24] - 2026-05-02:
-                changed to: 
+                changed to:
                     * **[Performance]:** Split wildcard ignore patterns into simple and compound regexes to prevent redundant evaluations during path checking, improving file event performance.
                     * **[Performance]:** Split `exact_ignores` into simple and compound frozensets to prevent redundant exact match evaluations against path segments, mirroring the wildcard optimization and further reducing latency in the hot path.
 
         and so on.
 
-     The base branch (main) also changed these sections? 
+     The base branch (main) also changed these sections?
 
         Base (main) changed:
-            ## [0.1.25] - 2026-05-08: 
-                changed to: 
+            ## [0.1.25] - 2026-05-08:
+                changed to:
                     * **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
 
             ## [0.1.24] - 2026-05-02:
-                changed to: 
+                changed to:
                     * **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
 
         and so on.

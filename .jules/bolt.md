@@ -16,13 +16,13 @@ Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and
 Ensure testing durations account for scheduling overhead but avoid massive overall CI slowdowns.
 
  Base (main) has:
-   - The change from the ancestor (which had an action about preferring explicit logical string conditions) 
+   - The change from the ancestor (which had an action about preferring explicit logical string conditions)
      plus two new sections added:
         ## 2026-05-27 — Graceful Shutdown Sequence Reliability
         ## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
 
  Head (PR branch) has:
-   - The same change from the ancestor (the action about explicit logical string conditions) 
+   - The same change from the ancestor (the action about explicit logical string conditions)
      plus only one new section:
         ## 2026-05-27 — Graceful Shutdown Sequence Reliability
 
@@ -41,7 +41,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
  But wait: the base and head both have the Graceful Shutdown section? Let's check:
 
-   Base: 
+   Base:
         ... (after the action) ...
         ## 2026-05-27 — Graceful Shutdown Sequence Reliability
         ... (content) ...
@@ -64,7 +64,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
    - Keep the action about explicit logical string conditions (which is common to both).
    - Then, we have the Graceful Shutdown section (which is in both and identical? We must check if they are the same).
 
- However, note the context says that the base and head both have the Graceful Shutdown section and the same content for it? 
+ However, note the context says that the base and head both have the Graceful Shutdown section and the same content for it?
  Let's look at the provided versions:
 
    Base (main) version includes:
@@ -75,7 +75,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
         ## 2026-05-27 — Graceful Shutdown Sequence Reliability
         ... (Learning and Action) ...
 
- And the text of the Learning and Action for Graceful Shutdown is the same in both? 
+ And the text of the Learning and Action for Graceful Shutdown is the same in both?
 
  From the context:
 
@@ -132,7 +132,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    The context says:
 
-        Base (main): 
+        Base (main):
             ... (after the action) ...
             ## 2026-05-27 — Graceful Shutdown Sequence Reliability
             Learning:
@@ -154,21 +154,21 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    Therefore, the base version already includes the head's change (the Graceful Shutdown section) and adds the Loop-Invariant section.
 
-   So we can simply take the base version for the entire file? 
+   So we can simply take the base version for the entire file?
 
    However, note: the rules say we must keep ALL meaningful changes from BOTH branches. The base version has the Loop-Invariant section which is not in the head, but that's okay because we are including it. The head version has no change that is not in the base version in this region.
 
-   But wait: what about the rest of the file? We are only given the conflicting region. We must assume that outside the conflicting region, the three versions are the same? 
+   But wait: what about the rest of the file? We are only given the conflicting region. We must assume that outside the conflicting region, the three versions are the same?
 
    The problem states: "This is a TRUE CONFLICT — both branches modified the same file from the same ancestor"
 
    And we are only shown the changes in the conflicting region.
 
-   Therefore, for the entire file, we can take the base version? 
+   Therefore, for the entire file, we can take the base version?
 
    However, note: the head branch might have changes elsewhere that are not in conflict? But the problem does not mention any other conflicts. We are only to resolve this conflict.
 
-   Since we are only given the conflicting region and the rest of the file is the same, we can output the base version for the entire file? 
+   Since we are only given the conflicting region and the rest of the file is the same, we can output the base version for the entire file?
 
    But wait: the base version is the target branch (main) and we are merging the head branch into it. The base version already includes the head's change (Graceful Shutdown) and adds the Loop-Invariant. So if we take the base version, we are including the head's change and the base's extra change.
 
@@ -180,19 +180,19 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    However, note: the base version might have other changes that are not in the head? We are not told of any other conflicts, so we assume that the base version is the correct resolution for the entire file.
 
-   But wait: the problem says "Output ONLY the complete resolved file content". We are not given the entire file, only snippets. We must reconstruct the entire file from the given snippets? 
+   But wait: the problem says "Output ONLY the complete resolved file content". We are not given the entire file, only snippets. We must reconstruct the entire file from the given snippets?
 
    Actually, we are given the three versions (ancestor, base, head) but only with the conflicting region shown and the rest truncated. We cannot reconstruct the entire file from the given snippets.
 
    However, note the instructions: we are to output the resolved file content. We are not given the full file, but we are expected to know that the rest of the file is the same in all three and we only need to resolve the conflict in the shown region.
 
-   Therefore, we must output the entire file as it would be after merging, but we are only allowed to change the conflicting region? 
+   Therefore, we must output the entire file as it would be after merging, but we are only allowed to change the conflicting region?
 
    But we don't have the full file. We are only given the three versions with the middle truncated.
 
    This is a problem.
 
-   Let me read the problem again: 
+   Let me read the problem again:
 
         "File Versions"
 
@@ -208,7 +208,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    We must assume that the only changes are in the shown snippets and the rest of the file is identical in all three.
 
-   Therefore, we can take the base version (which is the target branch) and then adjust the conflicting region to include the head's changes that are missing? 
+   Therefore, we can take the base version (which is the target branch) and then adjust the conflicting region to include the head's changes that are missing?
 
    But wait: the base version already includes the head's change (Graceful Shutdown) and adds the Loop-Invariant. So if we take the base version, we are good.
 
@@ -283,7 +283,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
         ## 2026-04-16 — Watcher Process Termination Logic
         ... (same as ancestor until the action about explicit logical string conditions?) ...
 
-   But wait, the base and head snippets do not show the action about explicit logical string conditions? 
+   But wait, the base and head snippets do not show the action about explicit logical string conditions?
 
    Let me compare:
 
@@ -297,11 +297,11 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
         Then it has:
             2024-04-16 — Trailing Slashes in Ignore Patterns
-            ... 
+            ...
 
         Then truncated, and then:
             ## 2026-05-27 — Graceful Shutdown Sequence Reliability
-            ... 
+            ...
             ## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
             ...
 
@@ -310,7 +310,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
    The Git Diff (Head changes vs base) shows:
 
         @@ -181,3 +181,11 @@ Using `any()` with a generator expression inside a list comprehension (e.g., `[p
-         
+
          Action:
          Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
          +
@@ -333,13 +333,13 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
    The three lines removed are:
 
         Using `any()` with a generator expression inside a list comprehension (e.g., `[p
-         
+
          Action:
          Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
 
    And then the head adds 11 lines: the same action line (which is now unchanged?) and then the Graceful Shutdown section.
 
-   Wait, that doesn't make sense. The diff shows that the head version has the action line and then adds the Graceful Shutdown section? 
+   Wait, that doesn't make sense. The diff shows that the head version has the action line and then adds the Graceful Shutdown section?
 
    Actually, the diff shows:
 
@@ -360,7 +360,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
    The three lines removed (from base) are:
 
         Using `any()` with a generator expression inside a list comprehension (e.g., `[p
-         
+
          Action:
          Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
 
@@ -391,7 +391,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    Therefore, the resolved version should have:
 
-        [everything up to and including the action line about explicit logical string conditions] 
+        [everything up to and including the action line about explicit logical string conditions]
         [then the Graceful Shutdown section]
         [then the Loop-Invariant section]
 
@@ -405,14 +405,14 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    We are given three snippets for the same region of the file. The ancestor snippet shows the action line at the end. The base and head snippets show the beginning of the file (watcher process termination) and then the trailing slashes section and then a truncated middle and then the new sections.
 
-   This suggests that the action line about explicit logical string conditions is actually located BEFORE the watcher process termination logic? 
+   This suggests that the action line about explicit logical string conditions is actually located BEFORE the watcher process termination logic?
 
    But the ancestor snippet shows:
 
         ## 2026-04-16 — Watcher Process Termination Logic
 
         Learning:
-        ... 
+        ...
         Action:
         Prefer explicit logical string conditions ...   [this is the last line of the ancestor snippet]
 
@@ -420,7 +420,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
         ## 2026-04-16 — Watcher Process Termination Logic
 
-   So it appears that the action line is actually part of the watcher process termination logic section? 
+   So it appears that the action line is actually part of the watcher process termination logic section?
 
    Let me read the ancestor snippet again:
 
@@ -465,7 +465,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    But the base and head have:
 
-        Learning: [about POSIX signal checking] 
+        Learning: [about POSIX signal checking]
         Action: [about testing durations]   <-- changed
 
         and then a new section: 2024-04-16 — Trailing Slashes in Ignore Patterns
@@ -478,12 +478,12 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    Given the complexity and the fact that we are only given snippets, we must rely on the diff provided.
 
-   The diff (Head changes vs base) shows only the addition of the Graceful Shutdown section in the head relative to the base? 
+   The diff (Head changes vs base) shows only the addition of the Graceful Shutdown section in the head relative to the base?
 
    But wait, the diff shows:
 
         @@ -181,3 +181,11 @@ Using `any()` with a generator expression inside a list comprehension (e.g., `[p
-         
+
          Action:
          Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
          +
@@ -498,17 +498,17 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
    This diff is showing that the base has, at lines 181-183:
 
         Using `any()` with a generator expression inside a list comprehension (e.g., `[p
-         
+
          Action:
          Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
 
    And the head has replaced those three lines with 11 lines: the same action line and then the Graceful Shutdown section.
 
-   This implies that the base version does NOT have the Graceful Shutdown section at this location? 
+   This implies that the base version does NOT have the Graceful Shutdown section at this location?
 
    But wait, the base version snippet we were given shows that after the truncated middle section, it has the Graceful Shutdown section.
 
-   This suggests that the Graceful Shutdown section appears in two places? 
+   This suggests that the Graceful Shutdown section appears in two places?
 
    This is very confusing.
 
@@ -519,14 +519,14 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
         - The base branch has two new sections (Graceful Shutdown and Loop-Invariant) that are not in the ancestor.
         - The head branch has one new section (Graceful Shutdown) that is not in the ancestor.
 
-   And the action about explicit logical string conditions is in the ancestor and is unchanged in both base and head? 
+   And the action about explicit logical string conditions is in the ancestor and is unchanged in both base and head?
 
    But the base and head snippets show a change in the watcher process termination logic section (they changed the action within that section from the ancestor's action to a new action about testing durations).
 
    So the base and head both have:
 
-        - Changed the watcher process termination logic section: 
-              Learning: same as ancestor? 
+        - Changed the watcher process termination logic section:
+              Learning: same as ancestor?
               Action: changed from the ancestor's action (about explicit logical string conditions) to a new action (about testing durations)
               Then added a new section: 2024-04-16 — Trailing Slashes in Ignore Patterns
 
@@ -540,23 +540,23 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
         Then the Graceful Shutdown section (from both)
         Then the Loop-Invariant section (from base)
 
-   And the action about explicit logical string conditions from the ancestor is gone? 
+   And the action about explicit logical string conditions from the ancestor is gone?
 
    But wait, the base and head snippets do not show the action about explicit logical string conditions in the watcher process termination logic section. They show a different action.
 
    And the diff shows that the base had, at a certain location, three lines that included the action about explicit logical string conditions, and the head replaced that with the action line and the Graceful Shutdown section.
 
-   This suggests that the action about explicit logical string conditions was moved or duplicated? 
+   This suggests that the action about explicit logical string conditions was moved or duplicated?
 
    Given the complexity and the lack of the full file, I think we must trust the diff provided for the conflict.
 
    The diff (Head changes vs base) shows that the head has, relative to the base, added the Graceful Shutdown section at a specific location (replacing three lines that were in the base).
 
-   Therefore, to resolve the conflict, we should take the base version and then apply the head's changes? 
+   Therefore, to resolve the conflict, we should take the base version and then apply the head's changes?
 
    But the head's changes, relative to the base, are to add the Graceful Shutdown section at that location.
 
-   However, the base version already has the Graceful Shutdown section later in the file (after the truncated middle). 
+   However, the base version already has the Graceful Shutdown section later in the file (after the truncated middle).
 
    This would result in two copies of the Graceful Shutdown section.
 
@@ -568,7 +568,7 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    The base branch has the Graceful Shutdown section at a different location (after the truncated middle).
 
-   Therefore, we should keep both? 
+   Therefore, we should keep both?
 
    But that would be two identical sections.
 
@@ -578,12 +578,12 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    Let's look at the ancestor: it does not have the Graceful Shutdown section at all.
 
-   The base version has it in two places? 
+   The base version has it in two places?
         - One at the location shown in the diff (which the diff shows as being three lines that are about the explicit logical string conditions) -> but wait, the diff shows that the base has three lines at that location that are:
               Using `any()` with a generator expression inside a list comprehension (e.g., `[p
-              
+
               Action:
-              Prefer explicit logical string conditions ... 
+              Prefer explicit logical string conditions ...
           and the head replaces that with the action line and the Graceful Shutdown section.
 
         - And then later in the file (after the truncated middle) the base version has the Graceful Shutdown section again.
@@ -604,13 +604,13 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 
    This matches the diff: the head version has, at the location of the diff, the action line and then the Graceful Shutdown section.
 
-   And then the head version snippet does not show any further sections after that? 
+   And then the head version snippet does not show any further sections after that?
 
    The head version snippet ends with the Graceful Shutdown section.
 
-   The base version snippet shows after the truncated middle: 
+   The base version snippet shows after the truncated middle:
         ## 2026-05-27 — Graceful Shutdown Sequence Reliability
-        ... 
+        ...
         ## 2026-05-27 — Loop-Inv
 Action:
 Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
