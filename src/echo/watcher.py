@@ -217,9 +217,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 match = compound_regex.match
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
-                    if prefix in compound_exact_ignores:
-                        return True
-                    if match(prefix):
+                    if prefix in compound_exact_ignores or match(prefix):
                         return True
             else:
                 for part in parts[1:]:
