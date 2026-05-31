@@ -167,13 +167,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.is_shutting_down:
                     return
 
-                if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
-                    console.print("[yellow]✔ Command terminated by reload.[/yellow]")
+            if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
+                console.print("[yellow]✔ Command terminated by reload.[/yellow]")
+            else:
+                if process.returncode == 0:
+                    console.print("[green]✔ Command executed successfully.[/green]")
                 else:
-                    if process.returncode == 0:
-                        console.print("[green]✔ Command executed successfully.[/green]")
-                    else:
-                        console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
+                    console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
         except Exception as e:
             console.print(f"[bold red]Error executing command: {escape(str(e))}[/bold red]")
 
