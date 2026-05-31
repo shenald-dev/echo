@@ -1750,6 +1750,11 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +
          ## [0.1.2
 # Changelog
+## [0.1.32] - 2026-05-29
+
+### Changed
+* **[Performance]:** Hoisted loop-invariant truthiness checks and method lookups out of hot path iterations to reduce evaluation overhead during burst events.
+
 
 ## [0.1.33] - 2026-05-31
 
@@ -1800,6 +1805,10 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 ### Changed
 * **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
 
+## [0.1.26] - 2026-05-14
+
+### Changed
+* **[Performance]:** Optimized event loop execution by avoiding thread lock contention on common attributes and conditionally spawning background debounce threads only when needed.
 ## [0.1.28] - 2026-05-16
 
 ### Changed
