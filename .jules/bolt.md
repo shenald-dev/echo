@@ -773,6 +773,13 @@ Acquiring a thread lock (`self.timer_lock`) on every file system event just to u
 Action:
 Prefer direct attribute access for guaranteed attributes (`self.is_shutting_down`). Use double-checked locking when spawning background threads (`if thread is None: with lock: if thread is None: start_thread()`) to avoid acquiring locks on every event, and update thread-safe variables like `time.monotonic()` outside the lock.
 
+## 2026-05-15 — Hot Path Property Access Optimization
+
+Learning:
+Inside the high-frequency event loop (`on_any_event`) of the file watcher, relying on `getattr(event, 'event_type', '')` and `getattr(event, 'src_path', None)` introduces unnecessary function call overhead. Since `event_type` and `src_path` are guaranteed attributes on `watchdog.events.FileSystemEvent`, direct attribute access is significantly faster. Similarly, recalculating the `len()` of prefix strings inside the string slicing operations in `_is_ignored_impl` occurs redundantly for every ignored file path check. Furthermore, loop invariant checks like `if self.compound_wildcard_regex:` inside hot-path iterations can be safely hoisted using loop unswitching to eliminate branch evaluation on every iteration.
+
+Action:
+Replaced dynamic `getattr()` calls with direct attribute access (`event.event_type`, `event.src_path`) where safe. Pre-calculated and stored base path lengths (`self._abs_base_path_len`, `self._base_prefix_len`) during instantiation to optimize slicing. Hoisted loop invariant truthiness evaluations for regex objects out of the iteration body to streamline directory path filtering.
 ## 2026-05-15 — Hot Path Performance Optimizations
 
 Learning:

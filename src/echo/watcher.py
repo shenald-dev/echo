@@ -217,7 +217,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 match = compound_regex.match
                 for part in parts[1:]:
                     prefix = f"{prefix}/{part}"
-                    if prefix in compound_exact_ignores or match(prefix):
+                    if prefix in compound_exact_ignores:
+                        return True
+                    if match(prefix):
                         return True
             else:
                 for part in parts[1:]:
@@ -235,6 +237,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
             
         # Ignore read-only events to prevent redundant executions
+        # Note: watchdog's FileSystemEvent guarantees 'event_type' and 'src_path' exist.
         if event.event_type in ('opened', 'closed_no_write'):
             return
 
