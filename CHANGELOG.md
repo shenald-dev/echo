@@ -1750,6 +1750,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
         +
          ## [0.1.2
 # Changelog
+## [0.1.32] - 2026-05-28
 ## [0.1.32] - 2026-05-21
 
 ### Changed
@@ -1762,6 +1763,7 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 * **[Quality]:** Assured the optimization to hoist regex variables in the ignore loop. Resolved static analysis warnings related to mocking in the shutdown test suite.
 * **[Lifecycle]:** Synced documentation and pruned dead code.
 
+## [0.1.31] - 2026-05-27
 
 ## [0.1.30] - 2026-05-27
 
@@ -1773,15 +1775,23 @@ We are given three versions: ancestor, base (main), and head (PR branch).
 ### Changed
 * **[Reliability]:** Wrapped graceful shutdown routines in isolated `try...except` blocks to ensure application termination does not hang or crash on errors.
 
+## [0.1.29] - 2026-05-22
 ## [0.1.28] - 2026-05-22
 
 ### Changed
 * **[Performance]:** Replaced generator expressions with explicit string checks during object initialization to eliminate evaluation overhead and reduce startup latency.
 
+## [0.1.29] - 2026-05-21
 ## [0.1.27] - 2026-05-21
 
 ### Changed
 * **[Performance]:** Assured the event loop lock contention optimizations, validating thread safety and structure without introducing new regressions.
+
+## [0.1.28] - 2026-05-16
+
+### Changed
+* **[Performance]:** Pre-computed `_abs_base_path` and `_base_prefix` string lengths during initialization to optimize the hot loop in `_is_ignored_impl`.
+* **[Performance]:** Optimized `on_any_event` by replacing `getattr(event, ...)` with direct attribute access for `event_type` and `src_path`, saving evaluation latency.
 
 ## [0.1.26] - 2026-05-17
 

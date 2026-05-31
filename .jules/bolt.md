@@ -772,6 +772,13 @@ Acquiring a thread lock (`self.timer_lock`) on every file system event just to u
 
 Action:
 Prefer direct attribute access for guaranteed attributes (`self.is_shutting_down`). Use double-checked locking when spawning background threads (`if thread is None: with lock: if thread is None: start_thread()`) to avoid acquiring locks on every event, and update thread-safe variables like `time.monotonic()` outside the lock.
+## 2026-05-16 — Attribute Access and Hot-Path Caching Optimization
+
+Learning:
+Inside the `on_any_event` handler, using `getattr` to access properties (`event_type`, `src_path`) that are inherently present on all relevant watchdog events introduces unnecessary function call overhead in high-frequency event loops. Furthermore, repeatedly calculating the length of string prefixes (`len(self._abs_base_path)`) within the `_is_ignored_impl` string slicing hot-path introduces redundant evaluations.
+
+Action:
+Replaced `getattr` with direct property access for standard properties on the fast path. Pre-computed prefix lengths during watcher initialization (`_abs_base_path_len`, `_base_prefix_len`) to optimize the string slicing in the `_is_ignored_impl` hot path.
 ## 2026-05-20 — Generator Expression Overhead in Object Initialization
 
 Learning:
