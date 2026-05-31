@@ -795,6 +795,14 @@ Using `any()` with a generator expression inside a list comprehension (e.g., `[p
 
 Action:
 Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
+
+## 2026-05-18 — Fast-Path Attributes, Method Hoisting and Path Length Caching
+
+Learning:
+Inside high-frequency Python hot paths, using `getattr` to fetch attributes that are guaranteed to exist on objects (like `src_path` and `event_type` on watchdog `FileSystemEvent`) introduces measurable function call overhead. Additionally, calling `len()` repeatedly on the same immutable strings (like `_abs_base_path` and `_base_prefix`) within loop conditions causes unnecessary recalculations, and method lookups (like `regex.match`) performed repeatedly within loops adds latency.
+
+Action:
+Prefer direct attribute access over `getattr` when the attribute is guaranteed. Pre-compute and store lengths of constant strings during object initialization and use them for string slicing. Hoist loop-invariant truthiness checks and method lookups outside of tight loops to eliminate redundant evaluations.
 ## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
 
 Learning:
@@ -811,6 +819,13 @@ When implementing graceful shutdown sequences (e.g., `SIGTERM` signal handlers a
 Action:
 Wrap each individual cleanup operation in its own dedicated `try...except Exception: pass` block to guarantee that the failure of one cleanup step does not prevent the execution of the others.
 
+## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
+
+Learning:
+Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance properties like `self.simple_wildcard_regex` repeatedly inside loop conditions (even if implicit truthiness checks) incurs measurable overhead in high-frequency event streams.
+
+Action:
+Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
 ## 2026-05-14 — String Slicing Optimization in Hot Path
 
 Learning:
