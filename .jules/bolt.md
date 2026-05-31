@@ -197,3 +197,29 @@ Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance prope
 
 Action:
 Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
+
+
+## 2026-05-28 — Unittest Mock Attribute Assignment Warnings
+
+Learning:
+When using `unittest.mock`, static analyzers like `vulture` may falsely flag direct attribute assignments on mock objects (e.g., `mock.side_effect = ...` or `mock_cls.return_value = ...`) as unused code.
+
+Action:
+To cleanly resolve this without adding suppression comments, initialize mock settings by passing `return_value` directly into the `patch()` decorators or by using the `.configure_mock()` method.
+
+
+## 2026-05-29 — Path Splitting and Attribute Extraction Optimizations
+
+Learning:
+In high-frequency file watcher loops, `path.split('/')` introduces unnecessary list allocation overhead for files in the root directory. Checking `if '/' not in path:` first avoids this. Additionally, unconditionally extracting `getattr(event, 'dest_path', None)` on every event when it is only needed for `moved` events incurs needless overhead.
+
+Action:
+Always apply fast-path logic (`if '/' not in string:`) before unconditionally splitting strings in hot paths. Defer attribute extraction from external objects (like watchdog events) until the property is strictly required by the event type logic.
+
+## 2026-05-31 — Slice Iteration over Range in Loops
+
+Learning:
+Inside loops that iterate over elements after the first one, using `for part in parts[1:]` (slice iteration) is faster and more Pythonic than using `for i in range(1, len(parts))` and accessing elements by index `parts[i]`. Additionally, string methods like `.replace` are expensive when called repeatedly, so gating them behind an `in` check (e.g., `if '\\' in path: path.replace(...)`) significantly reduces overhead in hot paths if the string rarely contains the target character.
+
+Action:
+Prefer explicit slicing over `range(len())` for iterating subsets of lists. Add conditional fast-paths for expensive string operations in high-frequency event loops.
