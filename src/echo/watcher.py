@@ -194,9 +194,18 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not path:
             return False
 
-        normalized_path = path.replace('\\', '/')
+        if '\\' in path:
+            path = path.replace('\\', '/')
 
-        parts = normalized_path.split('/')
+        if '/' not in path:
+            if path in self.simple_exact_ignores:
+                return True
+            simple_regex = self.simple_wildcard_regex
+            if simple_regex and simple_regex.match(path):
+                return True
+            return False
+
+        parts = path.split('/')
         if not self.simple_exact_ignores.isdisjoint(parts):
             return True
 
