@@ -918,3 +918,10 @@ Inside the `on_any_event` handler of the file watcher, properties like `event_ty
 Action:
 Prefer direct attribute access (`event.event_type` and `event.src_path`) over `getattr` when the attribute is guaranteed to exist.
 Prefer explicit slicing over `range(len())` for iterating subsets of lists. Add conditional fast-paths for expensive string operations in high-frequency event loops.
+## 2024-06-01 — Safely patch code with escapes
+
+Learning:
+When writing Python scripts to patch or generate other Python code that contains backslash escape sequences (like `if '\\' in path:`), always use raw multiline strings (e.g., `patch = r'''...'''`) for the code template. Otherwise, Python will consume the escapes during string evaluation, leading to invalid syntax (e.g., `SyntaxError: unterminated string literal`) in the generated or patched file.
+
+Action:
+Ensure to use raw strings `r"""..."""` when applying patches via `run_in_bash_session` to prevent syntax errors.
