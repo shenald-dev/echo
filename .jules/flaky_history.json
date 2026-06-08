@@ -29,6 +29,24 @@
       "classification": "test_failure",
       "workflow": "CI",
       "timestamp": "2026-06-08T07:59:12.517531+00:00"
+    },
+    {
+      "run_id": 27124029907,
+      "classification": "test_failure",
+      "workflow": "CI",
+      "timestamp": "2026-06-08T10:57:47.262544+00:00"
+    },
+    {
+      "run_id": 27123981251,
+      "classification": "test_failure",
+      "workflow": "CI",
+      "timestamp": "2026-06-08T10:57:47.896372+00:00"
+    },
+    {
+      "run_id": 27117013046,
+      "classification": "test_failure",
+      "workflow": "CI",
+      "timestamp": "2026-06-08T10:57:49.007484+00:00"
     }
   ],
   "flaky_workflows": {}
