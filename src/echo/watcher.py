@@ -189,7 +189,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
             path = path[self._base_prefix_len:]
         elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
             path = "."
-        elif self.base_path == "." and not os.path.isabs(path) and not path.startswith(".."):
+        elif self.base_path == ".":
             pass
         else:
             try:
@@ -222,47 +222,44 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     return True
 
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
-        if self._has_compound_ignores and len(parts) > 1:
-            prefix = parts[0]
-            compound_exact_ignores = self.compound_exact_ignores
-            compound_regex = self.compound_wildcard_regex
+        if self._has_compound_ignores:
+            length = len(parts)
+            if length > 1:
+                prefix = parts[0]
+                compound_exact_ignores = self.compound_exact_ignores
+                compound_regex = self.compound_wildcard_regex
 
-            if compound_regex:
-                match = compound_regex.match
-                for part in parts[1:]:
-                    prefix = f"{prefix}/{part}"
-                    if prefix in compound_exact_ignores:
-                        return True
-                    if match(prefix):
-                        return True
-            else:
-                for part in parts[1:]:
-                    prefix = f"{prefix}/{part}"
-                    if prefix in compound_exact_ignores:
-                        return True
+                if compound_regex:
+                    match = compound_regex.match
+                    for i in range(1, length):
+                        prefix = f"{prefix}/{parts[i]}"
+                        if prefix in compound_exact_ignores or match(prefix):
+                            return True
+                else:
+                    for i in range(1, length):
+                        prefix = f"{prefix}/{parts[i]}"
+                        if prefix in compound_exact_ignores:
+                            return True
 
         return False
 
     def on_any_event(self, event):
-        if self.is_shutting_down:
+        if self.is_shutting_down or event.is_directory:
             return
 
-        if event.is_directory:
-            return
-            
+        event_type = event.event_type
         # Ignore read-only events to prevent redundant executions
-        if event.event_type in ('opened', 'closed_no_write'):
+        if event_type == 'opened' or event_type == 'closed_no_write':
             return
 
         # Fast-path ignore filter to prevent infinite loops from test/build artifacts
         event_path = event.src_path
 
-        is_src_ignored = event_path and self._is_ignored(event_path)
-        dest_path = getattr(event, 'dest_path', None)
-
-        if is_src_ignored:
-            is_dest_ignored = dest_path and self._is_ignored(dest_path)
-            if not dest_path or is_dest_ignored:
+        if self._is_ignored(event_path):
+            if event_type != 'moved':
+                return
+            dest_path = getattr(event, 'dest_path', None)
+            if not dest_path or self._is_ignored(dest_path):
                 return
             event_path = dest_path
 
@@ -289,7 +286,7 @@ def main():
     event_handler = CommandRunnerHandler(args.cmd, base_path=args.path, ignore_patterns=ignore_patterns)
     observer = Observer()
     observer.schedule(event_handler, args.path, recursive=True)
-    
+
     console.print(f"[bold green]✨ Echo is watching [cyan]{escape(str(args.path))}[/] and will run [yellow]{escape(str(args.cmd))}[/][/bold green]")
 
     try:
