@@ -1,9 +1,15 @@
 import time
+import sys
+import os
 from unittest.mock import MagicMock
 from echo.watcher import CommandRunnerHandler
 
 def test_smart_reload():
-    handler = CommandRunnerHandler("sleep 2")
+    if os.name == 'nt':
+        cmd = f'"{sys.executable}" -c "import time; time.sleep(2)"'
+    else:
+        cmd = "sleep 2"
+    handler = CommandRunnerHandler(cmd)
 
     # Trigger first run
     mock_event = MagicMock()
@@ -44,7 +50,11 @@ def test_smart_reload():
 def test_on_any_event_non_blocking():
     """Verify that on_any_event doesn't block while a process is terminating."""
     # A command that takes some time to exit
-    handler = CommandRunnerHandler("trap '' TERM; sleep 2")
+    if os.name == 'nt':
+        cmd = f'"{sys.executable}" -c "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(2)"'
+    else:
+        cmd = "trap '' TERM; sleep 2"
+    handler = CommandRunnerHandler(cmd)
 
     mock_event = MagicMock()
     mock_event.is_directory = False

@@ -1,9 +1,15 @@
 import time
+import sys
+import os
 from unittest.mock import MagicMock
 from echo.watcher import CommandRunnerHandler
 
 def test_unkillable_process():
-    handler = CommandRunnerHandler("trap '' TERM; sleep 5")
+    if os.name == 'nt':
+        cmd = f'"{sys.executable}" -c "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(5)"'
+    else:
+        cmd = "trap '' TERM; sleep 5"
+    handler = CommandRunnerHandler(cmd)
 
     mock_event = MagicMock()
     mock_event.is_directory = False
