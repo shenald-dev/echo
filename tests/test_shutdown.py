@@ -44,8 +44,6 @@ def test_shutdown_exception_isolation():
         # Test handle_sigterm
         # We can simulate calling the sigterm handler
         with patch("signal.signal"):
-            from echo.watcher import main
-
             # Since main blocks, we need to mock time.sleep to raise KeyboardInterrupt
             with patch("time.sleep", side_effect=KeyboardInterrupt):
                 main()
