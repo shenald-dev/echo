@@ -223,21 +223,20 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         # Check for exact and wildcard ignore patterns matching cumulative prefix directories
         if self._has_compound_ignores:
-            length = len(parts)
-            if length > 1:
+            if len(parts) > 1:
                 prefix = parts[0]
                 compound_exact_ignores = self.compound_exact_ignores
                 compound_regex = self.compound_wildcard_regex
 
                 if compound_regex:
                     match = compound_regex.match
-                    for i in range(1, length):
-                        prefix = f"{prefix}/{parts[i]}"
+                    for part in parts[1:]:
+                        prefix = f"{prefix}/{part}"
                         if prefix in compound_exact_ignores or match(prefix):
                             return True
                 else:
-                    for i in range(1, length):
-                        prefix = f"{prefix}/{parts[i]}"
+                    for part in parts[1:]:
+                        prefix = f"{prefix}/{part}"
                         if prefix in compound_exact_ignores:
                             return True
 

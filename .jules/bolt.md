@@ -925,3 +925,11 @@ When writing Python scripts to patch or generate other Python code that contains
 
 Action:
 Ensure to use raw strings `r"""..."""` when applying patches via `run_in_bash_session` to prevent syntax errors.
+
+## 2026-05-31 — Slice Iteration over Range in Loops
+
+Learning:
+Inside loops that iterate over elements after the first one, using `for part in parts[1:]` (slice iteration) is faster and more Pythonic than using `for i in range(1, len(parts))` and accessing elements by index `parts[i]`.
+
+Action:
+Prefer explicit slicing over `range(len())` for iterating subsets of lists.
