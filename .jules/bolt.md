@@ -933,3 +933,11 @@ Inside loops that iterate over elements after the first one, using `for part in 
 
 Action:
 Prefer explicit slicing over `range(len())` for iterating subsets of lists.
+
+## 2026-10-26 — Thread Safety Race Condition in Event Dispatcher
+
+Learning:
+Inside the file watcher's high-frequency event loop (`on_any_event`), using lock-free writes (`self.last_event_time = time.monotonic()`) concurrently across multiple watchdog threads causes a race condition leading to data corruption and dropped events due to non-atomic variable assignments.
+
+Action:
+Ensure thread-safe atomic visibility by re-wrapping concurrent variable assignments (`last_event_time` and `last_event_path`) within the `timer_lock` context manager inside `on_any_event`.
