@@ -4,6 +4,7 @@ import subprocess
 
 from unittest.mock import MagicMock
 
+
 def test_rich_markup_crash_escaping():
     # If the command has markup tags, it should not crash
     handler = CommandRunnerHandler("echo [/cyan]")

@@ -2,6 +2,7 @@ import time
 from unittest.mock import MagicMock
 from echo.watcher import CommandRunnerHandler
 
+
 def test_is_ignored_exact_match():
     handler = CommandRunnerHandler("echo 1")
 
@@ -16,6 +17,7 @@ def test_is_ignored_exact_match():
     assert handler._is_ignored("my_venv/bin/python") is False
     assert handler._is_ignored("test_node_modules.py") is False
 
+
 def test_is_ignored_wildcard_match():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp", "build*", "src/*.tmp", "docs/build/*"])
 
@@ -29,6 +31,7 @@ def test_is_ignored_wildcard_match():
     assert handler._is_ignored("test.txt") is False
     assert handler._is_ignored("docs/index.html") is False
 
+
 def test_is_ignored_compound_path_match():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["src/build", "docs/temp", "src/*.tmp"])
 
@@ -38,6 +41,7 @@ def test_is_ignored_compound_path_match():
 
     assert handler._is_ignored("src/test.txt") is False
     assert handler._is_ignored("docs/index.html") is False
+
 
 def test_ignored_events_do_not_trigger():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp", "ignored_dir"])
@@ -115,12 +119,14 @@ def test_ignored_events_do_not_trigger():
         handler.current_process.terminate()
         handler.current_process.wait()
 
+
 def test_trailing_slashes_in_ignores():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["build/", "temp\\", "docs//"])
 
     assert handler._is_ignored("build/index.js") is True, "build/index.js should be ignored"
     assert handler._is_ignored("temp/index.js") is True, "temp/index.js should be ignored"
     assert handler._is_ignored("docs/index.js") is True, "docs/index.js should be ignored"
+
 
 def test_character_class_wildcard_match():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["[a-z].tmp"])
@@ -133,6 +139,7 @@ def test_character_class_wildcard_match():
     assert handler._is_ignored("z.tmp") is True
     assert handler._is_ignored("1.tmp") is False
     assert handler._is_ignored("A.tmp") is False
+
 
 def test_is_ignored_root_file():
     handler = CommandRunnerHandler("echo 1", ignore_patterns=["main.py"])

@@ -21,6 +21,7 @@ from rich.markup import escape
 
 console = Console()
 
+
 class CommandRunnerHandler(FileSystemEventHandler):
     def __init__(self, command: str, base_path: str = ".", ignore_patterns: list[str] | None = None):
         self.command = command
@@ -67,7 +68,6 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         # Bind LRU cache to instance to prevent memory leaks across instances
         self._is_ignored = functools.lru_cache(maxsize=4096)(self._is_ignored_impl)
-
 
     def _get_stream(self, stream):
         try:
@@ -172,7 +172,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.is_shutting_down:
                     return
 
-                if getattr(process, '_echo_terminated', False): # SIGTERM or Windows termination
+                if getattr(process, '_echo_terminated', False):  # SIGTERM or Windows termination
                     console.print("[yellow]✔ Command terminated by reload.[/yellow]")
                 else:
                     if process.returncode == 0:
@@ -274,6 +274,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
                     self.debounce_thread.start()
 
+
 def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
     parser.add_argument("--path", type=str, default=".", help="Directory to watch")
@@ -340,6 +341,7 @@ def main():
         observer.join()
     except Exception:
         pass
+
 
 if __name__ == "__main__":
     main()

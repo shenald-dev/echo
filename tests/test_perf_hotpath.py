@@ -1,6 +1,7 @@
 import timeit
 from echo.watcher import CommandRunnerHandler
 
+
 def test_hotpath_perf():
     handler = CommandRunnerHandler("echo test", base_path=".", ignore_patterns=[".git", "node_modules"])
     paths = ["src/echo/watcher.py", "node_modules/index.js", ".git/HEAD", "tests/test_perf.py"]
