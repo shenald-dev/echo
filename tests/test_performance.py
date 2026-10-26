@@ -1,6 +1,7 @@
 import timeit
 from echo.watcher import CommandRunnerHandler
 
+
 def test_performance_is_ignored_hotpath():
     handler = CommandRunnerHandler("echo test", ".", ignore_patterns=["*.tmp", "node_modules", "src/build", "test/*.log"])
 
@@ -32,6 +33,7 @@ def test_performance_is_ignored_hotpath():
     assert time_compound_exact < 1.0, f"Compound exact path is too slow: {time_compound_exact}"
     assert time_wildcard < 1.0, f"Wildcard path is too slow: {time_wildcard}"
 
+
 def test_performance_on_any_event_lock():
     handler = CommandRunnerHandler("echo test", ".", ignore_patterns=[])
 
@@ -39,7 +41,7 @@ def test_performance_on_any_event_lock():
     # This specifically tests that the lock isn't repeatedly acquired
 
     import threading
-    handler.debounce_thread = threading.Thread(target=lambda: None) # mock active thread
+    handler.debounce_thread = threading.Thread(target=lambda: None)  # mock active thread
 
     event = type("Event", (), {"is_directory": False, "event_type": "modified", "src_path": "src/test/abc.py", "dest_path": None})()
 

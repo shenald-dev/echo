@@ -1,6 +1,7 @@
 from echo.watcher import CommandRunnerHandler
 from unittest.mock import MagicMock
 
+
 def test_debounce_none_event_does_not_spin():
     handler = CommandRunnerHandler("echo test")
 
@@ -13,6 +14,7 @@ def test_debounce_none_event_does_not_spin():
 
     # Event path is empty, so the thread should not even start
     assert handler.debounce_thread is None
+
 
 def test_debounce_thread_terminates():
     handler = CommandRunnerHandler("echo test")

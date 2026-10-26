@@ -3,6 +3,7 @@ import threading
 from echo.watcher import CommandRunnerHandler
 from unittest.mock import MagicMock
 
+
 def test_debounce_thread_safety():
     handler = CommandRunnerHandler("echo test")
 

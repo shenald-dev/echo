@@ -1,6 +1,7 @@
 from echo.watcher import CommandRunnerHandler
 from unittest.mock import MagicMock
 
+
 def test_shutdown_prevents_execution():
     handler = CommandRunnerHandler("sleep 10")
 

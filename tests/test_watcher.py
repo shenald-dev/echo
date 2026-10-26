@@ -4,6 +4,7 @@ import os
 from unittest.mock import MagicMock
 from echo.watcher import CommandRunnerHandler
 
+
 def test_smart_reload():
     if os.name == 'nt':
         cmd = f'"{sys.executable}" -c "import time; time.sleep(2)"'
@@ -47,6 +48,7 @@ def test_smart_reload():
     second_process.terminate()
     second_process.wait()
 
+
 def test_on_any_event_non_blocking():
     """Verify that on_any_event doesn't block while a process is terminating."""
     # A command that takes some time to exit
@@ -89,6 +91,7 @@ def test_on_any_event_non_blocking():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
 
 def test_ignore_read_only_events():
     """Verify that read-only events (opened, closed_no_write) are ignored."""
@@ -134,6 +137,7 @@ def test_ignore_read_only_events():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+
 
 def test_stdout_capture_compatibility(capsys):  # noqa: ARG001
     """Verify that _run_command doesn't crash when sys.stdout lacks a fileno (like in pytest capsys)."""

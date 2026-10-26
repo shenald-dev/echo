@@ -4,6 +4,7 @@ import os
 from unittest.mock import MagicMock
 from echo.watcher import CommandRunnerHandler
 
+
 def test_unkillable_process():
     if os.name == 'nt':
         cmd = f'"{sys.executable}" -c "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(5)"'
@@ -34,7 +35,7 @@ def test_unkillable_process():
 
     p2 = handler.current_process
     assert p2 is not p1
-    assert p1.poll() is not None # P1 should be dead
+    assert p1.poll() is not None  # P1 should be dead
 
     elapsed = time.monotonic() - start_time
     assert elapsed < 3.0, "Should not have waited 5 seconds"

@@ -1,6 +1,7 @@
 import timeit
 from echo.watcher import CommandRunnerHandler
 
+
 def test_ignore_performance_no_regression():
     handler = CommandRunnerHandler("echo test", ignore_patterns=["node_modules", "*.tmp", "src/build", "docs/temp"])
 
