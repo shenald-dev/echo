@@ -27,6 +27,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.command = command
         self.base_path = base_path
         self._abs_base_path = os.path.join(os.path.abspath(base_path), '')
+        self._abs_base_path_stripped = self._abs_base_path.rstrip(os.sep)
         self._base_prefix = os.path.join(self.base_path, '')
         self._abs_base_path_len = len(self._abs_base_path)
         self._base_prefix_len = len(self._base_prefix)
@@ -38,8 +39,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.ignore_patterns = [p.replace('\\', '/').rstrip('/').removeprefix('./') for p in default_ignores]
 
         # Pre-compute exact vs wildcard patterns for faster matching
-        exact_ignores = [p for p in self.ignore_patterns if '*' not in p and '?' not in p and '[' not in p]
-        wildcard_ignores = [p for p in self.ignore_patterns if '*' in p or '?' in p or '[' in p]
+        exact_ignores = []
+        wildcard_ignores = []
+        for p in self.ignore_patterns:
+            if '*' not in p and '?' not in p and '[' not in p:
+                exact_ignores.append(p)
+            else:
+                wildcard_ignores.append(p)
 
         self.simple_exact_ignores = frozenset(p for p in exact_ignores if '/' not in p)
         self.compound_exact_ignores = frozenset(p for p in exact_ignores if '/' in p)
@@ -187,7 +193,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
             path = path[self._abs_base_path_len:]
         elif path.startswith(self._base_prefix):
             path = path[self._base_prefix_len:]
-        elif path == self.base_path or path == self._abs_base_path.rstrip(os.sep):
+        elif path == self.base_path or path == self._abs_base_path_stripped:
             path = "."
         elif self.base_path == ".":
             pass
@@ -231,12 +237,12 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if compound_regex:
                     match = compound_regex.match
                     for part in parts[1:]:
-                        prefix = f"{prefix}/{part}"
+                        prefix = prefix + '/' + part
                         if prefix in compound_exact_ignores or match(prefix):
                             return True
                 else:
                     for part in parts[1:]:
-                        prefix = f"{prefix}/{part}"
+                        prefix = prefix + '/' + part
                         if prefix in compound_exact_ignores:
                             return True
 

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+* **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
+
 ### Changed
 * **[Fixed]:** Verified thread-safety lock in `on_any_event` successfully resolved concurrency race condition through robust test suite assertions.
 
@@ -223,6 +225,8 @@
 
 ## [Unreleased]
 
+* **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
+
 ### Changed
 * **[Optimized]:** Fixed flake8 spacing issues to eliminate codebase entropy.
 
@@ -250,6 +254,8 @@
          # Changelog
 
 ## [Unreleased]
+
+* **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
 
 ### Changed
 * **[Optimized]:** Fixed flake8 spacing issues to eliminate codebase entropy.
@@ -531,6 +537,8 @@
 
 ## [Unreleased]
 
+* **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
+
 ### Changed
 * **[Optimized]:** Fixed flake8 spacing issues to eliminate codebase entropy.
 
@@ -600,6 +608,8 @@
 
 ## [Unreleased]
 
+* **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
+
 ### Changed
 * **[Optimized]:** Fixed flake8 spacing issues to eliminate codebase entropy.
 
@@ -611,6 +621,8 @@
 
 ## [Unreleased]
 
+* **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
+
 ### Changed
 * **[Optimized]:** Fixed flake8 spacing issues to eliminate codebase entropy.
 
@@ -621,6 +633,8 @@
             # Changelog
 
 ## [Unreleased]
+
+* **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
 
 ### Changed
 * **[Optimized]:** Fixed flake8 spacing issues to eliminate codebase entropy.
