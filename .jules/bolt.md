@@ -949,3 +949,11 @@ Using string concatenation (`+`) instead of string formatting (`f"{a}/{b}"`) in 
 
 Action:
 Prefer `+` over `f""` for simple string concatenations in hot paths. Retain `getattr(event, 'dest_path', None)` instead of using `hasattr` check to avoid duplicate lookups. Strip strings during initialization to avoid repeated `.rstrip()` calls in loop bodies.
+
+## 2026-10-27 — Compound Ignore Pattern Matching Fix
+
+Learning:
+Inside the file watcher's compound exact/wildcard loop, the logic only checked cumulative prefixes starting from the root of the path. This caused compound ignore patterns (like `my_dir/my_file.txt`) to fail to match when they were nested inside other directories (e.g., `some/deep/path/my_dir/my_file.txt`).
+
+Action:
+Refactored the `_is_ignored_impl` logic to add an outer loop `for start_idx in range(len(parts) - 1)`, effectively checking all contiguous sub-paths of length >= 2. This guarantees that nested compound patterns are discovered and matched successfully. The logic change from $O(n)$ to $O(n^2)$ for generating path permutations is safe because $n$ is very small (directory depth) and is mitigated by the LRU cache on the method.

@@ -751,3 +751,6 @@
    ### Changed
    * **[Performance]:** Optimized `on_any_event` by lazy-evaluating destination paths during moved events, saving redundant ignore checks.
    * **[Reliability]:** Hardened termination logic to set intent flags *before* making OS-level termination calls, preventing false failure logs when processes end concurrently.
+
+## [Unreleased]
+**[Fixed]:** Fixed a bug where compound ignore patterns (like `my_dir/my_file.txt`) failed to match nested paths correctly.
