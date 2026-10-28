@@ -8,7 +8,8 @@ def test_is_ignored_exact_match():
 
     assert handler._is_ignored("node_modules/express/index.js") is True
     assert handler._is_ignored(".git/HEAD") is True
-    assert handler._is_ignored("src/echo/__pycache__/watcher.cpython-312.pyc") is True
+    assert handler._is_ignored(
+        "src/echo/__pycache__/watcher.cpython-312.pyc") is True
     assert handler._is_ignored(".pytest_cache/v/cache/nodeids") is True
     assert handler._is_ignored("venv/bin/python") is True
     assert handler._is_ignored(".venv/bin/python") is True
@@ -19,7 +20,13 @@ def test_is_ignored_exact_match():
 
 
 def test_is_ignored_wildcard_match():
-    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp", "build*", "src/*.tmp", "docs/build/*"])
+    handler = CommandRunnerHandler(
+        "echo 1",
+        ignore_patterns=[
+            "*.tmp",
+            "build*",
+            "src/*.tmp",
+            "docs/build/*"])
 
     assert handler._is_ignored("test.tmp") is True
     assert handler._is_ignored("src/build_output/main.js") is True
@@ -33,7 +40,9 @@ def test_is_ignored_wildcard_match():
 
 
 def test_is_ignored_compound_path_match():
-    handler = CommandRunnerHandler("echo 1", ignore_patterns=["src/build", "docs/temp", "src/*.tmp"])
+    handler = CommandRunnerHandler(
+        "echo 1", ignore_patterns=[
+            "src/build", "docs/temp", "src/*.tmp"])
 
     assert handler._is_ignored("src/build/test.txt") is True
     assert handler._is_ignored("docs/temp/index.html") is True
@@ -43,11 +52,35 @@ def test_is_ignored_compound_path_match():
     assert handler._is_ignored("docs/index.html") is False
 
 
+def test_is_ignored_compound_nested_path_match():
+    handler = CommandRunnerHandler(
+        "echo 1", ignore_patterns=[
+            "my_dir/my_file.txt", "src/*/test.txt"])
+
+    # Test nested exact match
+    assert handler._is_ignored("some/deep/path/my_dir/my_file.txt") is True
+    assert handler._is_ignored("my_dir/my_file.txt") is True
+
+    # Test nested wildcard match
+    assert handler._is_ignored("foo/bar/src/build/test.txt") is True
+    assert handler._is_ignored("src/build/test.txt") is True
+
+    # Test false positives
+    assert handler._is_ignored("some/deep/path/my_dir/other_file.txt") is False
+    assert handler._is_ignored("foo/bar/src/build/other.txt") is False
+
+
 def test_ignored_events_do_not_trigger():
-    handler = CommandRunnerHandler("echo 1", ignore_patterns=["*.tmp", "ignored_dir"])
+    handler = CommandRunnerHandler(
+        "echo 1", ignore_patterns=[
+            "*.tmp", "ignored_dir"])
 
     # Mock event for ignored path
-    mock_event_ignored = MagicMock(spec=["is_directory", "event_type", "src_path"])
+    mock_event_ignored = MagicMock(
+        spec=[
+            "is_directory",
+            "event_type",
+            "src_path"])
     mock_event_ignored.is_directory = False
     mock_event_ignored.event_type = 'modified'
     mock_event_ignored.src_path = "test.tmp"
@@ -58,7 +91,8 @@ def test_ignored_events_do_not_trigger():
     assert handler.current_process is None, "Process should not be started for ignored event"
 
     # Mock moved event where dest_path is ignored but src_path is valid
-    mock_event_moved_dest_ignored = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event_moved_dest_ignored = MagicMock(
+        spec=["is_directory", "event_type", "src_path", "dest_path"])
     mock_event_moved_dest_ignored.is_directory = False
     mock_event_moved_dest_ignored.event_type = 'moved'
     mock_event_moved_dest_ignored.src_path = "test.txt"
@@ -79,7 +113,12 @@ def test_ignored_events_do_not_trigger():
         handler.current_process = None
 
     # Mock moved event where src_path is ignored but dest_path is valid
-    mock_event_moved_valid_dest = MagicMock(spec=["is_directory", "event_type", "src_path", "dest_path"])
+    mock_event_moved_valid_dest = MagicMock(
+        spec=[
+            "is_directory",
+            "event_type",
+            "src_path",
+            "dest_path"])
     mock_event_moved_valid_dest.is_directory = False
     mock_event_moved_valid_dest.event_type = 'moved'
     mock_event_moved_valid_dest.src_path = "ignored_dir/file.txt"
@@ -101,7 +140,11 @@ def test_ignored_events_do_not_trigger():
         handler.current_process = None
 
     # Mock event for valid path
-    mock_event_valid = MagicMock(spec=["is_directory", "event_type", "src_path"])
+    mock_event_valid = MagicMock(
+        spec=[
+            "is_directory",
+            "event_type",
+            "src_path"])
     mock_event_valid.is_directory = False
     mock_event_valid.event_type = 'modified'
     mock_event_valid.src_path = "test.txt"
@@ -121,11 +164,16 @@ def test_ignored_events_do_not_trigger():
 
 
 def test_trailing_slashes_in_ignores():
-    handler = CommandRunnerHandler("echo 1", ignore_patterns=["build/", "temp\\", "docs//"])
+    handler = CommandRunnerHandler(
+        "echo 1", ignore_patterns=[
+            "build/", "temp\\", "docs//"])
 
-    assert handler._is_ignored("build/index.js") is True, "build/index.js should be ignored"
-    assert handler._is_ignored("temp/index.js") is True, "temp/index.js should be ignored"
-    assert handler._is_ignored("docs/index.js") is True, "docs/index.js should be ignored"
+    assert handler._is_ignored(
+        "build/index.js") is True, "build/index.js should be ignored"
+    assert handler._is_ignored(
+        "temp/index.js") is True, "temp/index.js should be ignored"
+    assert handler._is_ignored(
+        "docs/index.js") is True, "docs/index.js should be ignored"
 
 
 def test_character_class_wildcard_match():
