@@ -941,3 +941,11 @@ Inside the file watcher's high-frequency event loop (`on_any_event`), using lock
 
 Action:
 Ensure thread-safe atomic visibility by re-wrapping concurrent variable assignments (`last_event_time` and `last_event_path`) within the `timer_lock` context manager inside `on_any_event`.
+
+## 2026-05-31 — Avoid string format and getattr overhead
+
+Learning:
+Using string concatenation (`+`) instead of string formatting (`f"{a}/{b}"`) in tight loops like `_is_ignored_impl` avoids overhead and speeds up hot paths. The previous assumption that `hasattr` is faster than `getattr` was incorrect. `getattr(obj, attr, default)` is faster and more Pythonic than checking `hasattr`. And pre-stripping `os.sep` from `self._abs_base_path` during `__init__` instead of calculating `rstrip` inside `_is_ignored_impl` reduces redundant method calls.
+
+Action:
+Prefer `+` over `f""` for simple string concatenations in hot paths. Retain `getattr(event, 'dest_path', None)` instead of using `hasattr` check to avoid duplicate lookups. Strip strings during initialization to avoid repeated `.rstrip()` calls in loop bodies.
