@@ -496,3 +496,8 @@ Reverted the lock removal around the variable assignments to assure atomic visib
 - **QA & Veto Actions:** Verified thread-safety lock fix in `on_any_event` resolved concurrent variable update race condition using the existing robust test suite. Commits verified.
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
+
+## 2026-10-28 — Lifecycle & Assurance Ledger
+- **QA & Veto Actions:** Verified recent hot-path micro-optimizations (pre-stripping `os.sep`, removing generator expressions in `__init__`, and string concatenation). Commits verified.
+- **Entropy Pruned:** 0 lines
+- **Deferred / Blocked:** No dependencies deferred. No blockers.
