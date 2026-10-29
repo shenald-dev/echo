@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+**[Optimized]:** Lifted regex truthiness check in compound ignore hot loop
 
 * **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
 
@@ -8,8 +9,6 @@
 * **[Fixed]:** Verified thread-safety lock in `on_any_event` successfully resolved concurrency race condition through robust test suite assertions.
 
 * **[Optimized]:** Fixed flake8 spacing issues to eliminate codebase entropy.
-* **[Fixed]:** Fixed a bug where compound ignore patterns (like `my_dir/my_file.txt`) failed to match nested paths correctly.
-
 
 ## [0.1.34] - 2026-06-02
 

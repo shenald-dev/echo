@@ -503,6 +503,6 @@ Reverted the lock removal around the variable assignments to assure atomic visib
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
 
 ## 2026-10-29 — Lifecycle & Assurance Ledger
-- **QA & Veto Actions:** Verified compound ignore pattern bugfix logic (reverting to check contiguous sub-paths via nested loop) resolves nested ignore issues without breaking the hot path performance. Tests passed.
+- **QA & Veto Actions:** Verified compound regex optimization in hot path by splitting the evaluation loop to avoid redundant truthiness checks. Tests verified.
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
