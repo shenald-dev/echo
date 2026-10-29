@@ -8,6 +8,8 @@
 * **[Fixed]:** Verified thread-safety lock in `on_any_event` successfully resolved concurrency race condition through robust test suite assertions.
 
 * **[Optimized]:** Fixed flake8 spacing issues to eliminate codebase entropy.
+* **[Fixed]:** Fixed a bug where compound ignore patterns (like `my_dir/my_file.txt`) failed to match nested paths correctly.
+
 
 ## [0.1.34] - 2026-06-02
 
