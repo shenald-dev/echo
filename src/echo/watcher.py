@@ -232,22 +232,14 @@ class CommandRunnerHandler(FileSystemEventHandler):
             if len(parts) > 1:
                 compound_exact_ignores = self.compound_exact_ignores
                 compound_regex = self.compound_wildcard_regex
+                match = compound_regex.match if compound_regex else None
 
-                if compound_regex:
-                    match = compound_regex.match
-                    for start_idx in range(len(parts) - 1):
-                        prefix = parts[start_idx]
-                        for part in parts[start_idx + 1:]:
-                            prefix = prefix + '/' + part
-                            if prefix in compound_exact_ignores or match(prefix):
-                                return True
-                else:
-                    for start_idx in range(len(parts) - 1):
-                        prefix = parts[start_idx]
-                        for part in parts[start_idx + 1:]:
-                            prefix = prefix + '/' + part
-                            if prefix in compound_exact_ignores:
-                                return True
+                for start_idx in range(len(parts) - 1):
+                    prefix = parts[start_idx]
+                    for part in parts[start_idx + 1:]:
+                        prefix = prefix + '/' + part
+                        if prefix in compound_exact_ignores or (match and match(prefix)):
+                            return True
 
         return False
 

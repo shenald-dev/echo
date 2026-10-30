@@ -2,7 +2,8 @@
 
 ## [Unreleased]
 
-* **[Optimized]:** Improved hot-path performance in `_is_ignored_impl` by eliminating redundant truthiness checks during compound pattern matching, saving evaluation time in nested loops.
+* **[Assurance]:** Audited recent compound nested path matching and thread safety lock fixes. Validated functionality and verified test suites.
+
 * **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
 
 ### Changed

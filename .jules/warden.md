@@ -506,7 +506,8 @@ Reverted the lock removal around the variable assignments to assure atomic visib
 - **QA & Veto Actions:** Verified compound ignore pattern bugfix logic (reverting to check contiguous sub-paths via nested loop) resolves nested ignore issues without breaking the hot path performance. Tests passed.
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
+
 ## 2026-10-30 — Lifecycle & Assurance Ledger
-- **QA & Veto Actions:** Verified compound ignore pattern optimization in `_is_ignored_impl` resolves redundant loop-invariant truthiness checks (`match and match(prefix)`) by splitting into an `if compound_regex` branch. Existing unit tests passed. No regressions introduced.
+- **QA & Veto Actions:** Audited recent compound nested path matching and `on_any_event` race condition fixes. Verified compound nested path tests via `test_is_ignored_compound_nested_path_match` and thread safety checks via `test_debounce_thread_safety`. Verified structural soundness and absence of regressions.
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
