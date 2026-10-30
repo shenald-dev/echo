@@ -2,9 +2,9 @@ import os
 import sys
 
 if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 import time
 import signal
 import platform
@@ -19,7 +19,7 @@ from watchdog.events import FileSystemEventHandler
 from rich.console import Console
 from rich.markup import escape
 
-console = Console()
+console = Console(legacy_windows=False)
 
 
 class CommandRunnerHandler(FileSystemEventHandler):
@@ -49,6 +49,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
 
         self.simple_exact_ignores = frozenset(p for p in exact_ignores if '/' not in p)
         self.compound_exact_ignores = frozenset(p for p in exact_ignores if '/' in p)
+        self._max_compound_exact_len = max((p.count('/') + 1 for p in self.compound_exact_ignores), default=0)
 
         simple_wildcards = [p for p in wildcard_ignores if '/' not in p]
         compound_wildcards = [p for p in wildcard_ignores if '/' in p]
@@ -148,8 +149,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if self.is_shutting_down:
             return
 
-        console.print(f"\n[cyan]📡 Change detected in {escape(str(event_path))}. Executing: [yellow]{escape(str(self.command))}[/][/cyan]")
         try:
+            console.print(f"\n[cyan]📡 Change detected in {escape(str(event_path))}. Executing: [yellow]{escape(str(self.command))}[/][/cyan]")
             with self.process_lock:
                 if self.is_shutting_down:
                     return
@@ -242,9 +243,11 @@ class CommandRunnerHandler(FileSystemEventHandler):
                             if prefix in compound_exact_ignores or match(prefix):
                                 return True
                 else:
+                    max_len = self._max_compound_exact_len
                     for start_idx in range(len(parts) - 1):
                         prefix = parts[start_idx]
-                        for part in parts[start_idx + 1:]:
+                        end_limit = min(len(parts), start_idx + max_len)
+                        for part in parts[start_idx + 1:end_limit]:
                             prefix = prefix + '/' + part
                             if prefix in compound_exact_ignores:
                                 return True

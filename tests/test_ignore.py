@@ -196,3 +196,22 @@ def test_is_ignored_root_file():
 
     handler2 = CommandRunnerHandler("echo 1", ignore_patterns=["src/main.py"])
     assert handler2._is_ignored("main.py") is False
+
+
+def test_compound_exact_bounded_depth_matching():
+    handler = CommandRunnerHandler(
+        "echo 1",
+        ignore_patterns=[
+            "build/output",
+            "nested/deep/target"
+        ]
+    )
+
+    assert handler._max_compound_exact_len == 3
+    assert handler._is_ignored("build/output/bundle.js") is True
+    assert handler._is_ignored("packages/app/build/output/main.js") is True
+    assert handler._is_ignored("nested/deep/target/data.json") is True
+    assert handler._is_ignored("deeply/nested/deep/target/data.json") is True
+    assert handler._is_ignored("very/deeply/nested/directory/structure/file.txt") is False
+    assert handler._is_ignored("build/other/bundle.js") is False
+    assert handler._is_ignored("nested/shallow/target/data.json") is False

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+* **[Optimized]:** Bound subpath evaluation depth for compound exact ignore patterns using precomputed `_max_compound_exact_len`, avoiding redundant $O(N^2)$ checks on deep directories.
+* **[Fixed]:** Fixed unhandled `UnicodeEncodeError` on Windows consoles by disabling legacy console mode in Rich and setting fallback stream error handling.
+* **[Reliability]:** Moved change notification output inside `_run_command` try-block to prevent console encoding or pipe errors from crashing debounce worker threads.
 * **[Optimized]:** Improved hot-path performance in `_is_ignored_impl` by eliminating redundant truthiness checks during compound pattern matching, saving evaluation time in nested loops.
 * **[Optimized]:** Applied hot-path micro-optimizations inside `_is_ignored_impl` by stripping string during initialization, preventing generator comprehension overhead, and using basic string concatenations instead of `f-strings`.
 
