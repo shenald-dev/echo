@@ -957,3 +957,8 @@ Inside the file watcher's compound exact/wildcard loop, the logic only checked c
 
 Action:
 Refactored the `_is_ignored_impl` logic to add an outer loop `for start_idx in range(len(parts) - 1)`, effectively checking all contiguous sub-paths of length >= 2. This guarantees that nested compound patterns are discovered and matched successfully. The logic change from $O(n)$ to $O(n^2)$ for generating path permutations is safe because $n$ is very small (directory depth) and is mitigated by the LRU cache on the method.
+
+## 2026-10-30 — Compound Regex Optimization in Hot Path Applied
+
+- **Learning:** Found an opportunity to apply the previously logged "Compound Regex Optimization in Hot Path" to `_is_ignored_impl` inside `src/echo/watcher.py`. The redundant `if (match and match(prefix))` truthiness check on `match` was still present in the nested loop that validates contiguous sub-paths.
+- **Action:** Split the loop logic based on `if compound_regex:`. If true, we check `match(prefix)`, and if false, we execute a loop without evaluating regex matches at all. This prevents redundant checks and improves performance when no compound wildcards exist.
