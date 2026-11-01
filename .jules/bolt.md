@@ -615,23 +615,6 @@ Ensure testing durations account for scheduling overhead but avoid massive overa
 Action:
 Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
 
-## 2026-05-27 — Graceful Shutdown Sequence Reliability
-
-Learning:
-When implementing graceful shutdown sequences (e.g., `SIGTERM` signal handlers and `KeyboardInterrupt` exception blocks), grouping multiple cleanup steps (like stopping observers, printing output, and shutting down event handlers) into a single try block, or no try block, is unreliable. If an exception occurs in the first step, subsequent critical cleanup steps (like terminating subprocesses) will be silently skipped, leading to orphaned processes and resource leaks.
-
-Action:
-Wrap each individual cleanup operation in its own dedicated `try...except Exception: pass` block to guarantee that the failure of one cleanup step does not prevent the execution of the others.
-
-## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
-
-Learning:
-Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance properties like `self.simple_wildcard_regex` repeatedly inside loop conditions (even if implicit truthiness checks) incurs measurable overhead in high-frequency event streams.
-
-Action:
-Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
-
-
 ## 2026-05-28 — Unittest Mock Attribute Assignment Warnings
 
 Learning:
@@ -639,7 +622,6 @@ When using `unittest.mock`, static analyzers like `vulture` may falsely flag dir
 
 Action:
 To cleanly resolve this without adding suppression comments, initialize mock settings by passing `return_value` directly into the `patch()` decorators or by using the `.configure_mock()` method.
-
 
 ## 2026-05-29 — Path Splitting and Attribute Extraction Optimizations
 
@@ -706,7 +688,6 @@ Ensure the background `_debounce_worker` thread unconditionally terminates (via 
 
 Learning:
 Tests involving thread execution (like the file watcher's debounce or shutdown threads) must not rely on `time.sleep()` for waiting. Under CI/coverage load, these static sleeps are prone to flakiness due to scheduling overhead, causing assertions against thread termination state to falsely fail.
-
 
 ## 2026-04-24 — Test Suite Dynamic Polling Fix
 
@@ -794,9 +775,6 @@ Inside the file watcher's `watchdog` event handler, `getattr(event, 'event_type'
 Action:
 Prefer direct attribute access (`event.event_type`, `event.src_path`) over `getattr`. Pre-compute prefix lengths during class initialization. Hoist loop-invariant method lookups (`match = regex.match`) outside of iterations. Remove `self.current_process is process` guards when evaluating subprocess wait results, as the reference can be overwritten during a rapid reload.
 
-
-
-
 ## 2026-05-15 — Hot Path Property Access Optimization
 
 Learning:
@@ -842,21 +820,6 @@ Using `any()` with a generator expression inside a list comprehension (e.g., `[p
 Action:
 Prefer explicit logical string conditions (`if '*' not in p and '?' not in p and '[' not in p`) over `any()` generator expressions for simple string character checks to avoid generator creation overhead, even outside of hot paths.
 
-## 2026-05-18 — Fast-Path Attributes, Method Hoisting and Path Length Caching
-
-Learning:
-Inside high-frequency Python hot paths, using `getattr` to fetch attributes that are guaranteed to exist on objects (like `src_path` and `event_type` on watchdog `FileSystemEvent`) introduces measurable function call overhead. Additionally, calling `len()` repeatedly on the same immutable strings (like `_abs_base_path` and `_base_prefix`) within loop conditions causes unnecessary recalculations, and method lookups (like `regex.match`) performed repeatedly within loops adds latency.
-
-Action:
-Prefer direct attribute access over `getattr` when the attribute is guaranteed. Pre-compute and store lengths of constant strings during object initialization and use them for string slicing. Hoist loop-invariant truthiness checks and method lookups outside of tight loops to eliminate redundant evaluations.
-## 2026-05-27 — Loop-Invariant Truthiness Check Overhead
-
-Learning:
-Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance properties like `self.simple_wildcard_regex` repeatedly inside loop conditions (even if implicit truthiness checks) incurs measurable overhead in high-frequency event streams.
-
-Action:
-Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
-
 ## 2026-05-27 — Graceful Shutdown Sequence Reliability
 
 Learning:
@@ -872,6 +835,14 @@ Inside the file watcher's `_is_ignored_impl` hot loop, evaluating instance prope
 
 Action:
 Hoist loop-invariant instance property lookups into local scope variables (`simple_regex = self.simple_wildcard_regex`) outside of loops to prevent redundant evaluation overhead.
+
+## 2026-05-18 — Fast-Path Attributes, Method Hoisting and Path Length Caching
+
+Learning:
+Inside high-frequency Python hot paths, using `getattr` to fetch attributes that are guaranteed to exist on objects (like `src_path` and `event_type` on watchdog `FileSystemEvent`) introduces measurable function call overhead. Additionally, calling `len()` repeatedly on the same immutable strings (like `_abs_base_path` and `_base_prefix`) within loop conditions causes unnecessary recalculations, and method lookups (like `regex.match`) performed repeatedly within loops adds latency.
+
+Action:
+Prefer direct attribute access over `getattr` when the attribute is guaranteed. Pre-compute and store lengths of constant strings during object initialization and use them for string slicing. Hoist loop-invariant truthiness checks and method lookups outside of tight loops to eliminate redundant evaluations.
 
 ## 2026-05-12 — Event Handler Lock Contention and Loop Lookup Optimizations
 

@@ -30,13 +30,14 @@ def test_shutdown_exception_isolation():
     from unittest.mock import patch, MagicMock
 
     with patch("echo.watcher.Observer") as mock_observer_cls, \
-         patch("echo.watcher.CommandRunnerHandler") as mock_handler_cls, \
-         patch("echo.watcher.console.print"), \
-         patch("sys.exit"), \
-         patch("sys.argv", ["echo-watch", "--cmd", "echo 1"]):
+            patch("echo.watcher.CommandRunnerHandler") as mock_handler_cls, \
+            patch("echo.watcher.console.print"), \
+            patch("sys.exit"), \
+            patch("sys.argv", ["echo-watch", "--cmd", "echo 1"]):
 
         mock_observer = MagicMock()
-        mock_observer.stop.configure_mock(side_effect=Exception("Observer crash"))
+        mock_observer.stop.configure_mock(
+            side_effect=Exception("Observer crash"))
         mock_observer_cls.configure_mock(return_value=mock_observer)
 
         mock_handler = MagicMock()
