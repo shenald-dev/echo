@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.0.0] - 2026-11-01
+
+### Added
+- **Multi-Rule Pipeline Engine:** Support defining tailored rules mapping file glob patterns to distinct commands (`*.py -> pytest {file}`, `*.ts -> tsc --noEmit`).
+- **Dynamic Variable Interpolation:** Built-in template interpolation for changed files (`{file}`, `{path}`, `{relpath}`, `{basename}`, `{stem}`, `{dirname}`, `{ext}`, `{event}`).
+- **Configuration Engine:** Native discovery and parsing for `.echorc.json`, `echo.config.json`, `.echo.json`, and `pyproject.toml` (`[tool.echo]`).
+- **Interactive Terminal Hotkeys (TUI):** Real-time hotkey listener with cross-platform support (`r` to force re-run, `c` to clear, `p` to pause/resume watching, `h` for help, `q` to quit).
+- **Configurable Debouncing:** Support natural units in CLI and config (`250ms`, `500`, `1.5s`).
+- **Clean Slate Mode:** Added `--clear` (`-C`) to cleanly clear console before running tasks.
+- **Initial Execution:** Added `--initial` (`-i`) to run commands immediately on startup.
+- **Audio Bell Notification:** Added `--bell` (`-b`) to emit terminal alert bells on command completion.
+- **Execution Telemetry:** Built-in execution duration stopwatch, run counters, and exit code indicators.
+- **Dual CLI Commands:** Both `echo` and `echo-watch` executable entrypoints.
+- **Matrix CI:** Multi-platform GitHub Actions workflow covering Linux, macOS, and Windows on Python 3.10, 3.11, and 3.12.
+
+### Fixed & Optimized
+- Added automatic ASCII transliteration fallback in `EchoConsole` for restricted stream encodings (e.g., CP1252/ASCII), preventing unhandled `UnicodeEncodeError` and background thread crashes when outputting status icons.
+- Hardened debounce worker and command runner exception handling against recursive stream write errors, guaranteeing threads never die on unencodable error messages or broken pipes.
+- Ensured deterministic shutdown and thread reaping across all event handler tests, and added regression test coverage for restricted stream encodings and pipe failures.
+- Bound subpath evaluation depth for compound exact ignore patterns using precomputed `_max_compound_exact_len`, avoiding redundant O(N^2) checks on deep directories.
+- Expanded automated test suite to 50 comprehensive tests with 100% pass rate.
+
 ## [Unreleased]
 
 * **[Fixed]:** Added automatic ASCII transliteration fallback in `EchoConsole` for restricted stream encodings (e.g., CP1252/ASCII), preventing unhandled `UnicodeEncodeError` and background thread crashes when outputting status icons.
