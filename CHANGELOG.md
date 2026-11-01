@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+* **[Fixed]:** Added automatic ASCII transliteration fallback in `EchoConsole` for restricted stream encodings (e.g., CP1252/ASCII), preventing unhandled `UnicodeEncodeError` and background thread crashes when outputting status icons.
+* **[Reliability]:** Hardened debounce worker and command runner exception handling against recursive stream write errors, guaranteeing threads never die on unencodable error messages or broken pipes.
+* **[Testing]:** Ensured deterministic shutdown and thread reaping across all event handler tests, and added regression test coverage for restricted stream encodings and pipe failures.
 * **[Optimized]:** Bound subpath evaluation depth for compound exact ignore patterns using precomputed `_max_compound_exact_len`, avoiding redundant $O(N^2)$ checks on deep directories.
 * **[Fixed]:** Fixed unhandled `UnicodeEncodeError` on Windows consoles by disabling legacy console mode in Rich and setting fallback stream error handling.
 * **[Reliability]:** Moved change notification output inside `_run_command` try-block to prevent console encoding or pipe errors from crashing debounce worker threads.

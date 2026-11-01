@@ -47,6 +47,9 @@ def test_smart_reload():
     # Cleanup
     second_process.terminate()
     second_process.wait()
+    handler.shutdown()
+    if handler.debounce_thread:
+        handler.debounce_thread.join(timeout=1.0)
 
 
 def test_on_any_event_non_blocking():
@@ -91,6 +94,9 @@ def test_on_any_event_non_blocking():
     if handler.current_process:
         handler.current_process.terminate()
         handler.current_process.wait()
+    handler.shutdown()
+    if handler.debounce_thread:
+        handler.debounce_thread.join(timeout=1.0)
 
 
 def test_ignore_read_only_events():
@@ -151,3 +157,6 @@ def test_stdout_capture_compatibility(capsys):  # noqa: ARG001
     assert handler.current_process is not None
     handler.current_process.wait()
     assert handler.current_process.returncode == 0
+    handler.shutdown()
+    if handler.debounce_thread:
+        handler.debounce_thread.join(timeout=1.0)

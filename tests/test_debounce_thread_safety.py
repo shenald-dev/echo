@@ -31,6 +31,9 @@ def test_debounce_thread_safety():
 
     if handler.current_process:
         handler.current_process.wait()
+    handler.shutdown()
+    if handler.debounce_thread:
+        handler.debounce_thread.join(timeout=1.0)
 
     # Ensure it didn't crash and actually processed an event
     assert handler.last_event_path is not None

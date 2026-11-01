@@ -43,3 +43,6 @@ def test_unkillable_process():
     if p2:
         p2.kill()
         p2.wait()
+    handler.shutdown()
+    if handler.debounce_thread:
+        handler.debounce_thread.join(timeout=1.0)

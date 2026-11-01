@@ -162,6 +162,10 @@ def test_ignored_events_do_not_trigger():
         handler.current_process.terminate()
         handler.current_process.wait()
 
+    handler.shutdown()
+    if handler.debounce_thread:
+        handler.debounce_thread.join(timeout=1.0)
+
 
 def test_trailing_slashes_in_ignores():
     handler = CommandRunnerHandler(

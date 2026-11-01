@@ -2,9 +2,15 @@ import os
 import sys
 
 if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 import time
 import signal
 import platform
@@ -19,7 +25,42 @@ from watchdog.events import FileSystemEventHandler
 from rich.console import Console
 from rich.markup import escape
 
-console = Console(legacy_windows=False)
+
+class EchoConsole(Console):
+    """Console wrapper providing automatic ASCII transliteration and stream fallback on non-UTF-8 terminals."""
+
+    UNICODE_FALLBACKS = {
+        "✔": "[OK]",
+        "✖": "[X]",
+        "⚠": "[!]",
+        "📡": "[*]",
+        "✨": "*",
+    }
+
+    def _write_buffer(self) -> None:
+        try:
+            super()._write_buffer()
+        except UnicodeEncodeError:
+            with self._lock:
+                encoding = getattr(self.file, "encoding", None) or "utf-8"
+                text = self._render_buffer(self._buffer[:])
+                for char, replacement in self.UNICODE_FALLBACKS.items():
+                    text = text.replace(char, replacement)
+                safe_text = text.encode(encoding, errors="replace").decode(encoding, errors="replace")
+                try:
+                    self.file.write(safe_text)
+                    self.file.flush()
+                except Exception:
+                    pass
+                del self._buffer[:]
+        except BrokenPipeError:
+            self.on_broken_pipe()
+        except Exception:
+            with self._lock:
+                del self._buffer[:]
+
+
+console = EchoConsole(legacy_windows=False)
 
 
 class CommandRunnerHandler(FileSystemEventHandler):
@@ -139,7 +180,13 @@ class CommandRunnerHandler(FileSystemEventHandler):
             if time_to_wait <= 0:
                 if path_to_run is not None and not self.is_shutting_down:
                     # We reached the debounce threshold, execute command
-                    self._run_command(path_to_run)
+                    try:
+                        self._run_command(path_to_run)
+                    except Exception as e:
+                        try:
+                            console.print(f"[bold red]Unexpected error in command runner: {escape(str(e))}[/bold red]")
+                        except Exception:
+                            pass
                 return
 
             # Sleep until the next check, but wake up instantly on shutdown
@@ -187,7 +234,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
                     else:
                         console.print(f"[red]✖ Command failed with exit code {process.returncode}.[/red]")
         except Exception as e:
-            console.print(f"[bold red]Error executing command: {escape(str(e))}[/bold red]")
+            try:
+                console.print(f"[bold red]Error executing command: {escape(str(e))}[/bold red]")
+            except Exception:
+                pass
 
     def _is_ignored_impl(self, path: str) -> bool:
         if path.startswith(self._abs_base_path):
