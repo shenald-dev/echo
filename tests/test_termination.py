@@ -7,7 +7,10 @@ from echo.watcher import CommandRunnerHandler
 
 def test_unkillable_process():
     if os.name == 'nt':
-        cmd = f'"{sys.executable}" -c "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(5)"'
+        cmd = (
+            f'"{sys.executable}" -c "import signal, time; '
+            'signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(5)"'
+        )
     else:
         cmd = "trap '' TERM; sleep 5"
     handler = CommandRunnerHandler(cmd)
@@ -30,7 +33,8 @@ def test_unkillable_process():
 
     # Wait enough for debounce + timeout + spawn new
     start_time_wait = time.monotonic()
-    while (handler.current_process is None or handler.current_process is p1) and time.monotonic() - start_time_wait < 3.0:
+    while (handler.current_process is None or handler.current_process is p1) and \
+            time.monotonic() - start_time_wait < 3.0:
         time.sleep(0.05)
 
     p2 = handler.current_process

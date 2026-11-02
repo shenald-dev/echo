@@ -105,7 +105,9 @@ def test_ignored_events_do_not_trigger():
     while handler.current_process is None and time.monotonic() - start_time < 3.0:
         time.sleep(0.05)
 
-    assert handler.current_process is not None, "Process should be started if src_path is valid even if dest_path is ignored"
+    assert handler.current_process is not None, (
+        "Process should be started if src_path is valid even if dest_path is ignored"
+    )
 
     if handler.current_process:
         handler.current_process.terminate()

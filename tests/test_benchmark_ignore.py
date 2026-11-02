@@ -20,4 +20,7 @@ def test_ignore_performance_no_regression():
 
     # Our hoisted optimization should easily clear 10k iterations in under 0.5s on any modern hardware.
     # We set a generous upper bound for CI reliability, but this ensures no major regressions happen.
-    assert duration < 1.0, f"Performance regression in ignore logic: 10,000 deep paths took {duration:.2f}s (threshold 1.0s)"
+    assert duration < 1.0, (
+        f"Performance regression in ignore logic: 10,000 deep paths took {duration:.2f}s "
+        "(threshold 1.0s)"
+    )

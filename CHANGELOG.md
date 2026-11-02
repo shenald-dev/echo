@@ -760,3 +760,6 @@
 
 ## [Unreleased]
 **[Fixed]:** Fixed a bug where compound ignore patterns (like `my_dir/my_file.txt`) failed to match nested paths correctly.
+
+## [Unreleased]
+**[Fixed]:** Resolved codebase-wide line-length (E501) linting warnings in test files and watcher to ensure pep8 compliance up to 120 chars.

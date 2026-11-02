@@ -33,7 +33,8 @@ def test_smart_reload():
 
     # Wait for second process to start
     start_time = time.monotonic()
-    while (handler.current_process is None or handler.current_process is first_process) and time.monotonic() - start_time < 3.0:
+    while (handler.current_process is None or handler.current_process is first_process) and \
+            time.monotonic() - start_time < 3.0:
         time.sleep(0.05)
     second_process = handler.current_process
     assert second_process is not first_process
@@ -53,7 +54,10 @@ def test_on_any_event_non_blocking():
     """Verify that on_any_event doesn't block while a process is terminating."""
     # A command that takes some time to exit
     if os.name == 'nt':
-        cmd = f'"{sys.executable}" -c "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(2)"'
+        cmd = (
+            f'"{sys.executable}" -c "import signal, time; '
+            'signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(2)"'
+        )
     else:
         cmd = "trap '' TERM; sleep 2"
     handler = CommandRunnerHandler(cmd)

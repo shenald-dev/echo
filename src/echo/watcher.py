@@ -61,7 +61,9 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if simple_wildcards:
             self.simple_wildcard_regex = re.compile("|".join(f"(?:{fnmatch.translate(p)})" for p in simple_wildcards))
         if compound_wildcards:
-            self.compound_wildcard_regex = re.compile("|".join(f"(?:{fnmatch.translate(p)})" for p in compound_wildcards))
+            self.compound_wildcard_regex = re.compile(
+                "|".join(f"(?:{fnmatch.translate(p)})" for p in compound_wildcards)
+            )
 
         self.current_process = None
         self.process_lock = threading.Lock()
@@ -150,7 +152,10 @@ class CommandRunnerHandler(FileSystemEventHandler):
             return
 
         try:
-            console.print(f"\n[cyan]📡 Change detected in {escape(str(event_path))}. Executing: [yellow]{escape(str(self.command))}[/][/cyan]")
+            console.print(
+                f"\n[cyan]📡 Change detected in {escape(str(event_path))}. "
+                f"Executing: [yellow]{escape(str(self.command))}[/][/cyan]"
+            )
             with self.process_lock:
                 if self.is_shutting_down:
                     return
@@ -290,7 +295,10 @@ def main():
     parser = argparse.ArgumentParser(description="📡 Echo File Watcher")
     parser.add_argument("--path", type=str, default=".", help="Directory to watch")
     parser.add_argument("--cmd", type=str, required=True, help="Command to execute on change")
-    parser.add_argument("--ignore", type=str, default="", help="Comma-separated list of extra ignore patterns (e.g. '*.tmp,build')")
+    parser.add_argument(
+        "--ignore", type=str, default="",
+        help="Comma-separated list of extra ignore patterns (e.g. '*.tmp,build')"
+    )
     args = parser.parse_args()
 
     ignore_patterns = [p.strip() for p in args.ignore.split(",") if p.strip()] if args.ignore else None
@@ -298,7 +306,10 @@ def main():
     observer = Observer()
     observer.schedule(event_handler, args.path, recursive=True)
 
-    console.print(f"[bold green]✨ Echo is watching [cyan]{escape(str(args.path))}[/] and will run [yellow]{escape(str(args.cmd))}[/][/bold green]")
+    console.print(
+        f"[bold green]✨ Echo is watching [cyan]{escape(str(args.path))}[/] "
+        f"and will run [yellow]{escape(str(args.cmd))}[/][/bold green]"
+    )
 
     try:
         observer.start()
@@ -308,7 +319,8 @@ def main():
                 "\n[bold red]✖ Error: OS inotify watch limit reached.[/bold red]\n"
                 "[yellow]Your system is configured to limit the number of files that can be watched.\n"
                 "You can fix this by increasing the limit. Run the following command:[/yellow]\n\n"
-                "  [cyan]echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p[/cyan]\n"
+                "  [cyan]echo fs.inotify.max_user_watches=524288 | sudo tee -a "
+                "/etc/sysctl.conf && sudo sysctl -p[/cyan]\n"
             )
             sys.exit(1)
         raise

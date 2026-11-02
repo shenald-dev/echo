@@ -3,7 +3,9 @@ from echo.watcher import CommandRunnerHandler
 
 
 def test_performance_is_ignored_hotpath():
-    handler = CommandRunnerHandler("echo test", ".", ignore_patterns=["*.tmp", "node_modules", "src/build", "test/*.log"])
+    handler = CommandRunnerHandler(
+        "echo test", ".", ignore_patterns=["*.tmp", "node_modules", "src/build", "test/*.log"]
+    )
 
     # Initialize LRU cache to make the test measure the internal execution not the cache wrapper
     # We call the underlying un-cached implementation directly to measure the hot path
@@ -43,7 +45,10 @@ def test_performance_on_any_event_lock():
     import threading
     handler.debounce_thread = threading.Thread(target=lambda: None)  # mock active thread
 
-    event = type("Event", (), {"is_directory": False, "event_type": "modified", "src_path": "src/test/abc.py", "dest_path": None})()
+    event = type("Event", (), {
+        "is_directory": False, "event_type": "modified",
+        "src_path": "src/test/abc.py", "dest_path": None
+    })()
 
     def run_events():
         for _ in range(10000):
