@@ -222,9 +222,9 @@ def test_main_cli_initial_run():
          patch("time.sleep", side_effect=KeyboardInterrupt):
 
         mock_obs = MagicMock()
-        mock_obs_cls.return_value = mock_obs
+        mock_obs_cls.configure_mock(return_value=mock_obs)
         mock_h = MagicMock()
-        mock_h_cls.return_value = mock_h
+        mock_h_cls.configure_mock(return_value=mock_h)
 
         main(["--cmd", "pytest", "--initial", "--no-interactive"])
 
@@ -272,9 +272,9 @@ def test_main_cli_with_rules_and_no_recursive():
          patch("time.sleep", side_effect=KeyboardInterrupt):
 
         mock_obs = MagicMock()
-        mock_obs_cls.return_value = mock_obs
+        mock_obs_cls.configure_mock(return_value=mock_obs)
         mock_h = MagicMock()
-        mock_h_cls.return_value = mock_h
+        mock_h_cls.configure_mock(return_value=mock_h)
 
         main(["--rule", "*.py:pytest {file}", "--no-recursive", "--no-interactive"])
 
