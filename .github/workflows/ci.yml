@@ -26,7 +26,7 @@ jobs:
         pip install .
         pip install pytest pytest-cov ruff
     - name: Lint with Ruff
-      run: ruff check .
+      run: ruff check src tests
     - name: Run Test Suite
       run: pytest --cov=src
     - name: Test CLI Entrypoint
