@@ -69,7 +69,7 @@ def test_echo_console_closed_stream_resilience():
 
 def test_echo_console_broken_pipe_handling():
     mock_file = MagicMock()
-    mock_file.write.side_effect = BrokenPipeError("Broken pipe")
+    mock_file.write.configure_mock(side_effect=BrokenPipeError("Broken pipe"))
     console = EchoConsole(file=mock_file, legacy_windows=False)
 
     # Must invoke on_broken_pipe() and not re-raise BrokenPipeError
@@ -115,7 +115,8 @@ def test_debounce_worker_catches_unexpected_run_command_error(monkeypatch):
     thread = handler.debounce_thread
     assert thread is not None
 
-    # Debounce worker thread should catch the error and terminate cleanly without crashing
+    # Debounce worker thread should catch the error and terminate cleanly
+    # without crashing
     thread.join(timeout=2.0)
     assert not thread.is_alive()
     handler.shutdown()
