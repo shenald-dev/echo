@@ -239,6 +239,7 @@ def test_main_cli_initial_run():
 
 def test_unicode_fallbacks_v1():
     import io
+
     from echo.watcher import EchoConsole
 
     raw_buffer = io.BytesIO()

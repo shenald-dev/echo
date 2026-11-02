@@ -1,5 +1,6 @@
-from echo.watcher import CommandRunnerHandler
 from unittest.mock import MagicMock
+
+from echo.watcher import CommandRunnerHandler
 
 
 def test_shutdown_prevents_execution():
@@ -26,8 +27,9 @@ def test_shutdown_prevents_execution():
 
 
 def test_shutdown_exception_isolation():
+    from unittest.mock import MagicMock, patch
+
     from echo.watcher import main
-    from unittest.mock import patch, MagicMock
 
     with patch("echo.watcher.Observer") as mock_observer_cls, \
          patch("echo.watcher.CommandRunnerHandler") as mock_handler_cls, \

@@ -27,7 +27,12 @@ from rich.markup import escape
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-from echo.config import DEFAULT_DEBOUNCE_SEC, DEFAULT_IGNORES, load_config, parse_debounce
+from echo.config import (
+    DEFAULT_DEBOUNCE_SEC,
+    DEFAULT_IGNORES,
+    load_config,
+    parse_debounce,
+)
 from echo.interactive import InteractiveController
 from echo.interpolator import interpolate_command
 
@@ -177,7 +182,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not process or process.poll() is not None:
             return
 
-        setattr(process, "_echo_terminated", True)
+        process._echo_terminated = True
         try:
             if self.is_posix:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)

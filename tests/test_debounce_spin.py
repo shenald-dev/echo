@@ -1,5 +1,6 @@
-from echo.watcher import CommandRunnerHandler
 from unittest.mock import MagicMock
+
+from echo.watcher import CommandRunnerHandler
 
 
 def test_debounce_none_event_does_not_spin():

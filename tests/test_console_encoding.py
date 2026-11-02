@@ -1,6 +1,7 @@
 import io
 from unittest.mock import MagicMock
-from echo.watcher import EchoConsole, CommandRunnerHandler
+
+from echo.watcher import CommandRunnerHandler, EchoConsole
 
 
 def test_echo_console_ascii_stream_fallback():

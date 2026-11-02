@@ -1,8 +1,8 @@
-import time
-from echo.watcher import CommandRunnerHandler
 import subprocess
-
+import time
 from unittest.mock import MagicMock
+
+from echo.watcher import CommandRunnerHandler
 
 
 def test_rich_markup_crash_escaping():
