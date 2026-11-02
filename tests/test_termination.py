@@ -1,7 +1,8 @@
-import time
-import sys
 import os
+import sys
+import time
 from unittest.mock import MagicMock
+
 from echo.watcher import CommandRunnerHandler
 
 

@@ -1,7 +1,8 @@
-import time
-import sys
 import os
+import sys
+import time
 from unittest.mock import MagicMock
+
 from echo.watcher import CommandRunnerHandler
 
 
@@ -145,7 +146,7 @@ def test_ignore_read_only_events():
         handler.current_process.wait()
 
 
-def test_stdout_capture_compatibility(capsys):  # noqa: ARG001
+def test_stdout_capture_compatibility(capsys):
     """Verify that _run_command doesn't crash when sys.stdout lacks a fileno (like in pytest capsys)."""
     handler = CommandRunnerHandler("echo test_capture")
 

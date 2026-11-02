@@ -1,7 +1,8 @@
-import time
 import threading
-from echo.watcher import CommandRunnerHandler
+import time
 from unittest.mock import MagicMock
+
+from echo.watcher import CommandRunnerHandler
 
 
 def test_debounce_thread_safety():

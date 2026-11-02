@@ -41,7 +41,11 @@ def test_format_duration():
 def test_interpolate_command():
     test_path = os.path.join("src", "echo", "watcher.py")
     cmd = "run --file {file} --base {basename} --stem {stem} --ext {ext} --event {event}"
-    result = interpolate_command(cmd, test_path, base_path=".", event_type="created")
+    result = interpolate_command(
+        cmd,
+        test_path,
+        base_path=".",
+        event_type="created")
 
     assert "watcher.py" in result
     assert "--stem watcher" in result
@@ -217,14 +221,14 @@ def test_main_cli_no_command_error(capsys):
 
 def test_main_cli_initial_run():
     with patch("echo.watcher.Observer") as mock_obs_cls, \
-         patch("echo.watcher.CommandRunnerHandler") as mock_h_cls, \
-         patch("echo.watcher.console.print"), \
-         patch("time.sleep", side_effect=KeyboardInterrupt):
+            patch("echo.watcher.CommandRunnerHandler") as mock_h_cls, \
+            patch("echo.watcher.console.print"), \
+            patch("time.sleep", side_effect=KeyboardInterrupt):
 
         mock_obs = MagicMock()
-        mock_obs_cls.return_value = mock_obs
+        mock_obs_cls.configure_mock(return_value=mock_obs)
         mock_h = MagicMock()
-        mock_h_cls.return_value = mock_h
+        mock_h_cls.configure_mock(return_value=mock_h)
 
         main(["--cmd", "pytest", "--initial", "--no-interactive"])
 
@@ -235,6 +239,7 @@ def test_main_cli_initial_run():
 
 def test_unicode_fallbacks_v1():
     import io
+
     from echo.watcher import EchoConsole
 
     raw_buffer = io.BytesIO()
@@ -254,8 +259,9 @@ def test_unicode_fallbacks_v1():
 
 def test_command_runner_bell_and_clear():
     with patch("echo.watcher.console.clear") as mock_clear, \
-         patch("echo.watcher.sys.stdout.write") as mock_stdout_write:
-        handler = CommandRunnerHandler("echo test_flags", bell=True, clear_screen=True)
+            patch("echo.watcher.sys.stdout.write") as mock_stdout_write:
+        handler = CommandRunnerHandler(
+            "echo test_flags", bell=True, clear_screen=True)
         handler._run_command("test.txt")
         if handler.current_process:
             handler.current_process.wait()
@@ -267,16 +273,19 @@ def test_command_runner_bell_and_clear():
 
 def test_main_cli_with_rules_and_no_recursive():
     with patch("echo.watcher.Observer") as mock_obs_cls, \
-         patch("echo.watcher.CommandRunnerHandler") as mock_h_cls, \
-         patch("echo.watcher.console.print"), \
-         patch("time.sleep", side_effect=KeyboardInterrupt):
+            patch("echo.watcher.CommandRunnerHandler") as mock_h_cls, \
+            patch("echo.watcher.console.print"), \
+            patch("time.sleep", side_effect=KeyboardInterrupt):
 
         mock_obs = MagicMock()
-        mock_obs_cls.return_value = mock_obs
+        mock_obs_cls.configure_mock(return_value=mock_obs)
         mock_h = MagicMock()
-        mock_h_cls.return_value = mock_h
+        mock_h_cls.configure_mock(return_value=mock_h)
 
-        main(["--rule", "*.py:pytest {file}", "--no-recursive", "--no-interactive"])
+        main(["--rule",
+              "*.py:pytest {file}",
+              "--no-recursive",
+              "--no-interactive"])
 
         assert mock_obs.schedule.call_count == 1
         # Check recursive=False
@@ -290,4 +299,3 @@ def test_print_hotkey_help():
         print_hotkey_help()
         mock_print.assert_called_once()
         assert "Interactive Shortcuts" in mock_print.call_args[0][0]
-
