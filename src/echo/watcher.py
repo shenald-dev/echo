@@ -177,7 +177,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         if not process or process.poll() is not None:
             return
 
-        setattr(process, "_echo_terminated", True)
+        process._echo_terminated = True
         try:
             if self.is_posix:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
