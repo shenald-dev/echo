@@ -516,6 +516,6 @@ Reverted the lock removal around the variable assignments to assure atomic visib
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
 ## 2026-11-01 — Lifecycle & Assurance Ledger
-- **QA & Veto Actions:** Fixed unused attributes flagged by Vulture (`side_effect`, `return_value`) in test files (`tests/test_console_encoding.py`, `tests/test_v1_features.py`) by replacing direct assignments with `.configure_mock()`.
+- **QA & Veto Actions:** Fixed unused attributes flagged by Vulture (`side_effect`, `return_value`) in test files (`tests/test_console_encoding.py`, `tests/test_v1_features.py`) by replacing direct assignments with `.configure_mock()`. Also fixed `B010` by using direct assignment instead of `setattr`.
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
