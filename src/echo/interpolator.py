@@ -1,6 +1,7 @@
 """Command placeholder interpolation utilities for Echo."""
 
 import os
+import shlex
 from pathlib import Path
 
 
@@ -40,14 +41,14 @@ def interpolate_command(
     ext = p.suffix.lstrip(".")
 
     mapping = {
-        "file": norm_path,
-        "path": norm_path,
-        "relpath": rel_path,
-        "basename": basename,
-        "stem": stem,
-        "dirname": dirname,
-        "ext": ext,
-        "event": event_type,
+        "file": shlex.quote(norm_path),
+        "path": shlex.quote(norm_path),
+        "relpath": shlex.quote(rel_path),
+        "basename": shlex.quote(basename),
+        "stem": shlex.quote(stem),
+        "dirname": shlex.quote(dirname),
+        "ext": shlex.quote(ext),
+        "event": shlex.quote(event_type),
     }
 
     result = command_template

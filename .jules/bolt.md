@@ -962,3 +962,7 @@ Refactored the `_is_ignored_impl` logic to add an outer loop `for start_idx in r
 
 - **Learning:** Found an opportunity to apply the previously logged "Compound Regex Optimization in Hot Path" to `_is_ignored_impl` inside `src/echo/watcher.py`. The redundant `if (match and match(prefix))` truthiness check on `match` was still present in the nested loop that validates contiguous sub-paths.
 - **Action:** Split the loop logic based on `if compound_regex:`. If true, we check `match(prefix)`, and if false, we execute a loop without evaluating regex matches at all. This prevents redundant checks and improves performance when no compound wildcards exist.
+
+## 2026-11-01 — Command Injection Vulnerability Fix
+- **Learning:** Path parameters used during command interpolation can contain shell meta-characters, leading to arbitrary command execution when passed to `subprocess.Popen(shell=True)`.
+- **Action:** All interpolated path and file variables must be sanitized using `shlex.quote()` to ensure malicious paths are treated as string literals, preventing command injection vulnerabilities.
