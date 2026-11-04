@@ -23,6 +23,7 @@
 - Expanded automated test suite to 50 comprehensive tests with 100% pass rate.
 
 ## [Unreleased]
+* **[Fixed]:** Reverted commit 024d6db to prevent double-quoting regressions in path interpolation.
 
 * **[Fixed]:** Added automatic ASCII transliteration fallback in `EchoConsole` for restricted stream encodings (e.g., CP1252/ASCII), preventing unhandled `UnicodeEncodeError` and background thread crashes when outputting status icons.
 * **[Reliability]:** Hardened debounce worker and command runner exception handling against recursive stream write errors, guaranteeing threads never die on unencodable error messages or broken pipes.
