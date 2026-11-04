@@ -515,3 +515,8 @@ Reverted the lock removal around the variable assignments to assure atomic visib
 - **QA & Veto Actions:** Audited bounded compound ignore evaluation depth and graceful shutdown exception isolation. Verified robust edge-case unit tests are present. No regressions or broken business rules found.
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
+
+## 2026-11-04 — Lifecycle & Assurance Ledger
+- **QA & Veto Actions:** Reverted commit 024d6db because applying `shlex.quote()` to interpolated path parameters causes double-quoting syntax errors for users who already encapsulate their template variables in quotes.
+- **Entropy Pruned:** 0 lines
+- **Deferred / Blocked:** No dependencies deferred. No blockers.
