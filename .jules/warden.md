@@ -517,6 +517,6 @@ Reverted the lock removal around the variable assignments to assure atomic visib
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
 
 ## 2026-11-03 — Lifecycle & Assurance Ledger
-- **QA & Veto Actions:** Audited recent chore commits (test suite mock updates, linting fixes, and command injection vulnerability fix). Verified test suite stability. No functional regressions introduced.
+- **QA & Veto Actions:** Audited recent chore commits (test suite mock updates, linting fixes). Verified test suite stability. No functional regressions introduced.
 - **Entropy Pruned:** 0 lines (vulture reports zero dead code).
 - **Deferred / Blocked:** No dependencies deferred. Version bump omitted as recent changes were purely internal chores. No blockers.
