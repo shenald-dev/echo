@@ -299,3 +299,14 @@ def test_print_hotkey_help():
         print_hotkey_help()
         mock_print.assert_called_once()
         assert "Interactive Shortcuts" in mock_print.call_args[0][0]
+
+
+def test_interpolate_command_injection():
+    test_path = "test; rm -rf \'"
+    cmd = "echo {file}"
+    result = interpolate_command(
+        cmd,
+        test_path,
+        base_path=".",
+        event_type="created")
+    assert "'test; rm -rf \'\"\'\"\'\'" in result
