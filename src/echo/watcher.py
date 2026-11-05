@@ -167,6 +167,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         self.is_shutting_down = False
         self.is_posix = platform.system() != "Windows"
         self.shutdown_event = threading.Event()
+        self.wakeup_event = threading.Event()
 
         # Bind LRU cache to instance to prevent memory leaks across instances
         self._is_ignored = functools.lru_cache(maxsize=4096)(self._is_ignored_impl)
@@ -212,6 +213,7 @@ class CommandRunnerHandler(FileSystemEventHandler):
         """Safely shuts down the handler and terminates any running process."""
         self.is_shutting_down = True
         self.shutdown_event.set()
+        self.wakeup_event.set()
         with self.process_lock:
             self._terminate_process(self.current_process)
 
@@ -279,6 +281,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
             if self.debounce_thread is None:
                 self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
                 self.debounce_thread.start()
+            else:
+                self.wakeup_event.set()
 
     def _debounce_worker(self):
         while True:
@@ -309,7 +313,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
                             pass
                 return
 
-            self.shutdown_event.wait(timeout=time_to_wait)
+            self.wakeup_event.wait(timeout=time_to_wait)
+            self.wakeup_event.clear()
 
     def _run_command(self, event_path, event_type: str = "modified"):
         if self.is_shutting_down:
@@ -477,6 +482,8 @@ class CommandRunnerHandler(FileSystemEventHandler):
             if self.debounce_thread is None:
                 self.debounce_thread = threading.Thread(target=self._debounce_worker, daemon=True)
                 self.debounce_thread.start()
+            else:
+                self.wakeup_event.set()
 
 
 def parse_cli_rule(rule_str: str) -> dict[str, Any]:

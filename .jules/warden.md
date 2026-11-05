@@ -520,3 +520,8 @@ Reverted the lock removal around the variable assignments to assure atomic visib
 - **QA & Veto Actions:** Reverted commit 024d6db because applying `shlex.quote()` to interpolated path parameters causes double-quoting syntax errors for users who already encapsulate their template variables in quotes.
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
+
+## 2026-11-05 — Lifecycle & Assurance Ledger
+- **QA & Veto Actions:** Fixed debounce sleep interruption bug in `watcher.py` where `force_run` and `on_any_event` failed to wake the debounce thread from `shutdown_event.wait()` by pulsing the event. Verified thread exits/loops properly with existing test suite.
+- **Entropy Pruned:** 0 lines
+- **Deferred / Blocked:** No dependencies deferred. No blockers.
