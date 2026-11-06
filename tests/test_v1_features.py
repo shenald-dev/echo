@@ -299,3 +299,27 @@ def test_print_hotkey_help():
         print_hotkey_help()
         mock_print.assert_called_once()
         assert "Interactive Shortcuts" in mock_print.call_args[0][0]
+
+
+def test_interpolate_command_recursive_bug():
+    test_path = "test_{event}.py"
+    cmd = "echo {file} {event}"
+    result = interpolate_command(
+        cmd,
+        test_path,
+        base_path=".",
+        event_type="created")
+
+    assert result == "echo test_{event}.py created"
+
+
+def test_interpolate_command_recursive_bug_with_braces():
+    test_path = "test_{ext}_file.txt"
+    cmd = "echo {file} {ext}"
+    result = interpolate_command(
+        cmd,
+        test_path,
+        base_path=".",
+        event_type="created")
+
+    assert result == "echo test_{ext}_file.txt txt"

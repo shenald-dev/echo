@@ -1,6 +1,7 @@
 """Command placeholder interpolation utilities for Echo."""
 
 import os
+import re
 
 from pathlib import Path
 
@@ -51,10 +52,11 @@ def interpolate_command(
         "event": event_type,
     }
 
-    result = command_template
-    for key, val in mapping.items():
-        placeholder = f"{{{key}}}"
-        if placeholder in result:
-            result = result.replace(placeholder, val)
+    def replacer(match):
+        key = match.group(1)
+        if key in mapping:
+            # Must return str because mapping values might not be strings
+            return str(mapping[key])
+        return match.group(0)
 
-    return result
+    return re.sub(r'\{([a-zA-Z_][a-zA-Z0-9_]*)\}', replacer, command_template)
