@@ -323,3 +323,16 @@ def test_interpolate_command_recursive_bug_with_braces():
         event_type="created")
 
     assert result == "echo test_{ext}_file.txt txt"
+
+def test_interpolate_command_edge_cases():
+    cmd = "echo {file} {file}"
+    result = interpolate_command(cmd, "test.txt")
+    assert result == "echo test.txt test.txt"
+
+    cmd = "echo {unknown}"
+    result = interpolate_command(cmd, "test.txt")
+    assert result == "echo {unknown}"
+
+    cmd = "echo {file"
+    result = interpolate_command(cmd, "test.txt")
+    assert result == "echo {file"
