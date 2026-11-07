@@ -966,3 +966,7 @@ Refactored the `_is_ignored_impl` logic to add an outer loop `for start_idx in r
 ## 2026-11-01 — Command Injection Vulnerability Fix
 - **Learning:** Path parameters used during command interpolation can contain shell meta-characters, leading to arbitrary command execution when passed to `subprocess.Popen(shell=True)`.
 - **Action:** All interpolated path and file variables must be sanitized using `shlex.quote()` to ensure malicious paths are treated as string literals, preventing command injection vulnerabilities.
+
+## 2026-11-07 — Command Injection Vulnerability Fix
+- **Learning:** When string replacement logic is used for expanding user placeholders into executable commands inside `subprocess.Popen(shell=True)`, any unescaped inputs open up command injection if they contain shell variables or subprocess operators like `$(...)`.
+- **Action:** Path variables passed into command templates via `{placeholder}` interpolation are now safely sanitized using `shlex.quote()` in `src/echo/interpolator.py` to prevent arbitrary command execution via shell metacharacters. Extra logic was included to strip redundant surrounding quotes when `shlex.quote()` is applied, preventing double-quoting errors.

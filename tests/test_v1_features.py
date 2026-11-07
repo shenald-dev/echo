@@ -310,7 +310,7 @@ def test_interpolate_command_recursive_bug():
         base_path=".",
         event_type="created")
 
-    assert result == "echo test_{event}.py created"
+    assert result == "echo 'test_{event}.py' created"
 
 
 def test_interpolate_command_recursive_bug_with_braces():
@@ -322,4 +322,4 @@ def test_interpolate_command_recursive_bug_with_braces():
         base_path=".",
         event_type="created")
 
-    assert result == "echo test_{ext}_file.txt txt"
+    assert result == "echo 'test_{ext}_file.txt' txt"

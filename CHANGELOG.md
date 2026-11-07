@@ -23,6 +23,7 @@
 - Expanded automated test suite to 50 comprehensive tests with 100% pass rate.
 
 ## [Unreleased]
+**[Security Fixed]:** Fixed a command injection vulnerability where string interpolation into `subprocess.Popen(shell=True)` allowed arbitrary command execution. Interpolated parameters are now properly sanitized with `shlex.quote()`.
 * **[Fixed]:** Fixed a string formatting interpolation vulnerability where recursively expanding placeholders could cause unexpected nested expansions.
 * **[Fixed]:** Reverted commit 024d6db to prevent double-quoting regressions in path interpolation.
 

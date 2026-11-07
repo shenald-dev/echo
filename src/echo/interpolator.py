@@ -2,6 +2,7 @@
 
 import os
 import re
+import shlex
 
 from pathlib import Path
 
@@ -23,8 +24,9 @@ def interpolate_command(
       - {ext}: File extension without leading dot (e.g., 'py').
       - {event}: Event type ('modified', 'created', 'deleted', 'moved').
 
-    If the command template contains no braces, it is returned as-is without overhead.
-    Unknown placeholders (like shell syntax '${VAR}' or regex '{1,3}') are safely preserved.
+    If the command template contains no braces, it is returned as-is
+    without overhead. Unknown placeholders (like shell syntax '${VAR}'
+    or regex '{1,3}') are safely preserved.
     """
     if "{" not in command_template:
         return command_template
@@ -53,10 +55,17 @@ def interpolate_command(
     }
 
     def replacer(match):
-        key = match.group(1)
+        left_quote = match.group(1)
+        key = match.group(2)
+        right_quote = match.group(3)
         if key in mapping:
             # Must return str because mapping values might not be strings
-            return str(mapping[key])
+            val = str(mapping[key])
+            quoted_val = shlex.quote(val)
+            if left_quote and right_quote and left_quote == right_quote:
+                return quoted_val
+            return left_quote + quoted_val + right_quote
         return match.group(0)
 
-    return re.sub(r'\{([a-zA-Z_][a-zA-Z0-9_]*)\}', replacer, command_template)
+    pattern = r'([\'"]?)\{([a-zA-Z_][a-zA-Z0-9_]*)\}([\'"]?)'
+    return re.sub(pattern, replacer, command_template)
