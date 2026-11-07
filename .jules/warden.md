@@ -529,3 +529,7 @@ Reverted the lock removal around the variable assignments to assure atomic visib
 - **QA & Veto Actions:** Fixed a string formatting interpolation vulnerability where recursively expanding placeholders like `{event}` could cause unexpected nested expansions. Replaced `str.replace` with `re.sub` using a non-recursive dictionary lookup. Verified zero logic regressions via unit tests.
 - **Entropy Pruned:** 0 lines
 - **Deferred / Blocked:** No dependencies deferred. No blockers.
+## 2026-11-08 — Lifecycle & Assurance Ledger
+- **QA & Veto Actions:** Abandoned an attempt to apply `shlex.quote()` during placeholder interpolation due to it modifying established interpolation contracts and breaking cross-platform execution on Windows runners, as previously evaluated in commit 82f61a3 (#184). Kept current intentional implementation.
+- **Entropy Pruned:** 0 lines
+- **Deferred / Blocked:** Blocked fixing command injection via interpolation to avoid breaking Windows compatibility.
