@@ -188,6 +188,15 @@ class CommandRunnerHandler(FileSystemEventHandler):
             if self.is_posix:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             else:
+                try:
+                    subprocess.run(
+                        ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        check=False,
+                    )
+                except Exception:
+                    pass
                 process.terminate()
         except OSError:
             pass
@@ -200,6 +209,15 @@ class CommandRunnerHandler(FileSystemEventHandler):
                 if self.is_posix:
                     os.killpg(os.getpgid(process.pid), signal.SIGKILL)
                 else:
+                    try:
+                        subprocess.run(
+                            ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                            check=False,
+                        )
+                    except Exception:
+                        pass
                     process.kill()
             except OSError:
                 pass
